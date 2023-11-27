@@ -16,7 +16,7 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CustomerAddressPK implements Serializable{
+public class CustomerAddressPK implements Serializable {
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
