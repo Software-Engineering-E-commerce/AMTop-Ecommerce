@@ -76,6 +76,7 @@ class AdminTest {
         admin.setFirstName("mahmoud");
         admin.setLastName("Attia");
 
+        //simulate the saving admin by using the mocked repo
         when(mockedAdminRepository.save(any(Admin.class))).thenReturn(admin);
         Admin savedAdmin = mockedAdminRepository.save(admin);
 
@@ -101,14 +102,18 @@ class AdminTest {
         admin.setIsGmail(false);
         admin.setIsVerified(false);
 
+        //search for unsaved admin
         Optional<Admin> optionalAdmin = adminRepository.findByEmail(email);
         assertFalse(optionalAdmin.isPresent());
 
+        //save it
         adminRepository.save(admin);
 
+        //search for the saved admin
         optionalAdmin = adminRepository.findByEmail(email);
         assertTrue(optionalAdmin.isPresent());
 
+        //verify its attributes
         assertEquals("test@example.com", optionalAdmin.get().getEmail());
         assertEquals("password", optionalAdmin.get().getPassword());
 
@@ -126,6 +131,7 @@ class AdminTest {
         admin.setFirstName("mahmoud");
         admin.setLastName("Attia");
 
+        //use mocked repo to simulate the operation of saving an admin then update its attributes
         when(mockedAdminRepository.findByEmail(email)).thenReturn(Optional.empty());
         Optional<Admin> foundAdmin = mockedAdminRepository.findByEmail(email);
         assertFalse(foundAdmin.isPresent());
@@ -166,6 +172,7 @@ class AdminTest {
         admin.setIsGmail(false);
         admin.setIsVerified(false);
 
+        //test the update by saving an admin then update it and check its updated attributes
         Optional<Admin> optionalAdmin = adminRepository.findByEmail(email);
         assertFalse(optionalAdmin.isPresent());
 
@@ -226,6 +233,7 @@ class AdminTest {
         admin.setIsGmail(false);
         admin.setIsVerified(false);
 
+        //test the delete admin by adding then deleting the add again
         Optional<Admin> optionalAdmin = adminRepository.findByEmail(email);
         assertFalse(optionalAdmin.isPresent());
 

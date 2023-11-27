@@ -59,6 +59,7 @@ class CustomerTest {
         String email = "test@example.com";
         Customer customer = getCustomer(email);
 
+        //simulate the create customer by the mocked repo
         when(mockedCustomerRepository.save(any(Customer.class))).thenReturn(customer);
         Customer savedCustomer = mockedCustomerRepository.save(customer);
 
@@ -96,6 +97,7 @@ class CustomerTest {
         String email = "test@example.com";
         Customer customer = getCustomer(email);
 
+        //test the create customer by checking it before adding and after adding
         Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
         assertFalse(optionalCustomer.isPresent());
 
@@ -117,6 +119,7 @@ class CustomerTest {
         String email = "test@example.com";
         Customer customer = getCustomer(email);
 
+        //simulate the update operations by using the mocked repo
         when(mockedCustomerRepository.findByEmail(email)).thenReturn(Optional.empty());
         Optional<Customer> foundCustomer = mockedCustomerRepository.findByEmail(email);
         assertFalse(foundCustomer.isPresent());
@@ -152,6 +155,7 @@ class CustomerTest {
         String email = "test@example.com";
         Customer customer = getCustomer(email);
 
+        //test the update customer by checking it after and before update
         Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
         assertFalse(optionalCustomer.isPresent());
 
@@ -203,6 +207,7 @@ class CustomerTest {
         String email = "test@example.com";
         Customer customer = getCustomer(email);
 
+        //test the delete customer by adding then deleting the add again
         Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
         assertFalse(optionalCustomer.isPresent());
 

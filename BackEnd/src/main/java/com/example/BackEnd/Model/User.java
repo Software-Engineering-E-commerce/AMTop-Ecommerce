@@ -21,7 +21,7 @@ public class User {
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean isGmail;
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private Boolean isVerified;
+    private Boolean isVerified; //is the customer secured or not yet.
     @Column
     private String firstName;
     @Column
