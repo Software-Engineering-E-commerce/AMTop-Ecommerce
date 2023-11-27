@@ -1,12 +1,45 @@
-import React from 'react'
-import Form from '../Components/Form'
-import LightBlocker from '../Components/LightBlocker'
+import axios from "axios";
+import Form from "../Components/Form";
+import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
+  const navigate = useNavigate()
   
-  return (
-    <><Form isLogin={false} /></>
-  )
-}
+  const getSignUpCredentials = (customer: Customer, isGoogle: boolean) => {
+    if (isGoogle) {
+      //TODO send the request for google signup
+    } else {
+      //TODO send the request for basic credentials sign up
+    }
+  };
 
-export default SignUp
+  const handelSignUpBasicCredentials = async (customer: Customer) => {
+    //if success then the user will be added to the DB and then routed to his home page
+    const requestPath = "";
+    try {
+      const response = await axios.post(requestPath, customer);
+
+      if (response.data === "SUCCESS") {
+        navigate("/home");
+      } else {
+        alert(response.data);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert(error);
+    }
+  };
+
+  const handelSignUpBasicGoogle = async (customer: Customer) => {
+    //if success then the user will be addel to the DB and then routed to his home page
+    //if the user already exists then we'll just log him in.
+  };
+
+  return (
+    <>
+      <Form isLogin={false} getSignUpCredentials={getSignUpCredentials} />
+    </>
+  );
+};
+
+export default SignUp;
