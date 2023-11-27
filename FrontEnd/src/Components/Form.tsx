@@ -33,7 +33,7 @@ const Form = ({ isLogin }: Props) => {
     }));
     console.log(name);
     if (name === "firstName") {
-      if (checkFirstName())
+      if (checkFirstName().length == 0)
         setFormErrors((prvious) => {
           return {
             ...prvious,
@@ -43,7 +43,7 @@ const Form = ({ isLogin }: Props) => {
     }
 
     if (name === "lastName") {
-      if (checkLastName())
+      if (checkLastName().length == 0)
         setFormErrors((prvious) => {
           return {
             ...prvious,
@@ -52,7 +52,7 @@ const Form = ({ isLogin }: Props) => {
         });
     }
     if (name === "email") {
-      if (checkEmail())
+      if (checkEmail().length == 0)
         setFormErrors((prvious) => {
           return {
             ...prvious,
@@ -61,7 +61,7 @@ const Form = ({ isLogin }: Props) => {
         });
     }
     if (name === "password") {
-      if (checkPassword())
+      if (checkPassword().length == 0)
         setFormErrors((prvious) => {
           return {
             ...prvious,
@@ -70,21 +70,28 @@ const Form = ({ isLogin }: Props) => {
         });
     }
   };
+  
 
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
     console.log("Submitt")
     e.preventDefault();
-    let isValid = CheckFields();
-    if (isValid) {
-       console.log("22")
-      console.log("All our credentials are set");
-      console.log(formData);
+    let validFields = CheckFields();
+
+    if(isLogin){
+      if(validFields.email && validFields.password){
+        console.log("All our credentials are set for the login");
+        //TODO the rest of the logic here for login using credentials
+      }
+    }else{
+      if(validFields.firstName && validFields.lastName && validFields.email && validFields.password && validFields.confirmPassword){
+        console.log("All our credentials are set for the Signup");
+        //TODO the rest of the logic here for Sign UP using credentials
+      }
     }
   };
 
   function CheckFields() {
-    let isValid: boolean = true; //to check the overall validity
-
+    
     let errorMessages = {
       firstName: "",
       lastName: "",
@@ -93,95 +100,115 @@ const Form = ({ isLogin }: Props) => {
       confirmPassword: "",
     };
 
+    let validFields = {
+      firstName: true,
+      lastName: true,
+      email: true,
+      password: true,
+      confirmPassword: true,
+    }
+
     //here we need to check the validity of all of our fields
-    if (!checkFirstName()) {
-      errorMessages.firstName = " Enter a valid name please!";
+    let firstNameComment = checkFirstName();
+    if (firstNameComment.length != 0) {
+      errorMessages.firstName = firstNameComment;
       if (formData.firstName.length == 0)
         errorMessages.firstName = "This is a mandatory field to fill !";
-      isValid = false;
+      validFields.firstName = false;
     }
-    if (!checkLastName()) {
-      errorMessages.lastName = " Enter a valid name please!";
+
+    let lastNameComment = checkLastName();
+    if (lastNameComment.length != 0) {
+      errorMessages.lastName = lastNameComment;
       if (formData.lastName.length == 0)
         errorMessages.lastName = "This is a mandatory field to fill !";
-      isValid = false;
+      validFields.lastName = false;
     }
-    if (!checkEmail()) {
-      errorMessages.email =
-        "Please enter a valid email of the format username@domain";
+    let emailComment = checkEmail();
+    if (emailComment.length != 0) {
+      errorMessages.email = emailComment;
       if (formData.email.length == 0)
         errorMessages.email = "This is a mandatory field to fill !";
-      isValid = false;
+      validFields.email = false;
     }
-    if (!checkPassword()) {
-      errorMessages.password =
-        "Please enter a valid password of at least 8 characters";
+    
+    let passwordComment = checkPassword();
+    if (passwordComment.length != 0) {
+      errorMessages.password = passwordComment;
       if (formData.password.length == 0)
         errorMessages.password = "This is a mandatory field to fill !";
-      isValid = false;
+      validFields.password = false;
     }
-    if (!checkConfirmPassword()) {
-      errorMessages.confirmPassword = "Passwords do not match";
+
+    let confirmPasswordComment = checkConfirmPassword();
+    if (confirmPasswordComment.length!= 0) {
+      errorMessages.confirmPassword = confirmPasswordComment;
       if (formData.confirmPassword.length == 0)
-        errorMessages.confirmPassword = "This is a mandatory field to fill !";
-      isValid = false;
+        errorMessages.confirmPassword = "This is a mandatory field to fill!";
+      validFields.confirmPassword = false;
     }
+
     setFormErrors(errorMessages);
     console.log(formErrors);
-    return isValid;
+    return validFields;
   }
 
   function checkFirstName() {
     const validNameRegex = /^[A-Za-z\s]+$/;
-    let isValid = true;
-    if (
-      !validNameRegex.test(formData.firstName) ||
-      formData.firstName.length < 3
-    ) {
-      isValid = false;
+    let comment = "";
+    if (!validNameRegex.test(formData.firstName)) {
+      comment = "Please use valid Characters for a name !"
+    }if(formData.firstName.length < 3){
+      comment = "Name is too short !"
     }
-    return isValid;
+    return comment;
   }
 
   function checkLastName() {
     const validNameRegex = /^[A-Za-z\s]+$/;
-    let isValid = true;
-    if (
-      !validNameRegex.test(formData.lastName) ||
-      formData.lastName.length < 3
-    ) {
-      isValid = false;
+    let comment = "";
+    if (!validNameRegex.test(formData.lastName)) {
+      comment = "Please use valid Characters for a name !"
+    }if(formData.lastName.length < 3){
+      comment = "Name is too short !"
     }
-    return isValid;
+    return comment;
   }
 
   function checkEmail() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    let isValid = true;
-    if (!emailRegex.test(formData.email) || formData.email.length < 6) {
-      isValid = false;
+    let comment = "";
+    if (!emailRegex.test(formData.email) ) {
+      comment = "Please enter a valid email of the format username@domain"
+    }if(formData.email.length < 6){
+      comment = "Email is too short !"
     }
-    return isValid;
+    return comment;
   }
 
   function checkPassword() {
-    let isValid = true;
-    if (formData.password.length < 8) {
-      console.log("Password not valid");
-      isValid = false;
+    const passwordRegex =
+    /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\-])[A-Za-z\d!@#$%^&*()_+{}\[\]:;<>,.?~\\-]{8,}$/
+
+    let comment = "";
+    if(!passwordRegex.test(formData.password)){
+      comment = "Please use a stronger password!";
     }
-    return isValid;
+    if (formData.password.length < 8) {
+      comment = "Password must be at least 8 characters long";
+    }
+    return comment;
   }
 
   function checkConfirmPassword() {
-    let isValid = true;
+    let comment = "";
     if (
       formData.password !== formData.confirmPassword ||
       formData.confirmPassword.length == 0
     ) {
-      isValid = false;
+      comment = "Passwords do not match !"
     }
-    return isValid;
+    return comment;
   }
 
   function getGoogleAuthData(
@@ -189,6 +216,7 @@ const Form = ({ isLogin }: Props) => {
     lastName: string,
     email: string
   ) {
+    //TODO now our user wants to log in using his Gmail
     console.log("get data called");
     console.log(firstName);
     console.log(lastName);
@@ -197,9 +225,10 @@ const Form = ({ isLogin }: Props) => {
 
   return (
     <>
-      <div className="container">
+      <div className="col-lg-5 col-sm-12 container">
         <form className="row g-3" onSubmit={handleFormSubmit} noValidate>
-          <header style={{ marginBottom: "0px" }}>
+
+          <header style={{ marginBottom: "0px"}}>
             <h3 style={{ marginBottom: "10px", color: "#007bff" }}>
               {isLogin ? "Log in" : "Sign Up"}
             </h3>
@@ -207,19 +236,22 @@ const Form = ({ isLogin }: Props) => {
               Please fill in this form in order to{" "}
               {isLogin ? "Log in" : "Sign Up"}
             </h6>
-            <hr style={{ marginBottom: "5px" }} />
+            <hr style={{ marginBottom: "0px" }} />
           </header>
+
+
 
           {!isLogin && (
             <>
-              <div className="col-md-6">
+              <div className="col-md-6 input-cont">
                 <label className="form-label">Frist name</label>
                 <input
                   type="text"
+                  placeholder="At least 3 characters"
+                  style={{padding: "0.8rem 0.75rem"}}
                   className={`form-control ${
                     formErrors.firstName ? "is-invalid" : ""
                   }`}
-                  placeholder="First name"
                   name="firstName"
                   aria-label="First name"
                   value={formData.firstName}
@@ -228,19 +260,20 @@ const Form = ({ isLogin }: Props) => {
                 />
                 {formErrors.firstName && (
                   <div className="invalid-feedback">
-                    {isLogin ? "Log in" : "Sign Up"}{" "}
+                    {formErrors.firstName}
                   </div>
                 )}
               </div>
 
-              <div className="col-md-6">
+              <div className="col-md-6 input-cont" >
                 <label className="form-label">Last name</label>
                 <input
                   type="text"
+                  placeholder="At least 3 characters"
+                  style={{padding: "0.8rem 0.75rem"}}
                   className={`form-control ${
                     formErrors.lastName ? "is-invalid" : ""
                   }`}
-                  placeholder="Last name"
                   aria-label="Last name"
                   name="lastName"
                   value={formData.lastName}
@@ -254,10 +287,11 @@ const Form = ({ isLogin }: Props) => {
             </>
           )}
 
-          <div className="col-12">
+          <div className="col-12 input-cont">
             <label className="form-label">Email</label>
             <input
               type="email"
+              style={{padding: "0.8rem 0.75rem"}}
               className={`form-control ${formErrors.email ? "is-invalid" : ""}`}
               id="inputEmail4"
               placeholder="Username@domain"
@@ -270,7 +304,7 @@ const Form = ({ isLogin }: Props) => {
               <div className="invalid-feedback">{formErrors.email}</div>
             )}
           </div>
-          <div className="col-12">
+          <div className="col-12 input-cont">
             <label className="form-label">Password</label>
             <input
               type="password"
@@ -279,6 +313,7 @@ const Form = ({ isLogin }: Props) => {
               }`}
               id="password"
               name="password"
+              style={{padding: "0.8rem 0.75rem"}}
               value={formData.password}
               onChange={handleInputChange}
               placeholder="At least 8 characters"
@@ -290,10 +325,11 @@ const Form = ({ isLogin }: Props) => {
           </div>
           {!isLogin && (
             <>
-              <div className="col-12">
-                <label className="form-label">confirm password</label>
+              <div className="col-12 input-cont">
+                <label className="form-label">Confirm password</label>
                 <input
                   type="password"
+                  style={{padding: "0.8rem 0.75rem"}}
                   className={`form-control ${
                     formErrors.confirmPassword ? "is-invalid" : ""
                   }`}
