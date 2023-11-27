@@ -2,6 +2,7 @@ package com.example.BackEnd.Services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -19,7 +20,7 @@ public class EmailService {
     private JavaMailSender emailSender;
 
     @Async
-    public void sendEmail(String to, String subject, String body) {
+    public void sendEmail(String to, String subject, String body) throws MessagingException {
         MimeMessage message = emailSender.createMimeMessage();
         try {
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
@@ -30,7 +31,9 @@ public class EmailService {
             emailSender.send(message);
             System.out.println("Mail Send...");
         } catch (MessagingException e) {
-            e.printStackTrace();
+            throw new MessagingException("Messaging Exception");
+        } catch (MailSendException e) {
+            throw new MailSendException("Mail Send Exception");
         }
     }
 
