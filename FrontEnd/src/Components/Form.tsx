@@ -3,11 +3,16 @@ import "./Form.css";
 import GoogleAuth from "../Components/GoogleAuth";
 import { Link } from "react-router-dom";
 
+
+// to define whether it is a login or signup form
 interface Props {
   isLogin: boolean;
 }
 
+
+//this is the main component of the form 
 const Form = ({ isLogin }: Props) => {
+  //one use state for all of the form fields (sign up or login)
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -16,6 +21,7 @@ const Form = ({ isLogin }: Props) => {
     confirmPassword: "",
   });
 
+  //here's states to show whether there's error for a specific field
   const [formErrors, setFormErrors] = useState({
     firstName: "",
     lastName: "",
@@ -72,6 +78,7 @@ const Form = ({ isLogin }: Props) => {
   };
   
 
+  //function to handel the contimue  button and see whether our fields are all valid or not
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
     console.log("Submitt")
     e.preventDefault();
@@ -82,6 +89,7 @@ const Form = ({ isLogin }: Props) => {
         console.log("All our credentials are set for the login");
         //TODO the rest of the logic here for login using credentials
       }
+
     }else{
       if(validFields.firstName && validFields.lastName && validFields.email && validFields.password && validFields.confirmPassword){
         console.log("All our credentials are set for the Signup");
@@ -90,6 +98,8 @@ const Form = ({ isLogin }: Props) => {
     }
   };
 
+  //function to check the validity of all the fields and change the errors states using comments 
+  //associated with each violation
   function CheckFields() {
     
     let errorMessages = {
@@ -153,6 +163,8 @@ const Form = ({ isLogin }: Props) => {
     return validFields;
   }
 
+  
+  //--------------------------------Here are some individual checking functions for each field----------------
   function checkFirstName() {
     const validNameRegex = /^[A-Za-z\s]+$/;
     let comment = "";
@@ -210,7 +222,10 @@ const Form = ({ isLogin }: Props) => {
     }
     return comment;
   }
+    //--------------------------------the end of some individual checking functions for each field----------------
 
+
+    //here's a function to get the google authenticator data if the user has clicked the "sign in with google" button
   function getGoogleAuthData(
     firstName: string,
     lastName: string,
@@ -223,6 +238,8 @@ const Form = ({ isLogin }: Props) => {
     console.log(email);
   }
 
+  //and here's the overall return HTML document for the form
+  //note that there's conditional rendering for some fields 
   return (
     <>
       <div className="col-lg-5 col-sm-12 container">

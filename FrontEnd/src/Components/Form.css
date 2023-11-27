@@ -2,26 +2,14 @@
   border: 2px solid lightgrey;
   border-radius: 15px;
   overflow: auto;
-  box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5);
   position: absolute;
   top: 50%;
   left: 50%;
-    transform: translate(-50%, -50%);
-
-  /* scroll-behavior: smooth; */
-
-  /* position: fixed;
-
-  /* bring your own prefixes */
-
-  /* position: fixed;
-    top: 20%;
-    left: 50%; */
-  /* bring your own prefixes */
-  /* transform: translate(-50%, -50%); */
+  transform: translate(-50%, -50%);
 }
 
-header{
+header {
   margin-bottom: 0px;
   display: flex;
   flex-direction: column;
@@ -52,7 +40,6 @@ label {
   top: -12px;
   left: 25px;
   background-color: white;
-  /* padding: 5px 10px; */
   z-index: 1;
 }
 
@@ -80,4 +67,3 @@ input {
   padding: 0.69rem 0.75rem;
 }
 
-/* Additional styles for large screens */
