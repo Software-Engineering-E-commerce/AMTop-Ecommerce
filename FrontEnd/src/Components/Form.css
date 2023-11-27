@@ -1,0 +1,48 @@
+.container {
+  border: 2px solid gray;
+  width: 60vw;
+  border-radius: 20px;
+  /* position: fixed;
+    top: 20%;
+    left: 50%; */
+  /* bring your own prefixes */
+  /* transform: translate(-50%, -50%); */
+}
+
+p {
+  font-weight: 500;
+}
+
+.form-control {
+  background-color: rgba(221, 213, 213, 0.3);
+}
+
+.btn-primary {
+  width: fit-content;
+  margin-left: 8px;
+}
+
+form {
+  padding: 20px;
+}
+
+label {
+  font-weight: 500;
+}
+
+.line-container {
+  display: flex;
+  align-items: center;
+}
+
+.line {
+  flex: 1;
+  border-bottom: 1px solid black;
+  margin: 0 10px;
+}
+
+.or {
+  margin: 0 10px;
+}
+
+/* Additional styles for large screens */
