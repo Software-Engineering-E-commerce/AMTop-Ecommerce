@@ -18,8 +18,6 @@ public class User {
     private String email;
     @Column
     private String password;
-    @Column(unique = true)
-    private String gmail;
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean isGmail;
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
