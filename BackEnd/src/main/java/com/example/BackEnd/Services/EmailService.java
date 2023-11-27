@@ -33,4 +33,8 @@ public class EmailService {
             e.printStackTrace();
         }
     }
+
+    public void setFromEmail(String fromEmail) {
+        this.fromEmail = fromEmail;
+    }
 }
