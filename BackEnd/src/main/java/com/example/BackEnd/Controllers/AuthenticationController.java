@@ -26,6 +26,7 @@ public class AuthenticationController {
             @RequestBody LoginRequest request
     ) {
         return ResponseEntity.ok(service.authenticate(request));
+
     }
 
 }
