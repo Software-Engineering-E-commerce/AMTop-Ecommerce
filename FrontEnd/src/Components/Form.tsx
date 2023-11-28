@@ -8,8 +8,8 @@ import { Link } from "react-router-dom";
 
 interface Props {
   isLogin: boolean;
-  getSignUpCredentials: (Customer: RegisterRequest) => void;
-  getSignUpGoogleTok: (googleTok:string) => void;
+  getSignUpCredentials?: (Customer: RegisterRequest) => void;
+  getSignUpGoogleTok?: (googleTok:string) => void;
 }
 
 //this is the main component of the form
@@ -106,14 +106,14 @@ const Form = ({ isLogin, getSignUpCredentials, getSignUpGoogleTok}: Props) => {
           email: formData.email.trim(),
           password: formData.password.trim(),
         };
-        getSignUpCredentials(customer);
+        getSignUpCredentials!(customer);
       }
     }
   };
 
   //here's a function to get the google authenticator data if the user has clicked the "sign in with google" button
   function getGoogleAuthData(googleTok:string) {
-      getSignUpGoogleTok(googleTok)
+      getSignUpGoogleTok!(googleTok)
   }
 
   //function to check the validity of all the fields and change the errors states using comments
