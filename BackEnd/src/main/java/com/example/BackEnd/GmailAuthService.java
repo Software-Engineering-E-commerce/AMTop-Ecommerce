@@ -34,30 +34,29 @@ public class GmailAuthService {
         String firstName = jwt.getClaim("given_name").asString();
         String lastName = jwt.getClaim("family_name").asString();
 
-        boolean customerExists = customerRepository.findByEmail(email).isPresent();
-        boolean adminExists = adminRepository.findByEmail(email).isPresent();
+        Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
+        Optional<Admin> optionalAdmin = adminRepository.findByEmail(email);
 
-        if(customerExists){
-            Optional<Customer> customer = customerRepository.findByEmail(email);
-            var jwtToken = jwtService.generateToken(customer.get());
+        if(optionalCustomer.isPresent()){
+            Customer customer = optionalCustomer.get();
+            if(!customer.getIsGmail()){
+                return AuthenticationResponse.builder().token("Already Exists").build();
+            }
+            var jwtToken = jwtService.generateToken(customer);
             return AuthenticationResponse.builder()
                     .token(jwtToken)
                     .build();
-        }else if (adminExists){
-            Optional<Admin> admin = adminRepository.findByEmail(email);
-            Customer existingCustomer = customerRepository.findByEmail(email).orElse(null);
-            var jwtToken = jwtService.generateToken(admin.get());
+        }else if (optionalAdmin.isPresent()){
+            Admin admin = optionalAdmin.get();
+            if(!admin.getIsGmail()){
+                return AuthenticationResponse.builder().token("Already Exists").build();
+            }
+            var jwtToken = jwtService.generateToken(admin);
             return AuthenticationResponse.builder()
                     .token(jwtToken)
                     .build();
         }else{
-            Customer customer = new Customer();
-            customer.setFirstName(firstName);
-            customer.setLastName(lastName);
-            customer.setEmail(email);
-            customer.setPassword("");
-            customer.setIsGmail(true);
-            customer.setIsVerified(true);
+            Customer customer = new Customer(email, "", true, true, firstName, lastName);
             customerRepository.save(customer);
             var jwtToken = jwtService.generateToken(customer);
             return AuthenticationResponse.builder()
