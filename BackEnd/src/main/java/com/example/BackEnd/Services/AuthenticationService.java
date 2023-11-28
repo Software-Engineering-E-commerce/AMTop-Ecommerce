@@ -48,7 +48,7 @@ public class AuthenticationService {
                 .build();
     }
 
-    public AuthenticationResponse authenticate(LoginRequest request) {
+    public AuthenticationResponse authenticate(LoginRequest request) throws NoSuchElementException {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -56,15 +56,14 @@ public class AuthenticationService {
                 )
         );
 
-
         Optional<Customer> customer = customerRepository.findByEmail(request.getEmail());
         Optional<Admin> admin = adminRepository.findByEmail(request.getEmail());
-        if (customer.isPresent()) {
+        if (customer.isPresent() && customer.get().getIsVerified()) {
             var jwtToken = jwtService.generateToken(customer.get());
             return AuthenticationResponse.builder()
                     .token(jwtToken)
                     .build();
-        } else if (admin.isPresent()) {
+        } else if (admin.isPresent() && admin.get().getIsVerified()) {
             var jwtToken = jwtService.generateToken(admin.get());
             return AuthenticationResponse.builder()
                     .token(jwtToken)
