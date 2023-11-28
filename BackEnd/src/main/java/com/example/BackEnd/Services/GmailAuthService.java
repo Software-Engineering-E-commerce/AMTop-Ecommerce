@@ -1,4 +1,4 @@
-package com.example.BackEnd;
+package com.example.BackEnd.Services;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
@@ -56,7 +56,7 @@ public class GmailAuthService {
                     .token(jwtToken)
                     .build();
         }else{
-            Customer customer = new Customer(email, "", true, true, firstName, lastName);
+            Customer customer = new Customer(email, null, true, true, firstName, lastName);
             customerRepository.save(customer);
             var jwtToken = jwtService.generateToken(customer);
             return AuthenticationResponse.builder()

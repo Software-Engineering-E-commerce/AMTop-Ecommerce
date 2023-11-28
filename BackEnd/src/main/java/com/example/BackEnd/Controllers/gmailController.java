@@ -1,8 +1,6 @@
-package com.example.BackEnd;
+package com.example.BackEnd.Controllers;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.example.BackEnd.Services.AuthenticationService;
+import com.example.BackEnd.Services.GmailAuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
