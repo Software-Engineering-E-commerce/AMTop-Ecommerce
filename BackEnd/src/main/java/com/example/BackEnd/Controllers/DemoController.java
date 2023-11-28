@@ -2,11 +2,9 @@ package com.example.BackEnd.Controllers;
 
 import com.example.BackEnd.Config.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/demo")
 public class DemoController {
     private final JwtService jwtService;
+
     @GetMapping
     public ResponseEntity<String> sayHello(HttpServletRequest request) {
         // Extract the token from the Authorization header

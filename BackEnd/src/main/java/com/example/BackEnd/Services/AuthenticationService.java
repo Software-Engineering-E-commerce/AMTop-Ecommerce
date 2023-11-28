@@ -2,13 +2,14 @@ package com.example.BackEnd.Services;
 
 import com.example.BackEnd.Config.JwtService;
 import com.example.BackEnd.DTO.AuthenticationResponse;
+import com.example.BackEnd.DTO.LoginRequest;
+import com.example.BackEnd.DTO.RegisterRequest;
 import com.example.BackEnd.Model.Admin;
 import com.example.BackEnd.Model.Customer;
 import com.example.BackEnd.Repositories.AdminRepository;
 import com.example.BackEnd.Repositories.CustomerRepository;
 
-import com.example.BackEnd.DataObject.LoginRequest;
-import com.example.BackEnd.DataObject.RegisterRequest;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
