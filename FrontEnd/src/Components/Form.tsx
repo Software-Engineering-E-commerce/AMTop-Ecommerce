@@ -13,11 +13,10 @@ interface Props {
   getSignUpGoogleTok?: (googleTok:string) => void;
   
   getLogInCredentials?: (customer: LoginRequest) => void
-  getLogInGoogleTok?: (googleTok:string) => void
 }
 
 //this is the main component of the form
-const Form = ({ isLogin, getSignUpCredentials, getSignUpGoogleTok, getLogInCredentials, getLogInGoogleTok}: Props) => {
+const Form = ({ isLogin, getSignUpCredentials, getSignUpGoogleTok, getLogInCredentials}: Props) => {
 
   //one use state for all of the form fields (sign up or login)
   const [formData, setFormData] = useState({
@@ -122,7 +121,6 @@ const Form = ({ isLogin, getSignUpCredentials, getSignUpGoogleTok, getLogInCrede
 
   //here's a function to get the google authenticator data if the user has clicked the "sign in with google" button
   function getGoogleAuthData(googleTok:string) {
-      isLogin? getLogInGoogleTok!(googleTok) :getSignUpGoogleTok!(googleTok) 
   }
 
   //function to check the validity of all the fields and change the errors states using comments
