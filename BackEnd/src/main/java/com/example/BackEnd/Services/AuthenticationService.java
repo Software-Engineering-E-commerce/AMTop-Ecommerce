@@ -39,7 +39,7 @@ public class AuthenticationService {
             } else {
                 customerRepository.save(customer);
                 var jwtToken = jwtService.generateToken(customer);
-                //verification
+                //verify
                 return AuthenticationResponse.builder()
                         .token("SUCCESS " + jwtToken)
                         .build();
