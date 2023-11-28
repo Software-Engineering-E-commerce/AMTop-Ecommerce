@@ -23,12 +23,12 @@ const SignUp = () => {
     customer: RegisterRequest
   ) => {
     //if success then the user will be added to the DB and then routed to his home page
-    try{
-      const response:AuthenticationResponse = await axios({
+    try {
+      const response: AuthenticationResponse = await axios({
         method: "post",
         url: "http://localhost:9080/api/auth/registerC", //TODO check the local host port of the server
         data: customer,
-      })
+      });
       handelSignUpBasicCredentialsResponse(response);
     } catch (error) {
       console.error("Error:", error);
@@ -36,7 +36,9 @@ const SignUp = () => {
     }
   };
 
-  const handelSignUpBasicCredentialsResponse = (response: AuthenticationResponse) => {
+  const handelSignUpBasicCredentialsResponse = (
+    response: AuthenticationResponse
+  ) => {
     let userTok = response.token;
 
     //here the userTok is "SUCCESS + token"
@@ -60,8 +62,8 @@ const SignUp = () => {
           </BobUpWindow>
         </>
       );
-    
-    //but here it is "Already Exist"  
+
+      //but here it is "Already Exist"
     } else if (userTok === "Already Exist") {
       return (
         <>
@@ -84,7 +86,7 @@ const SignUp = () => {
           </BobUpWindow>
         </>
       );
-    } 
+    }
   };
 
   //-------------------------end of handeling sign up using basic credentials-----------------------------------------
@@ -94,11 +96,11 @@ const SignUp = () => {
     //TODO handel google requests once the back is done
   };
 
-  const handelSignUpBasicGoogleResponse =  () => {
+  const handelSignUpBasicGoogleResponse = () => {
     //TODO handel the google response once back is done
-  }
+  };
   //-------------------------end of Handling signUp using Google oath-----------------------------------------------------
-  
+
   return (
     <>
       <Form

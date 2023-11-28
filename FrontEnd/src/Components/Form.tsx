@@ -8,12 +8,16 @@ import { Link } from "react-router-dom";
 
 interface Props {
   isLogin: boolean;
+
   getSignUpCredentials?: (Customer: RegisterRequest) => void;
   getSignUpGoogleTok?: (googleTok:string) => void;
+  
+  getLogInCredentials?: (customer: LoginRequest) => void
+  getLogInGoogleTok?: (googleTok:string) => void
 }
 
 //this is the main component of the form
-const Form = ({ isLogin, getSignUpCredentials, getSignUpGoogleTok}: Props) => {
+const Form = ({ isLogin, getSignUpCredentials, getSignUpGoogleTok, getLogInCredentials, getLogInGoogleTok}: Props) => {
 
   //one use state for all of the form fields (sign up or login)
   const [formData, setFormData] = useState({
@@ -89,8 +93,13 @@ const Form = ({ isLogin, getSignUpCredentials, getSignUpGoogleTok}: Props) => {
     if (isLogin) {
       if (validFields.email && validFields.password) {
         console.log("All our credentials are set for the login");
-        //TODO the rest of the logic here for login using credentials
+        const customer:LoginRequest = {
+          email: formData.email,
+          password: formData.password
+        }
+        getLogInCredentials!(customer);
       }
+    
     } else {
       if (
         validFields.firstName &&
@@ -101,10 +110,10 @@ const Form = ({ isLogin, getSignUpCredentials, getSignUpGoogleTok}: Props) => {
       ) {
         console.log("All our credentials are set for the Signup");
         const customer: RegisterRequest = {
-          firstName: formData.firstName.trim(),
-          lastName: formData.lastName.trim(),
-          email: formData.email.trim(),
-          password: formData.password.trim(),
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          password: formData.password,
         };
         getSignUpCredentials!(customer);
       }
@@ -113,7 +122,7 @@ const Form = ({ isLogin, getSignUpCredentials, getSignUpGoogleTok}: Props) => {
 
   //here's a function to get the google authenticator data if the user has clicked the "sign in with google" button
   function getGoogleAuthData(googleTok:string) {
-      getSignUpGoogleTok!(googleTok)
+      isLogin? getLogInGoogleTok!(googleTok) :getSignUpGoogleTok!(googleTok) 
   }
 
   //function to check the validity of all the fields and change the errors states using comments
