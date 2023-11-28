@@ -28,12 +28,6 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse customerRegister(RegisterRequest request) {
-//        Customer customer = Customer.builder()
-//                .firstName(request.getFirstName())
-//                .lastName(request.getLastName())
-//                .email(request.getEmail())
-//                .password(passwordEncoder.encode(request.getPassword()))
-//                .build();
         Customer customer = new Customer();
         customer.setFirstName(request.getFirstName());
         customer.setLastName(request.getLastName());
