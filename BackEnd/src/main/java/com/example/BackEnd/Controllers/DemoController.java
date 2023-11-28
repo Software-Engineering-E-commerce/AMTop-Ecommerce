@@ -26,6 +26,7 @@ public class DemoController {
             System.out.println(jwtService.extractUsername(token));
             return ResponseEntity.ok("Hello from secured endpoint. Bearer Token: " + token);
         } else {
+
             return ResponseEntity.badRequest().body("Invalid or missing Authorization header");
         }
     }
