@@ -1,8 +1,6 @@
 import "./BobUpWindow.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faEnvelope,
-  faHippo,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import React, { ReactNode, useState } from "react";

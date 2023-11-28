@@ -8,11 +8,13 @@ import { Link } from "react-router-dom";
 
 interface Props {
   isLogin: boolean;
-  getSignUpCredentials: (Customer: Customer, usingGmail: boolean) => void;
+  getSignUpCredentials: (Customer: RegisterRequest) => void;
+  getSignUpGoogleTok: (googleTok:string) => void;
 }
 
 //this is the main component of the form
-const Form = ({ isLogin, getSignUpCredentials }: Props) => {
+const Form = ({ isLogin, getSignUpCredentials, getSignUpGoogleTok}: Props) => {
+
   //one use state for all of the form fields (sign up or login)
   const [formData, setFormData] = useState({
     firstName: "",
@@ -98,29 +100,20 @@ const Form = ({ isLogin, getSignUpCredentials }: Props) => {
         validFields.confirmPassword
       ) {
         console.log("All our credentials are set for the Signup");
-        const customer: Customer = {
+        const customer: RegisterRequest = {
           firstName: formData.firstName.trim(),
           lastName: formData.lastName.trim(),
           email: formData.email.trim(),
           password: formData.password.trim(),
         };
-        getSignUpCredentials(customer, false);
+        getSignUpCredentials(customer);
       }
     }
   };
 
   //here's a function to get the google authenticator data if the user has clicked the "sign in with google" button
-  function getGoogleAuthData(
-    firstName: string,
-    lastName: string,
-    email: string
-  ) {
-    const customer: Customer = {
-      firstName: firstName,
-      lastName: lastName,
-      email: email,
-    };
-    getSignUpCredentials(customer, true);
+  function getGoogleAuthData(googleTok:string) {
+      getSignUpGoogleTok(googleTok)
   }
 
   //function to check the validity of all the fields and change the errors states using comments
