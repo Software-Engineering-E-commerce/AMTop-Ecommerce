@@ -1,11 +1,10 @@
 import "./App.css";
-import BobUpWindow from "./Components/BobUpWindow";
-import LightBlocker from "./Components/LightBlocker";
+import SignUp from "./Pages/SignUp";
 
 function App() {
   return (
     <>
-      <BobUpWindow />
+      <SignUp />
     </>
   );
 }
