@@ -15,7 +15,7 @@ public class AuthenticationController {
 
     private final AuthenticationService service;
 
-    @PostMapping("/registerC")
+    @PostMapping("/registerCustomer")
     public ResponseEntity<AuthenticationResponse> register(
             @RequestBody RegisterRequest request
     ) {
