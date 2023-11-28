@@ -52,12 +52,12 @@ public class AuthenticationService {
 
         Optional<Customer> customer = customerRepository.findByEmail(request.getEmail());
         Optional<Admin> admin = adminRepository.findByEmail(request.getEmail());
-        if (customer.isPresent() && customer.get().getIsVerified()) {
+        if (customer.isPresent() && customer.get().getIsVerified() && !customer.get().getIsGmail()) {
             var jwtToken = jwtService.generateToken(customer.get());
             return AuthenticationResponse.builder()
                     .token(jwtToken)
                     .build();
-        } else if (admin.isPresent() && admin.get().getIsVerified()) {
+        } else if (admin.isPresent() && admin.get().getIsVerified() && !admin.get().getIsGmail()) {
             var jwtToken = jwtService.generateToken(admin.get());
             return AuthenticationResponse.builder()
                     .token(jwtToken)
