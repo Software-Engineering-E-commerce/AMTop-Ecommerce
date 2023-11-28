@@ -1,11 +1,12 @@
 package com.example.BackEnd.Services;
 
 import com.example.BackEnd.Config.JwtService;
+import com.example.BackEnd.DTO.AuthenticationResponse;
 import com.example.BackEnd.Model.Admin;
 import com.example.BackEnd.Model.Customer;
 import com.example.BackEnd.Repositories.AdminRepository;
 import com.example.BackEnd.Repositories.CustomerRepository;
-import com.example.BackEnd.DataObject.AuthenticationResponse;
+
 import com.example.BackEnd.DataObject.LoginRequest;
 import com.example.BackEnd.DataObject.RegisterRequest;
 import lombok.RequiredArgsConstructor;
