@@ -21,8 +21,12 @@ public class Customer extends User {
     @JsonIgnore //to break the circular reference
     private List<CustomerAddress> addresses = new ArrayList<>();
 
-    public Customer(String email, String password, Boolean isGmail, Boolean isVerified, String firstName, String lastName, String phoneNumber, List<CustomerAddress> addresses) {
-        super(email, password, isGmail, isVerified, firstName, lastName, phoneNumber);
-        this.addresses = addresses;
+    public Customer(String email, String password, Boolean isGmail, Boolean isVerified, String firstName, String lastName) {
+        this.setEmail(email);
+        this.setPassword(password);
+        this.setIsGmail(isGmail);
+        this.setIsVerified(isVerified);
+        this.setFirstName(firstName);
+        this.setLastName(lastName);
     }
 }

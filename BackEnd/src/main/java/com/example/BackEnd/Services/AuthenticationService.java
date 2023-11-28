@@ -5,9 +5,9 @@ import com.example.BackEnd.Model.Admin;
 import com.example.BackEnd.Model.Customer;
 import com.example.BackEnd.Repositories.AdminRepository;
 import com.example.BackEnd.Repositories.CustomerRepository;
-import com.example.BackEnd.DTO.AuthenticationResponse;
-import com.example.BackEnd.DTO.LoginRequest;
-import com.example.BackEnd.DTO.RegisterRequest;
+import com.example.BackEnd.DataObject.AuthenticationResponse;
+import com.example.BackEnd.DataObject.LoginRequest;
+import com.example.BackEnd.DataObject.RegisterRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,19 +28,29 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse customerRegister(RegisterRequest request) {
-        Customer customer = new Customer();
-        customer.setFirstName(request.getFirstName());
-        customer.setLastName(request.getLastName());
-        customer.setEmail(request.getEmail());
-        customer.setPassword(passwordEncoder.encode(request.getPassword()));
-        customer.setIsGmail(false);
-        customer.setIsVerified(false);
-        customerRepository.save(customer);
-        var jwtToken = jwtService.generateToken(customer);
-        return AuthenticationResponse.builder()
-                .token(jwtToken)
-                .build();
+        Customer customer = new Customer(request.getEmail(), passwordEncoder.encode(request.getPassword()), false
+                , false, request.getFirstName(), request.getLastName());
+
+        try {
+            Optional<Customer> customerCheck = customerRepository.findByEmail(request.getEmail());
+            Optional<Admin> adminCheck = adminRepository.findByEmail(request.getEmail());
+            if (adminCheck.isPresent() || (customerCheck.isPresent() && customerCheck.get().getIsVerified())) {
+                return AuthenticationResponse.builder().token("Already Exist").build();
+            } else {
+                customerRepository.save(customer);
+                var jwtToken = jwtService.generateToken(customer);
+                //verify
+                return AuthenticationResponse.builder()
+                        .token("SUCCESS " + jwtToken)
+                        .build();
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return AuthenticationResponse.builder().token(e.getMessage()).build();
+        }
+
     }
+
 
     public AuthenticationResponse authenticate(LoginRequest request) throws NoSuchElementException {
         authenticationManager.authenticate(

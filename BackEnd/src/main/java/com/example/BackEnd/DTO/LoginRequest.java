@@ -1,4 +1,4 @@
-package com.example.BackEnd.DTO;
+package com.example.BackEnd.DataObject;
 
 import lombok.*;
 
