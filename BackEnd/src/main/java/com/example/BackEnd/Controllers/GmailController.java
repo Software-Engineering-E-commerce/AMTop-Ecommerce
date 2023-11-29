@@ -10,11 +10,11 @@ import java.util.Map;
 @RestController
 @RequestMapping("/googleAuth")
 @RequiredArgsConstructor
-public class gmailController {
+public class GmailController {
     private final GmailAuthService service;
     @PostMapping("/googleRegister")
     public ResponseEntity<?> authenticate(@RequestBody Map<String, String> payload) {
         String token = payload.get("token");
-        return ResponseEntity.ok(service.customerRegister(token));
+        return ResponseEntity.ok(service.googleRegister(token));
     }
 }

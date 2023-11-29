@@ -8,15 +8,9 @@ import com.example.BackEnd.Model.Customer;
 import com.example.BackEnd.Repositories.AdminRepository;
 import com.example.BackEnd.Repositories.CustomerRepository;
 import com.example.BackEnd.DTO.AuthenticationResponse;
-import com.example.BackEnd.DTO.LoginRequest;
-import com.example.BackEnd.DTO.RegisterRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -27,7 +21,7 @@ public class GmailAuthService {
     private final CustomerRepository customerRepository;
     private final JwtService jwtService;
 
-    public AuthenticationResponse customerRegister(String token) {
+    public AuthenticationResponse googleRegister(String token) {
         DecodedJWT jwt = JWT.decode(token);
         //extract information from the token
         String email = jwt.getClaim("email").asString();
