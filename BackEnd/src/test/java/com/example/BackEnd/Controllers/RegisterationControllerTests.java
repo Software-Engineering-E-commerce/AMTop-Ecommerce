@@ -73,7 +73,7 @@ class RegistrationControllerTests {
 
         RegisterRequest request = new RegisterRequest(testCustomer.getFirstName(),testCustomer.getLastName(),"testCustomer2@example.com","correctPassword");
         Mockito.doNothing().when(emailService).sendEmail(Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
-        mockMvc.perform(post("/api/auth/registerC")
+        mockMvc.perform(post("/api/auth/registerCustomer")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isOk());
