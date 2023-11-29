@@ -33,7 +33,7 @@ const LogIn = () => {
     if (response.status == 200) {
       //then the user exists in out system then we want to navigate to the home page
       let userToken = response.data.token;
-      navigate("/home", { state: { userToken: userToken } });
+      navigate("/home", { state: { userToken: userToken, from:"logged-in"}});
 
     } else if (response.status == 403) {
       //then the user doesn't exist and forbidden to log in so we need to notify him

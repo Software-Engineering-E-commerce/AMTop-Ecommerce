@@ -42,13 +42,13 @@ const Verification = () => {
           if (response.status == 200) {
             //means that the user is successfully verified
             setVerificationStatus("success");
-            navigate("/home", { state: { userToken: userTok } });
+            navigate("/home", { state: { userToken: userTok, from:"Signed-up"}  });
 
           } else if (response.status == 400) {
             //means that the user already exists and this is a bad request
             //so we notify him and we'll let him in anyway
             alert("You already exist, so you'll be logged in");
-            navigate("/home", { state: { userToken: userTok } });
+            navigate("/home", { state: { userToken: userTok, from:"Signed-up"} });
 
           } else if (response.status == 404) {
             alert("User not found!");

@@ -6,8 +6,9 @@ import { useLocation } from "react-router";
 
 const Home = () => {
   const location = useLocation();
-  var {userToken} = location.state || {};
+  var {userToken, from} = location.state || {};
   
+  console.log(from);
   return (
     <>
       <BobUpWindow>
@@ -20,7 +21,7 @@ const Home = () => {
               marginRight: "10px",
             }}
           />
-          Congrats ! you've successfully logged in
+          Congrats ! you've successfully {from}
         </p>
       </BobUpWindow>
       <h1>Welcome to Your Home page!</h1>

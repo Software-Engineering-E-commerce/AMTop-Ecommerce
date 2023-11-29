@@ -4,6 +4,7 @@ import GoogleAuth from "../Components/GoogleAuth";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import BobUpWindow from "./BobUpWindow";
+import LogIn from "../Pages/LogIn";
 
 // to define whether it is a login or signup form
 
@@ -49,7 +50,6 @@ const Form = ({
       ...prevData,
       [name]: value,
     }));
-    console.log(name);
     if (name === "firstName") {
       if (checkFirstName().length == 0)
         setFormErrors((prvious) => {
@@ -91,7 +91,6 @@ const Form = ({
 
   //function to handel the contimue  button and see whether our fields are all valid or not
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
-    console.log("Submitt");
     e.preventDefault();
     let validFields = CheckFields();
 
@@ -155,7 +154,7 @@ const Form = ({
     } else {
       //here means that we have our token and this user is created if not exist or is authorized to login
       //so we can redirect him to the home page
-      navigate("/home", { state: { userToken: token } });
+      navigate("/home", { state: { userToken: token, from: "Logged-in" } });
     }
   };
 
@@ -268,8 +267,11 @@ const Form = ({
       /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\-])[A-Za-z\d!@#$%^&*()_+{}\[\]:;<>,.?~\\-]{8,}$/;
 
     let comment = "";
-    if (!passwordRegex.test(formData.password)) {
-      comment = "Please use a stronger password and Don't use white spaces!";
+    console.log("log in = ", isLogin)
+    if(!isLogin){
+      if (!passwordRegex.test(formData.password)) {
+        comment = "Please use a stronger password and Don't use white spaces!";
+      }
     }
     if (formData.password.length < 8) {
       comment = "Password must be at least 8 characters long";
@@ -435,14 +437,16 @@ const Form = ({
               This email address is used prviously to sign up but with using the
               basic credentials so you shall Log in this way
             </p>
-            <button
-              type="button"
-              className="btn btn-primary"
-              style={{ marginLeft: 0 }}
-              onClick={() => navigate("/login")}
-            >
-              Log in
-            </button>
+            {!isLogin && (
+              <button
+                type="button"
+                className="btn btn-primary"
+                style={{ marginLeft: 0 }}
+                onClick={() => navigate("/login")}
+              >
+                Log in
+              </button>
+            )}
           </BobUpWindow>
         </>
       )}

@@ -22,7 +22,6 @@ const SignUp = () => {
     customer: RegisterRequest
   ) => {
     //if success then the user will be added to the DB and then routed to his home page
-    console.log("Data sent : ", customer);
     try {
       const response = await axios({
         method: "post",
@@ -51,7 +50,6 @@ const SignUp = () => {
       console.log("User already exists");
     } else {
       setResponseStatus("Problem");
-      //TODO check out this case in the back
       console.log("There's a problem with the email address provided!");
     }
   };
