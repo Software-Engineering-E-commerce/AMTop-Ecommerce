@@ -48,7 +48,7 @@ public class GmailAuthServiceTest {
         assertNotNull(response);
         assertTrue(customerRepository.findByEmail(email).isPresent());
     }
-
+ 
     @Test
     @Transactional
     @DirtiesContext
