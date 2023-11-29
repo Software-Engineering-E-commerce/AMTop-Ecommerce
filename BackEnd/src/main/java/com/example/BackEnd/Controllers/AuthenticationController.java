@@ -16,7 +16,7 @@ public class AuthenticationController {
 
     private final AuthenticationService service;
 
-    @PostMapping("/registerC")
+    @PostMapping("/registerCustomer")
     public ResponseEntity<AuthenticationResponse> register(
             @RequestBody RegisterRequest request
     ) {
@@ -27,8 +27,8 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponse> authenticate(
             @RequestBody LoginRequest request
     ) {
-
-        return ResponseEntity.ok(service.authenticate(request));
+     ResponseEntity<AuthenticationResponse> token = ResponseEntity.ok(service.authenticate(request));
+        return token;
     }
 
 
