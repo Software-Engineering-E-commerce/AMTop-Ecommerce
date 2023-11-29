@@ -35,6 +35,8 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
+    private final EmailService emailService;
+
     public AuthenticationResponse customerRegister(RegisterRequest request) {
         Customer customer = new Customer(request.getEmail(), passwordEncoder.encode(request.getPassword()), false
                 , false, request.getFirstName(), request.getLastName());
@@ -48,7 +50,6 @@ public class AuthenticationService {
 
                 customerRepository.save(customer);
                 var jwtToken = jwtService.generateToken(customer);
-                EmailService emailService = new EmailService();
                 emailService.sendEmail(customer.getEmail(),"Email Verification",
                         "<body style=\"font-family: Arial, sans-serif; background-color: #f4f4f4; text-align: center; padding: 20px;\">\n" +
                                 "\n" +
