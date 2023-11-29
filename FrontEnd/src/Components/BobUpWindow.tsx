@@ -1,28 +1,46 @@
-import React from "react";
-import LightBlocker from "./LightBlocker";
+import "./BobUpWindow.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
+import React, { ReactNode, useState } from "react";
 
-const BobUpWindow = () => {
+interface Props {
+  children: ReactNode;
+}
+
+const BobUpWindow = ({ children }: Props) => {
+  const [xClicked, setXclicked] = useState(true);
+
   return (
     <>
-      <LightBlocker />
       <div
+        className="light-blocker"
+        id="light-blocker"
         style={{
-          fontWeight: 500,
           position: "absolute",
-          top: "50%",
-          fontSize: "1.2em",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "40vw",
-          zIndex: 10000,
-          borderRadius: "10px",
-          backgroundColor: "red",
-          height: "200px",
-          display: "flex",
-          flexDirection: "column",
+          width: "100vw",
+          display: xClicked ? "block" : "none",
+          height: "100vh",
+          backgroundColor: "#000000",
+          opacity: 0.3,
+          top: 0,
+          right: 0,
         }}
+      ></div>
+
+      <div
+        className="bob-up-window"
+        style={{ display: xClicked ? "block" : "none" }}
       >
+        <div className="x-container">
+          <button className="x-button" onClick={() => setXclicked(false)}>
+            <FontAwesomeIcon icon={faXmark} />
+          </button>
+        </div>
+        <div className="content">{children}</div>
       </div>
+      
     </>
   );
 };

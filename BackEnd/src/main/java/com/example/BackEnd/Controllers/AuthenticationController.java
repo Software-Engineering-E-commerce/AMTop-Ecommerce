@@ -1,6 +1,7 @@
 package com.example.BackEnd.Controllers;
 
 import com.example.BackEnd.DTO.AuthenticationResponse;
+
 import com.example.BackEnd.DTO.LoginRequest;
 import com.example.BackEnd.Services.AuthenticationService;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,13 @@ public class AuthenticationController {
 
     private final AuthenticationService service;
 
+    @PostMapping("/registerCustomer")
+    public ResponseEntity<AuthenticationResponse> register(
+            @RequestBody RegisterRequest request
+    ) {
+        return ResponseEntity.ok(service.customerRegister(request));
+    }
+
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(
             @RequestBody LoginRequest request
@@ -25,5 +33,6 @@ public class AuthenticationController {
         else
             return ResponseEntity.ok(token);
     }
+
 
 }

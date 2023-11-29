@@ -1,17 +1,29 @@
 import React, { ChangeEvent, FormEvent, useState } from "react";
 import "./Form.css";
 import GoogleAuth from "../Components/GoogleAuth";
-import { Link } from "react-router-dom";
-
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import BobUpWindow from "./BobUpWindow";
 
 // to define whether it is a login or signup form
+
 interface Props {
   isLogin: boolean;
+
+  getSignUpCredentials?: (Customer: RegisterRequest) => void;
+
+  getLogInCredentials?: (customer: LoginRequest) => void
 }
 
+//this is the main component of the form
+const Form = ({ isLogin, getSignUpCredentils, getLogInCredentials}: Props) => {
+  getSignUpCredentials?: (Customer: RegisterRequest) => void;
+}
 
-//this is the main component of the form 
-const Form = ({ isLogin }: Props) => {
+//this is the main component of the form
+const Form = ({ isLogin, getSignUpCredentials }: Props) => {
+  const navigate = useNavigate(); //to navigate programatically milestone_1
+
   //one use state for all of the form fields (sign up or login)
   const [formData, setFormData] = useState({
     firstName: "",
@@ -76,32 +88,103 @@ const Form = ({ isLogin }: Props) => {
         });
     }
   };
-  
 
   //function to handel the contimue  button and see whether our fields are all valid or not
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
-    console.log("Submitt")
+    console.log("Submitt");
     e.preventDefault();
     let validFields = CheckFields();
 
-    if(isLogin){
-      if(validFields.email && validFields.password){
+    if (isLogin) {
+      if (validFields.email && validFields.password) {
         console.log("All our credentials are set for the login");
-        //TODO the rest of the logic here for login using credentials
+        const customer:LoginRequest = {
+          email: formData.email,
+          password: formData.password
+        }
+        getLogInCredentials!(customer);
       }
 
-    }else{
-      if(validFields.firstName && validFields.lastName && validFields.email && validFields.password && validFields.confirmPassword){
+    } else {
+      if (
+        validFields.firstName &&
+        validFields.lastName &&
+        validFields.email &&
+        validFields.password &&
+        validFields.confirmPassword
+      ) {
         console.log("All our credentials are set for the Signup");
-        //TODO the rest of the logic here for Sign UP using credentials
+        const customer: RegisterRequest = {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          password: formData.password,
+        };
+        getSignUpCredentials!(customer);
       }
     }
   };
 
-  //function to check the validity of all the fields and change the errors states using comments 
+
+  //------------------------------------Handel sign in using google request------------------
+  function getGoogleAuthData(googleTok: string) {
+    HandelSignInGoogleRequest(googleTok);
+  }
+
+  const HandelSignInGoogleRequest = async (googleTok: string) => {
+    let tokenObject = { token: googleTok };
+    try {
+      const response = await axios({
+        method: "post",
+        url: "http://localhost:9080/googleAuth/googleRegister",
+        data: tokenObject,
+      });
+      console.log(response);
+      let res: AuthenticationResponse = response.data;
+      HandelSignInGoogleResponse(res);
+    } catch (error) {
+      alert("Error occured");
+      console.log(error);
+    }
+  };
+  
+  const HandelSignInGoogleResponse = (response: AuthenticationResponse) => {
+    let token = response.token;
+    if (token.includes("Already Exists")) {
+      //then this user have used this email address to sign up using basic credentials
+      //so he shall not log in using Gmail
+      return (
+        <>
+          <>
+            <BobUpWindow>
+              <p style={{ color: "black" }}>
+                  This email address is used prviously to sign up but with using the basic credentials 
+                  so you shall Log in this way
+              </p>
+              <button
+                type="button"
+                className="btn btn-primary"
+                style={{ marginLeft: 0 }}
+                onClick={() => navigate("/login")}
+              >
+                Log in
+              </button>
+            </BobUpWindow>
+          </>
+        </>
+      );
+    } else {
+      //here means that we have our token and this user is created if not exist or is authorized to login
+      //so we can redirect him to the home page
+      navigate("/home", { state: { userToken: token } });
+    }
+  };
+
+  //------------------------------------End Handel sign in using google request------------------
+
+  //function to check the validity of all the fields and change the errors states using comments
   //associated with each violation
   function CheckFields() {
-    
     let errorMessages = {
       firstName: "",
       lastName: "",
@@ -116,7 +199,7 @@ const Form = ({ isLogin }: Props) => {
       email: true,
       password: true,
       confirmPassword: true,
-    }
+    };
 
     //here we need to check the validity of all of our fields
     let firstNameComment = checkFirstName();
@@ -141,7 +224,7 @@ const Form = ({ isLogin }: Props) => {
         errorMessages.email = "This is a mandatory field to fill !";
       validFields.email = false;
     }
-    
+
     let passwordComment = checkPassword();
     if (passwordComment.length != 0) {
       errorMessages.password = passwordComment;
@@ -151,7 +234,7 @@ const Form = ({ isLogin }: Props) => {
     }
 
     let confirmPasswordComment = checkConfirmPassword();
-    if (confirmPasswordComment.length!= 0) {
+    if (confirmPasswordComment.length != 0) {
       errorMessages.confirmPassword = confirmPasswordComment;
       if (formData.confirmPassword.length == 0)
         errorMessages.confirmPassword = "This is a mandatory field to fill!";
@@ -163,15 +246,16 @@ const Form = ({ isLogin }: Props) => {
     return validFields;
   }
 
-  
   //--------------------------------Here are some individual checking functions for each field----------------
   function checkFirstName() {
+    formData.firstName.trim();
     const validNameRegex = /^[A-Za-z\s]+$/;
     let comment = "";
-    if (!validNameRegex.test(formData.firstName)) {
-      comment = "Please use valid Characters for a name !"
-    }if(formData.firstName.length < 3){
-      comment = "Name is too short !"
+    if (!validNameRegex.test(formData.firstName.trim())) {
+      comment = "Please use valid Characters for a name !";
+    }
+    if (formData.firstName.trim().length < 3) {
+      comment = "Name is too short !";
     }
     return comment;
   }
@@ -179,10 +263,11 @@ const Form = ({ isLogin }: Props) => {
   function checkLastName() {
     const validNameRegex = /^[A-Za-z\s]+$/;
     let comment = "";
-    if (!validNameRegex.test(formData.lastName)) {
-      comment = "Please use valid Characters for a name !"
-    }if(formData.lastName.length < 3){
-      comment = "Name is too short !"
+    if (!validNameRegex.test(formData.lastName.trim())) {
+      comment = "Please use valid Characters for a name !";
+    }
+    if (formData.lastName.trim().length < 3) {
+      comment = "Name is too short !";
     }
     return comment;
   }
@@ -190,21 +275,22 @@ const Form = ({ isLogin }: Props) => {
   function checkEmail() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     let comment = "";
-    if (!emailRegex.test(formData.email) ) {
-      comment = "Please enter a valid email of the format username@domain"
-    }if(formData.email.length < 6){
-      comment = "Email is too short !"
+    if (!emailRegex.test(formData.email.trim())) {
+      comment = "Please enter a valid email of the format username@domain";
+    }
+    if (formData.email.trim().length < 6) {
+      comment = "Email is too short !";
     }
     return comment;
   }
 
   function checkPassword() {
     const passwordRegex =
-    /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\-])[A-Za-z\d!@#$%^&*()_+{}\[\]:;<>,.?~\\-]{8,}$/
+      /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\-])[A-Za-z\d!@#$%^&*()_+{}\[\]:;<>,.?~\\-]{8,}$/;
 
     let comment = "";
-    if(!passwordRegex.test(formData.password)){
-      comment = "Please use a stronger password!";
+    if (!passwordRegex.test(formData.password)) {
+      comment = "Please use a stronger password and Don't use white spaces!";
     }
     if (formData.password.length < 8) {
       comment = "Password must be at least 8 characters long";
@@ -218,34 +304,19 @@ const Form = ({ isLogin }: Props) => {
       formData.password !== formData.confirmPassword ||
       formData.confirmPassword.length == 0
     ) {
-      comment = "Passwords do not match !"
+      comment = "Passwords do not match !";
     }
     return comment;
   }
-    //--------------------------------the end of some individual checking functions for each field----------------
-
-
-    //here's a function to get the google authenticator data if the user has clicked the "sign in with google" button
-  function getGoogleAuthData(
-    firstName: string,
-    lastName: string,
-    email: string
-  ) {
-    //TODO now our user wants to log in using his Gmail
-    console.log("get data called");
-    console.log(firstName);
-    console.log(lastName);
-    console.log(email);
-  }
+  //--------------------------------the end of some individual checking functions for each field----------------
 
   //and here's the overall return HTML document for the form
-  //note that there's conditional rendering for some fields 
+  //note that there's conditional rendering for some fields
   return (
     <>
       <div className="col-lg-5 col-sm-12 container">
         <form className="row g-3" onSubmit={handleFormSubmit} noValidate>
-
-          <header style={{ marginBottom: "0px"}}>
+          <header style={{ marginBottom: "0px" }}>
             <h3 style={{ marginBottom: "10px", color: "#007bff" }}>
               {isLogin ? "Log in" : "Sign Up"}
             </h3>
@@ -256,8 +327,6 @@ const Form = ({ isLogin }: Props) => {
             <hr style={{ marginBottom: "0px" }} />
           </header>
 
-
-
           {!isLogin && (
             <>
               <div className="col-md-6 input-cont">
@@ -265,7 +334,7 @@ const Form = ({ isLogin }: Props) => {
                 <input
                   type="text"
                   placeholder="At least 3 characters"
-                  style={{padding: "0.8rem 0.75rem"}}
+                  style={{ padding: "0.8rem 0.75rem" }}
                   className={`form-control ${
                     formErrors.firstName ? "is-invalid" : ""
                   }`}
@@ -276,18 +345,16 @@ const Form = ({ isLogin }: Props) => {
                   required
                 />
                 {formErrors.firstName && (
-                  <div className="invalid-feedback">
-                    {formErrors.firstName}
-                  </div>
+                  <div className="invalid-feedback">{formErrors.firstName}</div>
                 )}
               </div>
 
-              <div className="col-md-6 input-cont" >
+              <div className="col-md-6 input-cont">
                 <label className="form-label">Last name</label>
                 <input
                   type="text"
                   placeholder="At least 3 characters"
-                  style={{padding: "0.8rem 0.75rem"}}
+                  style={{ padding: "0.8rem 0.75rem" }}
                   className={`form-control ${
                     formErrors.lastName ? "is-invalid" : ""
                   }`}
@@ -308,7 +375,7 @@ const Form = ({ isLogin }: Props) => {
             <label className="form-label">Email</label>
             <input
               type="email"
-              style={{padding: "0.8rem 0.75rem"}}
+              style={{ padding: "0.8rem 0.75rem" }}
               className={`form-control ${formErrors.email ? "is-invalid" : ""}`}
               id="inputEmail4"
               placeholder="Username@domain"
@@ -330,7 +397,7 @@ const Form = ({ isLogin }: Props) => {
               }`}
               id="password"
               name="password"
-              style={{padding: "0.8rem 0.75rem"}}
+              style={{ padding: "0.8rem 0.75rem" }}
               value={formData.password}
               onChange={handleInputChange}
               placeholder="At least 8 characters"
@@ -346,7 +413,7 @@ const Form = ({ isLogin }: Props) => {
                 <label className="form-label">Confirm password</label>
                 <input
                   type="password"
-                  style={{padding: "0.8rem 0.75rem"}}
+                  style={{ padding: "0.8rem 0.75rem" }}
                   className={`form-control ${
                     formErrors.confirmPassword ? "is-invalid" : ""
                   }`}
@@ -375,8 +442,11 @@ const Form = ({ isLogin }: Props) => {
           </div>
           <GoogleAuth getUserData={getGoogleAuthData} />
 
-           {!isLogin ? (<Link to="/login">Already have an account? Log-in</Link>) : <Link to="/">Don't have an account? Sign-Up</Link>} 
-          
+          {!isLogin ? (
+            <Link to="/login">Already have an account? Log-in</Link>
+          ) : (
+            <Link to="/">Don't have an account? Sign-Up</Link>
+          )}
         </form>
       </div>
     </>
