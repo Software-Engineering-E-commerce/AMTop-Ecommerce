@@ -13,16 +13,9 @@ interface AuthenticationResponse {
     //can be [{token: "SUCCESS tok"}, {token: "Already Exist"}, {token: errorMessage}]
 }
 
-
 //the OTD for the logIn request
 interface LoginRequest {
     email:string;
     password:string;
 }
-
-
-
-
-
-
-
+        

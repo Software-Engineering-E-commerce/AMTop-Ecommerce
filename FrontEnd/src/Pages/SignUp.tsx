@@ -13,23 +13,20 @@ const SignUp = () => {
     handelSignUpBasicCredentialsRequest(customer);
   };
 
-  //function to direct the flow to the sinup using google oath
-  const getSignUpGoogleTok = (googleTok: string) => {
-    handelSignUpBasicGoogleRequest(googleTok);
-  };
-
   //-------------------------handeling sign up using basic credentials-----------------------------------------
   const handelSignUpBasicCredentialsRequest = async (
     customer: RegisterRequest
   ) => {
     //if success then the user will be added to the DB and then routed to his home page
-    try {
-      const response: AuthenticationResponse = await axios({
+
+      const response = await axios({
         method: "post",
-        url: "http://localhost:9080/api/auth/registerC", //TODO check the local host port of the server
+        url: "http://localhost:9080/api/auth/registerC",
         data: customer,
-      });
-      handelSignUpBasicCredentialsResponse(response);
+
+      console.log(response);
+      let res: AuthenticationResponse = response.data;
+      handelSignUpBasicCredentialsResponse(res);
     } catch (error) {
       console.error("Error:", error);
       alert(error);
@@ -38,12 +35,11 @@ const SignUp = () => {
 
   const handelSignUpBasicCredentialsResponse = (
     response: AuthenticationResponse
-  ) => {
-    let userTok = response.token;
+
+    let status = response.token;
 
     //here the userTok is "SUCCESS + token"
-    if (userTok.includes("SUCCESS")) {
-      //TODO still we need to extract the user token from the string
+    if (status === "SUCCESS") {
       return (
         <>
           <BobUpWindow>
@@ -60,11 +56,12 @@ const SignUp = () => {
               able to log in.
             </p>
           </BobUpWindow>
+          {navigate("/signup")}
         </>
       );
 
-      //but here it is "Already Exist"
-    } else if (userTok === "Already Exist") {
+
+    } else if (status === "Already Exist") {
       return (
         <>
           <BobUpWindow>
@@ -76,14 +73,23 @@ const SignUp = () => {
               type="button"
               className="btn btn-primary"
               style={{ marginLeft: 0 }}
-              onClick={() =>
-                //TODO navigate to the sign in
-                navigate("/login")
-              }
+              onClick={() => navigate("/login")}
             >
               Log in
             </button>
           </BobUpWindow>
+        </>
+
+    } else {
+      return (
+        <>
+          <BobUpWindow>
+            <p style={{ color: "red" }}>
+              An error has occured while signing you in, please sign up
+              properly!
+            </p>
+          </BobUpWindow>
+          {navigate("/signup")}
         </>
       );
     }
@@ -91,24 +97,9 @@ const SignUp = () => {
 
   //-------------------------end of handeling sign up using basic credentials-----------------------------------------
 
-  //-------------------------Handling signUp using Google oath-----------------------------------------------------
-  const handelSignUpBasicGoogleRequest = async (googleTok: string) => {
-    //TODO handel google requests once the back is done
-  };
-
-  const handelSignUpBasicGoogleResponse = () => {
-    //TODO handel the google response once back is done
-  };
-  //-------------------------end of Handling signUp using Google oath-----------------------------------------------------
-
   return (
     <>
-      <Form
-        isLogin={false}
-        getSignUpCredentials={getSignUpCredentials}
-        getSignUpGoogleTok={getSignUpGoogleTok}
-      />
-      {/* {handelSignUpBasicCredentialsResponse({token:"Already Exist"})} */}
+      <Form isLogin={false} getSignUpCredentials={getSignUpCredentials} />
     </>
   );
 };

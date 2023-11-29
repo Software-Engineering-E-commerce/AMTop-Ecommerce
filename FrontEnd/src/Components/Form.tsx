@@ -1,22 +1,28 @@
 import React, { ChangeEvent, FormEvent, useState } from "react";
 import "./Form.css";
 import GoogleAuth from "../Components/GoogleAuth";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import BobUpWindow from "./BobUpWindow";
 
 // to define whether it is a login or signup form
-
 
 interface Props {
   isLogin: boolean;
 
   getSignUpCredentials?: (Customer: RegisterRequest) => void;
-  getSignUpGoogleTok?: (googleTok:string) => void;
 
   getLogInCredentials?: (customer: LoginRequest) => void
 }
 
 //this is the main component of the form
-const Form = ({ isLogin, getSignUpCredentials, getSignUpGoogleTok, getLogInCredentials}: Props) => {
+const Form = ({ isLogin, getSignUpCredentils, getLogInCredentials}: Props) => {
+  getSignUpCredentials?: (Customer: RegisterRequest) => void;
+}
+
+//this is the main component of the form
+const Form = ({ isLogin, getSignUpCredentials }: Props) => {
+  const navigate = useNavigate(); //to navigate programatically milestone_1
 
   //one use state for all of the form fields (sign up or login)
   const [formData, setFormData] = useState({
@@ -119,9 +125,62 @@ const Form = ({ isLogin, getSignUpCredentials, getSignUpGoogleTok, getLogInCrede
     }
   };
 
-  //here's a function to get the google authenticator data if the user has clicked the "sign in with google" button
-  function getGoogleAuthData(googleTok:string) {
+
+  //------------------------------------Handel sign in using google request------------------
+  function getGoogleAuthData(googleTok: string) {
+    HandelSignInGoogleRequest(googleTok);
   }
+
+  const HandelSignInGoogleRequest = async (googleTok: string) => {
+    let tokenObject = { token: googleTok };
+    try {
+      const response = await axios({
+        method: "post",
+        url: "http://localhost:9080/googleAuth/googleRegister",
+        data: tokenObject,
+      });
+      console.log(response);
+      let res: AuthenticationResponse = response.data;
+      HandelSignInGoogleResponse(res);
+    } catch (error) {
+      alert("Error occured");
+      console.log(error);
+    }
+  };
+  
+  const HandelSignInGoogleResponse = (response: AuthenticationResponse) => {
+    let token = response.token;
+    if (token.includes("Already Exists")) {
+      //then this user have used this email address to sign up using basic credentials
+      //so he shall not log in using Gmail
+      return (
+        <>
+          <>
+            <BobUpWindow>
+              <p style={{ color: "black" }}>
+                  This email address is used prviously to sign up but with using the basic credentials 
+                  so you shall Log in this way
+              </p>
+              <button
+                type="button"
+                className="btn btn-primary"
+                style={{ marginLeft: 0 }}
+                onClick={() => navigate("/login")}
+              >
+                Log in
+              </button>
+            </BobUpWindow>
+          </>
+        </>
+      );
+    } else {
+      //here means that we have our token and this user is created if not exist or is authorized to login
+      //so we can redirect him to the home page
+      navigate("/home", { state: { userToken: token } });
+    }
+  };
+
+  //------------------------------------End Handel sign in using google request------------------
 
   //function to check the validity of all the fields and change the errors states using comments
   //associated with each violation
