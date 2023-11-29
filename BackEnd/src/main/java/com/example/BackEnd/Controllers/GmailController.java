@@ -1,5 +1,6 @@
 package com.example.BackEnd.Controllers;
 
+import com.example.BackEnd.DTO.AuthenticationResponse;
 import com.example.BackEnd.Services.GmailAuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,7 @@ import java.util.Map;
 public class GmailController {
     private final GmailAuthService service;
     @PostMapping("/googleRegister")
-    public ResponseEntity<?> authenticate(@RequestBody Map<String, String> payload) {
+    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody Map<String, String> payload) {
         String token = payload.get("token");
         return ResponseEntity.ok(service.googleRegister(token));
     }

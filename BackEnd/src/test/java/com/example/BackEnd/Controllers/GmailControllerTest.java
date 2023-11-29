@@ -50,6 +50,29 @@ public class GmailControllerTest {
         AuthenticationResponse responseObj = objectMapper.readValue(response, AuthenticationResponse.class);
 
         assertNotNull(responseObj);
-        assertNotNull(responseObj.getToken()); // Ensure this matches your AuthenticationResponse class structure
+        assertNotNull(responseObj.getToken());
+    }
+    @Test
+    public void checkThatTokenIsValid() throws Exception {
+        String requestBody = "{\"token\":\"" + validJwtToken + "\"}";
+
+        MvcResult result = mockMvc.perform(post("/googleAuth/googleRegister")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String response = result.getResponse().getContentAsString();
+        AuthenticationResponse responseObj = objectMapper.readValue(response, AuthenticationResponse.class);
+
+        assertNotNull(responseObj);
+        String returnedToken = responseObj.getToken();
+        assertNotNull(returnedToken);
+
+        // Check that the token structure is valid (two dots separating three base64-encoded parts)
+        assertTrue(returnedToken.matches("^[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_.+/=]*$"));
+
+        // Check that the key name is "token"
+        assertTrue(response.contains("\"token\""));
     }
 }

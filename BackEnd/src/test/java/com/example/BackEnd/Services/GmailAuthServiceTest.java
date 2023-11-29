@@ -5,6 +5,7 @@ package com.example.BackEnd.Services;
         import com.example.BackEnd.Repositories.AdminRepository;
         import com.example.BackEnd.Repositories.CustomerRepository;
         import com.example.BackEnd.DTO.AuthenticationResponse;
+        import org.junit.jupiter.api.AfterEach;
         import org.junit.jupiter.api.BeforeEach;
         import org.junit.jupiter.api.Test;
         import org.springframework.beans.factory.annotation.Autowired;
@@ -27,18 +28,12 @@ public class GmailAuthServiceTest {
     @Autowired
     private CustomerRepository customerRepository;
 
-    @BeforeEach
-    public void setUp() {
-        // Any setup if necessary
-    }
-
     @Test
     @Transactional
     @DirtiesContext
     public void whenNewUser_thenShouldBeAddedToDatabase() {
         final String validJwtToken =
-                "eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Im5ld3VzZXJAZ29vZ2xlLmNvbSIsImdpdmVuX25hbWUiOiJOZXciLCJmYW1pbHlfbm" +
-                        "FtZSI6IlVzZXIifQ.brcwayiUvJSsTWLDBhXQWtKCQ7SLgjM8IUnYSZIhlLc";
+                "eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Im5ld3VzZXJAZ29vZ2xlLmNvbSIsImdpdmVuX25hbWUiOiJOZXciLCJmYW1pbHlfbmFtZSI6IlVzZXIifQ.brcwayiUvJSsTWLDBhXQWtKCQ7SLgjM8IUnYSZIhlLc";
 
         String email = "newuser@google.com";
         assertFalse(customerRepository.findByEmail(email).isPresent());
@@ -47,8 +42,9 @@ public class GmailAuthServiceTest {
 
         assertNotNull(response);
         assertTrue(customerRepository.findByEmail(email).isPresent());
+        customerRepository.findByEmail(email).ifPresent(customer -> customerRepository.delete(customer));
     }
- 
+
     @Test
     @Transactional
     @DirtiesContext
@@ -64,6 +60,7 @@ public class GmailAuthServiceTest {
         assertNotNull(response);
         assertTrue(existingCustomer.getIsGmail());
         assertEquals("existinguser@google.com", customerRepository.findByEmail(email).get().getEmail());
+        customerRepository.findByEmail(email).ifPresent(customer -> customerRepository.delete(customer));
     }
 
     @Test
@@ -82,6 +79,7 @@ public class GmailAuthServiceTest {
         assertFalse(existingCustomer.getIsGmail());
         assertEquals("nongmailuser@google.com", customerRepository.findByEmail(email).get().getEmail());
         assertEquals("Already Exists", response.getToken());
+        customerRepository.findByEmail(email).ifPresent(customer -> customerRepository.delete(customer));
     }
 
     @Test
@@ -107,6 +105,7 @@ public class GmailAuthServiceTest {
         assertNotNull(response.getToken());
         assertTrue(existingAdmin.getIsGmail());
         assertFalse(response.getToken().isEmpty());
+        customerRepository.findByEmail(email).ifPresent(admin -> customerRepository.delete(admin));
     }
 }
 
