@@ -8,6 +8,8 @@ import com.example.BackEnd.Model.Admin;
 import com.example.BackEnd.Model.Customer;
 import com.example.BackEnd.Repositories.AdminRepository;
 import com.example.BackEnd.Repositories.CustomerRepository;
+import com.example.BackEnd.DTO.AuthenticationResponse;
+import com.example.BackEnd.DTO.LoginRequest;
 
 
 import jakarta.mail.MessagingException;
@@ -31,10 +33,9 @@ public class AuthenticationService {
 
     private final AdminRepository adminRepository;
     private final CustomerRepository customerRepository;
-    private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-
+    private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
 
     public AuthenticationResponse customerRegister(RegisterRequest request) {
@@ -77,12 +78,16 @@ public class AuthenticationService {
 
 
     public AuthenticationResponse authenticate(LoginRequest request) throws NoSuchElementException {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
+            );
+        } catch (Exception e) {
+            return AuthenticationResponse.builder().token("Unauthorized").build();
+        }
 
         Optional<Customer> customer = customerRepository.findByEmail(request.getEmail());
         Optional<Admin> admin = adminRepository.findByEmail(request.getEmail());
@@ -97,7 +102,9 @@ public class AuthenticationService {
                     .token(jwtToken)
                     .build();
         } else {
-            throw new NoSuchElementException();
+            return AuthenticationResponse.builder()
+                    .token("Unauthorized")
+                    .build();
         }
     }
 
