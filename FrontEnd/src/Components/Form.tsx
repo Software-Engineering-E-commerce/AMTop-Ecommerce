@@ -11,7 +11,7 @@ interface Props {
 
   getSignUpCredentials?: (Customer: RegisterRequest) => void;
   getSignUpGoogleTok?: (googleTok:string) => void;
-  
+
   getLogInCredentials?: (customer: LoginRequest) => void
 }
 
@@ -98,7 +98,7 @@ const Form = ({ isLogin, getSignUpCredentials, getSignUpGoogleTok, getLogInCrede
         }
         getLogInCredentials!(customer);
       }
-    
+
     } else {
       if (
         validFields.firstName &&
