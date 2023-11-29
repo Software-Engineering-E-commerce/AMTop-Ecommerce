@@ -8,14 +8,22 @@ import com.example.BackEnd.Model.Admin;
 import com.example.BackEnd.Model.Customer;
 import com.example.BackEnd.Repositories.AdminRepository;
 import com.example.BackEnd.Repositories.CustomerRepository;
+import com.example.BackEnd.DTO.AuthenticationResponse;
+import com.example.BackEnd.DTO.LoginRequest;
 
 
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailSendException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.net.http.HttpHeaders;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -27,8 +35,8 @@ public class AuthenticationService {
     private final CustomerRepository customerRepository;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-    private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     public AuthenticationResponse customerRegister(RegisterRequest request) {
         Customer customer = new Customer(request.getEmail(), passwordEncoder.encode(request.getPassword()), false
@@ -40,7 +48,6 @@ public class AuthenticationService {
             if (adminCheck.isPresent() || (customerCheck.isPresent() && customerCheck.get().getIsVerified())) {
                 return AuthenticationResponse.builder().token("Already Exist").build();
             } else {
-
                 customerRepository.save(customer);
                 var jwtToken = jwtService.generateToken(customer);
                 emailService.sendEmail(customer.getEmail(),"Email Verification",
