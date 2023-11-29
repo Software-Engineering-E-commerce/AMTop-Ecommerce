@@ -1,0 +1,38 @@
+.bob-up-window {
+  font-weight: 500;
+  position: absolute;
+  top: 50%;
+  font-size: 1.2em;
+  left: 50%;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5);
+  transform: translate(-50%, -100%);
+  width: 40vw;
+  z-index: 1000;
+  border-radius: 10px;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+}
+
+.x-container{
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.x-button {
+    border: 1px solid gray;
+    border-radius: 10px;
+    background-color: rgb(248, 30, 30);
+    position: absolute;
+    top:0;
+    right: 0;
+    color: white;
+}
+
+.x-button:hover{
+    background-color: red;
+}
+
+.content {
+  padding: 20px;
+}
