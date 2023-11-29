@@ -10,6 +10,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/googleAuth")
+@CrossOrigin(origins = "http://localhost:3000/")
 @RequiredArgsConstructor
 public class GmailController {
     private final GmailAuthService service;

@@ -48,7 +48,6 @@ public class AuthenticationService {
             if (adminCheck.isPresent() || (customerCheck.isPresent() && customerCheck.get().getIsVerified())) {
                 return AuthenticationResponse.builder().token("Already Exist").build();
             } else {
-
                 customerRepository.save(customer);
                 var jwtToken = jwtService.generateToken(customer);
                 emailService.sendEmail(customer.getEmail(),"Email Verification",

@@ -4,6 +4,7 @@ import GoogleAuth from "../Components/GoogleAuth";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import BobUpWindow from "./BobUpWindow";
+import LogIn from "../Pages/LogIn";
 
 // to define whether it is a login or signup form
 
@@ -12,17 +13,17 @@ interface Props {
 
   getSignUpCredentials?: (Customer: RegisterRequest) => void;
 
-  getLogInCredentials?: (customer: LoginRequest) => void
+  getLogInCredentials?: (customer: LoginRequest) => void;
 }
 
 //this is the main component of the form
-const Form = ({ isLogin, getSignUpCredentils, getLogInCredentials}: Props) => {
-  getSignUpCredentials?: (Customer: RegisterRequest) => void;
-}
-
-//this is the main component of the form
-const Form = ({ isLogin, getSignUpCredentials }: Props) => {
+const Form = ({
+  isLogin,
+  getSignUpCredentials,
+  getLogInCredentials,
+}: Props) => {
   const navigate = useNavigate(); //to navigate programatically milestone_1
+  const [userALreadyExist, setUserAlreadyExist] = useState(false);
 
   //one use state for all of the form fields (sign up or login)
   const [formData, setFormData] = useState({
@@ -49,7 +50,6 @@ const Form = ({ isLogin, getSignUpCredentials }: Props) => {
       ...prevData,
       [name]: value,
     }));
-    console.log(name);
     if (name === "firstName") {
       if (checkFirstName().length == 0)
         setFormErrors((prvious) => {
@@ -91,20 +91,18 @@ const Form = ({ isLogin, getSignUpCredentials }: Props) => {
 
   //function to handel the contimue  button and see whether our fields are all valid or not
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
-    console.log("Submitt");
     e.preventDefault();
     let validFields = CheckFields();
 
     if (isLogin) {
       if (validFields.email && validFields.password) {
         console.log("All our credentials are set for the login");
-        const customer:LoginRequest = {
+        const customer: LoginRequest = {
           email: formData.email,
-          password: formData.password
-        }
+          password: formData.password,
+        };
         getLogInCredentials!(customer);
       }
-
     } else {
       if (
         validFields.firstName &&
@@ -124,7 +122,6 @@ const Form = ({ isLogin, getSignUpCredentials }: Props) => {
       }
     }
   };
-
 
   //------------------------------------Handel sign in using google request------------------
   function getGoogleAuthData(googleTok: string) {
@@ -147,36 +144,17 @@ const Form = ({ isLogin, getSignUpCredentials }: Props) => {
       console.log(error);
     }
   };
-  
+
   const HandelSignInGoogleResponse = (response: AuthenticationResponse) => {
     let token = response.token;
     if (token.includes("Already Exists")) {
       //then this user have used this email address to sign up using basic credentials
       //so he shall not log in using Gmail
-      return (
-        <>
-          <>
-            <BobUpWindow>
-              <p style={{ color: "black" }}>
-                  This email address is used prviously to sign up but with using the basic credentials 
-                  so you shall Log in this way
-              </p>
-              <button
-                type="button"
-                className="btn btn-primary"
-                style={{ marginLeft: 0 }}
-                onClick={() => navigate("/login")}
-              >
-                Log in
-              </button>
-            </BobUpWindow>
-          </>
-        </>
-      );
+      setUserAlreadyExist(true);
     } else {
       //here means that we have our token and this user is created if not exist or is authorized to login
       //so we can redirect him to the home page
-      navigate("/home", { state: { userToken: token } });
+      navigate("/home", { state: { userToken: token, from: "Logged-in" } });
     }
   };
 
@@ -289,8 +267,11 @@ const Form = ({ isLogin, getSignUpCredentials }: Props) => {
       /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\-])[A-Za-z\d!@#$%^&*()_+{}\[\]:;<>,.?~\\-]{8,}$/;
 
     let comment = "";
-    if (!passwordRegex.test(formData.password)) {
-      comment = "Please use a stronger password and Don't use white spaces!";
+    console.log("log in = ", isLogin)
+    if(!isLogin){
+      if (!passwordRegex.test(formData.password)) {
+        comment = "Please use a stronger password and Don't use white spaces!";
+      }
     }
     if (formData.password.length < 8) {
       comment = "Password must be at least 8 characters long";
@@ -330,7 +311,7 @@ const Form = ({ isLogin, getSignUpCredentials }: Props) => {
           {!isLogin && (
             <>
               <div className="col-md-6 input-cont">
-                <label className="form-label">Frist name</label>
+                <label className="form-label">First name</label>
                 <input
                   type="text"
                   placeholder="At least 3 characters"
@@ -449,6 +430,26 @@ const Form = ({ isLogin, getSignUpCredentials }: Props) => {
           )}
         </form>
       </div>
+      {userALreadyExist && (
+        <>
+          <BobUpWindow>
+            <p style={{ color: "black" }}>
+              This email address is used prviously to sign up but with using the
+              basic credentials so you shall Log in this way
+            </p>
+            {!isLogin && (
+              <button
+                type="button"
+                className="btn btn-primary"
+                style={{ marginLeft: 0 }}
+                onClick={() => navigate("/login")}
+              >
+                Log in
+              </button>
+            )}
+          </BobUpWindow>
+        </>
+      )}
     </>
   );
 };
