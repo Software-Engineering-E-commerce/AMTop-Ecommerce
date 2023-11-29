@@ -1,7 +1,12 @@
 package com.example.BackEnd.Controllers;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.BackEnd.DTO.AuthenticationResponse;
+import com.example.BackEnd.Model.Customer;
+import com.example.BackEnd.Repositories.CustomerRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,6 +33,9 @@ public class GmailControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private CustomerRepository customerRepository;
+
     private String validJwtToken;
 
     @BeforeEach
@@ -37,6 +45,7 @@ public class GmailControllerTest {
     }
 
     @Test
+    @Transactional
     public void whenAuthenticateWithToken_thenReturnsResponse() throws Exception {
         String requestBody = "{\"token\":\"" + validJwtToken + "\"}";
 
@@ -51,8 +60,18 @@ public class GmailControllerTest {
 
         assertNotNull(responseObj);
         assertNotNull(responseObj.getToken());
+
+        DecodedJWT jwt = JWT.decode(validJwtToken);
+        String email = jwt.getClaim("email").asString();
+        System.out.println(email);
+        String firstName = jwt.getClaim("given_name").asString();
+        String lastName = jwt.getClaim("family_name").asString();
+        Customer customer = new Customer(email, null, true, true, firstName, lastName);
+        customerRepository.delete(customer);
+
     }
     @Test
+    @Transactional
     public void checkThatTokenIsValid() throws Exception {
         String requestBody = "{\"token\":\"" + validJwtToken + "\"}";
 
@@ -74,5 +93,11 @@ public class GmailControllerTest {
 
         // Check that the key name is "token"
         assertTrue(response.contains("\"token\""));
+        DecodedJWT jwt = JWT.decode(validJwtToken);
+        String email = jwt.getClaim("email").asString();
+        String firstName = jwt.getClaim("given_name").asString();
+        String lastName = jwt.getClaim("family_name").asString();
+        Customer customer = new Customer(email, null, true, true, firstName, lastName);
+        customerRepository.delete(customer);
     }
 }

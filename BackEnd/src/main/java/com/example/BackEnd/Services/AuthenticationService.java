@@ -10,19 +10,12 @@ import com.example.BackEnd.Repositories.AdminRepository;
 import com.example.BackEnd.Repositories.CustomerRepository;
 
 
-import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.mail.MailSendException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.net.http.HttpHeaders;
-import java.util.EnumMap;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -32,10 +25,11 @@ public class AuthenticationService {
 
     private final AdminRepository adminRepository;
     private final CustomerRepository customerRepository;
-    private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final EmailService emailService;
+    private final PasswordEncoder passwordEncoder;
+
     public AuthenticationResponse customerRegister(RegisterRequest request) {
         Customer customer = new Customer(request.getEmail(), passwordEncoder.encode(request.getPassword()), false
                 , false, request.getFirstName(), request.getLastName());
@@ -49,8 +43,6 @@ public class AuthenticationService {
 
                 customerRepository.save(customer);
                 var jwtToken = jwtService.generateToken(customer);
-                System.out.println(customer.getEmail());
-
                 emailService.sendEmail(customer.getEmail(),"Email Verification",
                         "<body style=\"font-family: Arial, sans-serif; background-color: #f4f4f4; text-align: center; padding: 20px;\">\n" +
                                 "\n" +
@@ -65,7 +57,6 @@ public class AuthenticationService {
                                 "    </div>\n" +
                                 "</body>");
 
-                System.out.println("Email sent succesfully");
                 return AuthenticationResponse.builder()
                         .token("SUCCESS")
                         .build();
@@ -79,12 +70,16 @@ public class AuthenticationService {
 
 
     public AuthenticationResponse authenticate(LoginRequest request) throws NoSuchElementException {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
+            );
+        } catch (Exception e) {
+            return AuthenticationResponse.builder().token("Unauthorized").build();
+        }
 
         Optional<Customer> customer = customerRepository.findByEmail(request.getEmail());
         Optional<Admin> admin = adminRepository.findByEmail(request.getEmail());
@@ -99,7 +94,9 @@ public class AuthenticationService {
                     .token(jwtToken)
                     .build();
         } else {
-            throw new NoSuchElementException();
+            return AuthenticationResponse.builder()
+                    .token("Unauthorized")
+                    .build();
         }
     }
 
