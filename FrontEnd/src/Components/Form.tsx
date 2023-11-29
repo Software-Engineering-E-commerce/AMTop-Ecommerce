@@ -12,17 +12,17 @@ interface Props {
 
   getSignUpCredentials?: (Customer: RegisterRequest) => void;
 
-  getLogInCredentials?: (customer: LoginRequest) => void
+  getLogInCredentials?: (customer: LoginRequest) => void;
 }
 
 //this is the main component of the form
-const Form = ({ isLogin, getSignUpCredentils, getLogInCredentials}: Props) => {
-  getSignUpCredentials?: (Customer: RegisterRequest) => void;
-}
-
-//this is the main component of the form
-const Form = ({ isLogin, getSignUpCredentials }: Props) => {
+const Form = ({
+  isLogin,
+  getSignUpCredentials,
+  getLogInCredentials,
+}: Props) => {
   const navigate = useNavigate(); //to navigate programatically milestone_1
+  const [userALreadyExist, setUserAlreadyExist] = useState(false);
 
   //one use state for all of the form fields (sign up or login)
   const [formData, setFormData] = useState({
@@ -98,13 +98,12 @@ const Form = ({ isLogin, getSignUpCredentials }: Props) => {
     if (isLogin) {
       if (validFields.email && validFields.password) {
         console.log("All our credentials are set for the login");
-        const customer:LoginRequest = {
+        const customer: LoginRequest = {
           email: formData.email,
-          password: formData.password
-        }
+          password: formData.password,
+        };
         getLogInCredentials!(customer);
       }
-
     } else {
       if (
         validFields.firstName &&
@@ -124,7 +123,6 @@ const Form = ({ isLogin, getSignUpCredentials }: Props) => {
       }
     }
   };
-
 
   //------------------------------------Handel sign in using google request------------------
   function getGoogleAuthData(googleTok: string) {
@@ -147,32 +145,13 @@ const Form = ({ isLogin, getSignUpCredentials }: Props) => {
       console.log(error);
     }
   };
-  
+
   const HandelSignInGoogleResponse = (response: AuthenticationResponse) => {
     let token = response.token;
     if (token.includes("Already Exists")) {
       //then this user have used this email address to sign up using basic credentials
       //so he shall not log in using Gmail
-      return (
-        <>
-          <>
-            <BobUpWindow>
-              <p style={{ color: "black" }}>
-                  This email address is used prviously to sign up but with using the basic credentials 
-                  so you shall Log in this way
-              </p>
-              <button
-                type="button"
-                className="btn btn-primary"
-                style={{ marginLeft: 0 }}
-                onClick={() => navigate("/login")}
-              >
-                Log in
-              </button>
-            </BobUpWindow>
-          </>
-        </>
-      );
+      setUserAlreadyExist(true);
     } else {
       //here means that we have our token and this user is created if not exist or is authorized to login
       //so we can redirect him to the home page
@@ -330,7 +309,7 @@ const Form = ({ isLogin, getSignUpCredentials }: Props) => {
           {!isLogin && (
             <>
               <div className="col-md-6 input-cont">
-                <label className="form-label">Frist name</label>
+                <label className="form-label">First name</label>
                 <input
                   type="text"
                   placeholder="At least 3 characters"
@@ -449,6 +428,24 @@ const Form = ({ isLogin, getSignUpCredentials }: Props) => {
           )}
         </form>
       </div>
+      {userALreadyExist && (
+        <>
+          <BobUpWindow>
+            <p style={{ color: "black" }}>
+              This email address is used prviously to sign up but with using the
+              basic credentials so you shall Log in this way
+            </p>
+            <button
+              type="button"
+              className="btn btn-primary"
+              style={{ marginLeft: 0 }}
+              onClick={() => navigate("/login")}
+            >
+              Log in
+            </button>
+          </BobUpWindow>
+        </>
+      )}
     </>
   );
 };

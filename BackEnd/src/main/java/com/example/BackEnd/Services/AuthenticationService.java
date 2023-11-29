@@ -8,8 +8,6 @@ import com.example.BackEnd.Model.Admin;
 import com.example.BackEnd.Model.Customer;
 import com.example.BackEnd.Repositories.AdminRepository;
 import com.example.BackEnd.Repositories.CustomerRepository;
-import com.example.BackEnd.DTO.AuthenticationResponse;
-import com.example.BackEnd.DTO.LoginRequest;
 
 
 import jakarta.mail.MessagingException;
@@ -20,9 +18,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailSendException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.net.http.HttpHeaders;
+import java.util.EnumMap;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -32,9 +32,10 @@ public class AuthenticationService {
 
     private final AdminRepository adminRepository;
     private final CustomerRepository customerRepository;
+    private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-
+    private final EmailService emailService;
     public AuthenticationResponse customerRegister(RegisterRequest request) {
         Customer customer = new Customer(request.getEmail(), passwordEncoder.encode(request.getPassword()), false
                 , false, request.getFirstName(), request.getLastName());
@@ -48,7 +49,8 @@ public class AuthenticationService {
 
                 customerRepository.save(customer);
                 var jwtToken = jwtService.generateToken(customer);
-                EmailService emailService = new EmailService();
+                System.out.println(customer.getEmail());
+
                 emailService.sendEmail(customer.getEmail(),"Email Verification",
                         "<body style=\"font-family: Arial, sans-serif; background-color: #f4f4f4; text-align: center; padding: 20px;\">\n" +
                                 "\n" +
@@ -63,6 +65,7 @@ public class AuthenticationService {
                                 "    </div>\n" +
                                 "</body>");
 
+                System.out.println("Email sent succesfully");
                 return AuthenticationResponse.builder()
                         .token("SUCCESS")
                         .build();
@@ -76,16 +79,12 @@ public class AuthenticationService {
 
 
     public AuthenticationResponse authenticate(LoginRequest request) throws NoSuchElementException {
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            request.getEmail(),
-                            request.getPassword()
-                    )
-            );
-        } catch (Exception e) {
-            return AuthenticationResponse.builder().token("Unauthorized").build();
-        }
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(),
+                        request.getPassword()
+                )
+        );
 
         Optional<Customer> customer = customerRepository.findByEmail(request.getEmail());
         Optional<Admin> admin = adminRepository.findByEmail(request.getEmail());
@@ -100,9 +99,7 @@ public class AuthenticationService {
                     .token(jwtToken)
                     .build();
         } else {
-            return AuthenticationResponse.builder()
-                    .token("Unauthorized")
-                    .build();
+            throw new NoSuchElementException();
         }
     }
 

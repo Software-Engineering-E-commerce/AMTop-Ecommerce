@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Form from "../Components/Form";
 import axios, { Axios, AxiosResponse } from "axios";
 import { useNavigate } from "react-router-dom";
@@ -6,6 +6,7 @@ import BobUpWindow from "../Components/BobUpWindow";
 
 const LogIn = () => {
   const navigate = useNavigate();
+  const [responseStatus, setResponseStatus] = useState("")
 
   //function to direct us to the login using credential handeling
   const getLogInCredentials = (customer: LoginRequest) => {
@@ -24,8 +25,7 @@ const LogIn = () => {
       console.log("Response: ", response);
       handelLoginBasicCredentialsResponse(response);
     } catch (error) {
-      console.error("Error:", error);
-      alert(error);
+      alert("User is not found");
     }
   };
 
@@ -37,8 +37,21 @@ const LogIn = () => {
 
     } else if (response.status == 403) {
       //then the user doesn't exist and forbidden to log in so we need to notify him
-      return (
-        <>
+      setResponseStatus("Not exists")
+    }
+  };
+
+  //--------------------------------------End Handel log in using credentials----------------------------------
+
+
+  return (
+    <>
+      <Form
+        isLogin={true}
+        getLogInCredentials={getLogInCredentials}
+      />
+      {responseStatus === "Not exist" && (
+          <>
           <BobUpWindow>
             <p style={{ color: "red" }}>
               User does NOT exist so you might wanna Sign up first !
@@ -53,19 +66,7 @@ const LogIn = () => {
             </button>
           </BobUpWindow>
         </>
-      );
-    }
-  };
-
-  //--------------------------------------End Handel log in using credentials----------------------------------
-
-
-  return (
-    <>
-      <Form
-        isLogin={true}
-        getLogInCredentials={getLogInCredentials}
-      />
+      )}
     </>
   );
 

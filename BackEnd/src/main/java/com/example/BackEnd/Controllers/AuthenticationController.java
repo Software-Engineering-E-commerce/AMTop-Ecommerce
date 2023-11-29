@@ -3,14 +3,15 @@ package com.example.BackEnd.Controllers;
 import com.example.BackEnd.DTO.AuthenticationResponse;
 
 import com.example.BackEnd.DTO.LoginRequest;
+import com.example.BackEnd.DTO.RegisterRequest;
 import com.example.BackEnd.Services.AuthenticationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
+@CrossOrigin(origins = "http://localhost:3000/")
 @RequiredArgsConstructor
 public class AuthenticationController {
 
@@ -20,6 +21,10 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponse> register(
             @RequestBody RegisterRequest request
     ) {
+        System.out.println(request.getFirstName());
+        System.out.println(request.getLastName());
+        System.out.println(request.getEmail());
+        System.out.println(request.getPassword());
         return ResponseEntity.ok(service.customerRegister(request));
     }
 
@@ -27,11 +32,8 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponse> authenticate(
             @RequestBody LoginRequest request
     ) {
-        AuthenticationResponse token = service.authenticate(request);
-        if (token.getToken().equals("Unauthorized"))
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(token);
-        else
-            return ResponseEntity.ok(token);
+     ResponseEntity<AuthenticationResponse> token = ResponseEntity.ok(service.authenticate(request));
+        return token;
     }
 
 

@@ -25,10 +25,14 @@ public class EmailService {
         MimeMessage message = emailSender.createMimeMessage();
         try {
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            System.out.println();
             helper.setFrom(fromEmail);
+            System.out.println(fromEmail);
             helper.setTo(to);
+            System.out.println(to);
             helper.setSubject(subject);
             helper.setText(body, true);
+            System.out.println(subject);
             emailSender.send(message);
             System.out.println("Mail Send...");
         } catch (MessagingException e) {
