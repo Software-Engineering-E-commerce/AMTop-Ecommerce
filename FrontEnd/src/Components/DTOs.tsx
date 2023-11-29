@@ -12,11 +12,3 @@ interface AuthenticationResponse {
     token:string;
     //can be [{token: "SUCCESS tok"}, {token: "Already Exist"}, {token: errorMessage}]
 }
-
-
-
-
-
-
-
-
