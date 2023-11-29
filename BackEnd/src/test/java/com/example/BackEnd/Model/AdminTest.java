@@ -255,4 +255,33 @@ class AdminTest {
         assertTrue(optionalAdmin.isPresent());
     }
 
+    @Test
+    public void testEqualsAndHashCode() {
+        // Set up
+        Admin admin1 = new Admin();
+        admin1.setId(1L);
+        admin1.setAddress("Admin Address");
+        admin1.setContactPhone("123456789");
+
+        Admin admin2 = new Admin();
+        admin2.setId(1L);
+        admin2.setAddress("Admin Address");
+        admin2.setContactPhone("123456789");
+
+        Admin admin3 = new Admin();
+        admin3.setId(2L);
+        admin3.setAddress("Different Address");
+        admin3.setContactPhone("987654321");
+
+        // Mocking repository behavior
+        when(mockedAdminRepository.findById(1L)).thenReturn(Optional.of(admin1));
+        when(mockedAdminRepository.findById(2L)).thenReturn(Optional.of(admin3));
+
+        // Verify
+        assertEquals(admin1, admin2);
+        assertNotEquals(admin1, admin3);
+        assertEquals(admin1.hashCode(), admin2.hashCode());
+        assertNotEquals(admin1.hashCode(), admin3.hashCode());
+    }
+
 }
