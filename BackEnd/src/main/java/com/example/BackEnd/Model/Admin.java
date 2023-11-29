@@ -19,4 +19,5 @@ public class Admin extends User {
     private String address;
     @Column
     private String contactPhone;
+
 }

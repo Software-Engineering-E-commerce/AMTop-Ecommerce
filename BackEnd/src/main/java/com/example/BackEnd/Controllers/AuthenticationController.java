@@ -1,6 +1,7 @@
 package com.example.BackEnd.Controllers;
 
 import com.example.BackEnd.DTO.AuthenticationResponse;
+
 import com.example.BackEnd.DTO.LoginRequest;
 import com.example.BackEnd.DTO.RegisterRequest;
 import com.example.BackEnd.Services.AuthenticationService;
@@ -21,12 +22,14 @@ public class AuthenticationController {
     ) {
         return ResponseEntity.ok(service.customerRegister(request));
     }
+
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(
             @RequestBody LoginRequest request
     ) {
-        ResponseEntity<AuthenticationResponse> token = ResponseEntity.ok(service.authenticate(request));
+     ResponseEntity<AuthenticationResponse> token = ResponseEntity.ok(service.authenticate(request));
         return token;
     }
+
 
 }
