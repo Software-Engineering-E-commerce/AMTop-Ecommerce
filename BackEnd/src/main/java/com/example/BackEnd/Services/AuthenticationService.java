@@ -8,6 +8,8 @@ import com.example.BackEnd.Model.Admin;
 import com.example.BackEnd.Model.Customer;
 import com.example.BackEnd.Repositories.AdminRepository;
 import com.example.BackEnd.Repositories.CustomerRepository;
+import com.example.BackEnd.DTO.AuthenticationResponse;
+import com.example.BackEnd.DTO.LoginRequest;
 
 
 import jakarta.mail.MessagingException;
@@ -18,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailSendException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.net.http.HttpHeaders;
@@ -31,7 +32,6 @@ public class AuthenticationService {
 
     private final AdminRepository adminRepository;
     private final CustomerRepository customerRepository;
-    private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
@@ -76,12 +76,16 @@ public class AuthenticationService {
 
 
     public AuthenticationResponse authenticate(LoginRequest request) throws NoSuchElementException {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
+            );
+        } catch (Exception e) {
+            return AuthenticationResponse.builder().token("Unauthorized").build();
+        }
 
         Optional<Customer> customer = customerRepository.findByEmail(request.getEmail());
         Optional<Admin> admin = adminRepository.findByEmail(request.getEmail());
@@ -96,7 +100,9 @@ public class AuthenticationService {
                     .token(jwtToken)
                     .build();
         } else {
-            throw new NoSuchElementException();
+            return AuthenticationResponse.builder()
+                    .token("Unauthorized")
+                    .build();
         }
     }
 

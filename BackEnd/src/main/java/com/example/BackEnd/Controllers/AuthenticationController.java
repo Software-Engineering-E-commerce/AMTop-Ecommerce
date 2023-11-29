@@ -3,9 +3,9 @@ package com.example.BackEnd.Controllers;
 import com.example.BackEnd.DTO.AuthenticationResponse;
 
 import com.example.BackEnd.DTO.LoginRequest;
-import com.example.BackEnd.DTO.RegisterRequest;
 import com.example.BackEnd.Services.AuthenticationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,8 +27,11 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponse> authenticate(
             @RequestBody LoginRequest request
     ) {
-     ResponseEntity<AuthenticationResponse> token = ResponseEntity.ok(service.authenticate(request));
-        return token;
+        AuthenticationResponse token = service.authenticate(request);
+        if (token.getToken().equals("Unauthorized"))
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(token);
+        else
+            return ResponseEntity.ok(token);
     }
 
 
