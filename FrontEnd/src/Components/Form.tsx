@@ -9,12 +9,20 @@ import BobUpWindow from "./BobUpWindow";
 
 interface Props {
   isLogin: boolean;
+
+  getSignUpCredentials?: (Customer: RegisterRequest) => void;
+
+  getLogInCredentials?: (customer: LoginRequest) => void
+}
+
+//this is the main component of the form
+const Form = ({ isLogin, getSignUpCredentils, getLogInCredentials}: Props) => {
   getSignUpCredentials?: (Customer: RegisterRequest) => void;
 }
 
 //this is the main component of the form
 const Form = ({ isLogin, getSignUpCredentials }: Props) => {
-  const navigate = useNavigate(); //to navigate programatically
+  const navigate = useNavigate(); //to navigate programatically milestone_1
 
   //one use state for all of the form fields (sign up or login)
   const [formData, setFormData] = useState({
@@ -90,8 +98,13 @@ const Form = ({ isLogin, getSignUpCredentials }: Props) => {
     if (isLogin) {
       if (validFields.email && validFields.password) {
         console.log("All our credentials are set for the login");
-        //TODO the rest of the logic here for login using credentials
+        const customer:LoginRequest = {
+          email: formData.email,
+          password: formData.password
+        }
+        getLogInCredentials!(customer);
       }
+
     } else {
       if (
         validFields.firstName &&
@@ -102,15 +115,16 @@ const Form = ({ isLogin, getSignUpCredentials }: Props) => {
       ) {
         console.log("All our credentials are set for the Signup");
         const customer: RegisterRequest = {
-          firstName: formData.firstName.trim(),
-          lastName: formData.lastName.trim(),
-          email: formData.email.trim(),
-          password: formData.password.trim(),
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          password: formData.password,
         };
         getSignUpCredentials!(customer);
       }
     }
   };
+
 
   //------------------------------------Handel sign in using google request------------------
   function getGoogleAuthData(googleTok: string) {

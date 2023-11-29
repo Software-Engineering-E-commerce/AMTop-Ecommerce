@@ -18,12 +18,12 @@ const SignUp = () => {
     customer: RegisterRequest
   ) => {
     //if success then the user will be added to the DB and then routed to his home page
-    try {
+
       const response = await axios({
         method: "post",
         url: "http://localhost:9080/api/auth/registerC",
         data: customer,
-      });
+
       console.log(response);
       let res: AuthenticationResponse = response.data;
       handelSignUpBasicCredentialsResponse(res);
@@ -35,7 +35,7 @@ const SignUp = () => {
 
   const handelSignUpBasicCredentialsResponse = (
     response: AuthenticationResponse
-  ) => {
+
     let status = response.token;
 
     //here the userTok is "SUCCESS + token"
@@ -60,7 +60,7 @@ const SignUp = () => {
         </>
       );
 
-      //but here it is "Already Exist"
+
     } else if (status === "Already Exist") {
       return (
         <>
@@ -79,7 +79,7 @@ const SignUp = () => {
             </button>
           </BobUpWindow>
         </>
-      );
+
     } else {
       return (
         <>
