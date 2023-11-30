@@ -4,10 +4,12 @@ import { useLocation, useNavigate } from "react-router-dom";
 import BobUpWindow from "../Components/BobUpWindow";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
+import { PulseLoader } from "react-spinners";
 import { useState } from "react";
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const [requestStatus, setRequestStatus] = useState("");
 
   const [responseStatus, setResponseStatus] = useState("");
 
@@ -22,12 +24,15 @@ const SignUp = () => {
     customer: RegisterRequest
   ) => {
     //if success then the user will be added to the DB and then routed to his home page
+    setRequestStatus("loading");
     try {
       const response = await axios({
         method: "post",
         url: "http://localhost:9080/api/auth/registerCustomer",
         data: customer,
       });
+      setRequestStatus("");
+
       console.log(response);
       let res: AuthenticationResponse = response.data;
       handelSignUpBasicCredentialsResponse(res);
@@ -75,7 +80,6 @@ const SignUp = () => {
               able to log in.
             </p>
           </BobUpWindow>
-          {/* {navigate("/signup")} */}
         </>
       )}
 
@@ -95,6 +99,42 @@ const SignUp = () => {
               Log in
             </button>
           </BobUpWindow>
+        </>
+      )}
+
+      {requestStatus === "loading" && (
+        <>
+          <div
+            className="light-blocker"
+            id="light-blocker"
+            style={{
+              position: "absolute",
+              width: "100vw",
+              height: "100vh",
+              backgroundColor: "#000000",
+              opacity: 0.3,
+              top: 0,
+              right: 0,
+            }}
+          ></div>
+          <div
+            className="loadingDiv"
+            style={{
+              position: "fixed",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              zIndex:12
+            }}
+          >
+            <PulseLoader
+              color={"black"}
+              loading={requestStatus === "loading"}
+              size={30}
+              aria-label="Loading Spinner"
+              data-testid="loader"
+            />
+          </div>
         </>
       )}
 

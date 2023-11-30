@@ -25,7 +25,8 @@ const LogIn = () => {
       console.log("Response: ", response);
       handelLoginBasicCredentialsResponse(response);
     } catch (error) {
-      alert("User is not found");
+      alert("User not found")
+      // setResponseStatus("Not exist");
     }
   };
 
@@ -35,9 +36,10 @@ const LogIn = () => {
       let userToken = response.data.token;
       navigate("/home", { state: { userToken: userToken, from:"logged-in"}});
 
-    } else if (response.status == 403) {
+     } 
+     else if (response.status == 403) {
       //then the user doesn't exist and forbidden to log in so we need to notify him
-      setResponseStatus("Not exists")
+      setResponseStatus("Not exist")
     }
   };
 
