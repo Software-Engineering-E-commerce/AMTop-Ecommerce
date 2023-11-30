@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import { PulseLoader } from "react-spinners";
 import { useState } from "react";
+import Loading from "../Components/Loading";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -102,40 +103,8 @@ const SignUp = () => {
         </>
       )}
 
-      {requestStatus === "loading" && (
-        <>
-          <div
-            className="light-blocker"
-            id="light-blocker"
-            style={{
-              position: "absolute",
-              width: "100vw",
-              height: "100vh",
-              backgroundColor: "#000000",
-              opacity: 0.3,
-              top: 0,
-              right: 0,
-            }}
-          ></div>
-          <div
-            className="loadingDiv"
-            style={{
-              position: "fixed",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              zIndex:12
-            }}
-          >
-            <PulseLoader
-              color={"black"}
-              loading={requestStatus === "loading"}
-              size={30}
-              aria-label="Loading Spinner"
-              data-testid="loader"
-            />
-          </div>
-        </>
+      {requestStatus === "loading" &&  (
+        <Loading isLoading = {requestStatus === "loading"}/>
       )}
 
       {responseStatus === "Problem" && (
