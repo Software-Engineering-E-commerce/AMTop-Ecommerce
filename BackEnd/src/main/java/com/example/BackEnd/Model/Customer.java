@@ -17,9 +17,21 @@ public class Customer extends User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore //to break the circular reference
     private List<CustomerAddress> addresses = new ArrayList<>();
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Order> orders = new ArrayList<>();
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<CustomerCart> customerCart = new ArrayList<>();
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<WishList> wishList = new ArrayList<>();
 
     public Customer(String email, String password, Boolean isGmail, Boolean isVerified, String firstName, String lastName) {
         this.setEmail(email);
