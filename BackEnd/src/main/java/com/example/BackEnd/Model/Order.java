@@ -29,6 +29,8 @@ public class Order {
     private int totalAmount;
     @Column(nullable = false)
     private float totalCost;
+    @Column(nullable = false)
+    private String status;
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
