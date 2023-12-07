@@ -1,6 +1,7 @@
 package com.example.BackEnd.Services;
 
 import com.example.BackEnd.Config.JwtService;
+import com.example.BackEnd.DTO.CartElement;
 import com.example.BackEnd.Model.Customer;
 import com.example.BackEnd.Model.CustomerCart;
 import com.example.BackEnd.Model.Product;
@@ -17,6 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
@@ -24,7 +28,6 @@ import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 class CartServiceTest {
-
     @Mock
     private  CustomerCartRepository customerCartRepository;
     @Mock
@@ -232,4 +235,113 @@ class CartServiceTest {
     //-------End setQuantity Tests--------------------------------------------------------------
 
 
+    //-------deleteFromCart Tests--------------------------------------------------------------
+    @Test
+    void happyScenarioDelete(){
+        //deleting a product that exists in my cart
+        String mockToken = "sd2151ewf";
+        String mockUserName = "AdelMahmoud";
+        Long mockProductId = 14L;
+        Customer mockCustomer = new Customer();
+
+        when(customerRepository.findByEmail(mockUserName)).thenReturn(Optional.of(mockCustomer));
+        when(customerCartRepository.existsByCustomerAndProduct_Id(mockCustomer,mockProductId)).thenReturn(true);
+
+        //when
+        cartService.deleteFromCart(mockToken, mockProductId);
+
+        // Verify that deleteByCustomerAndProduct_Id is called with the correct arguments
+        verify(customerCartRepository).deleteByCustomerAndProduct_Id(mockCustomer, mockProductId);
+    }
+
+    @Test
+    void deleteProductNotInCart(){
+        //deleting a product that exists in my cart
+        String mockToken = "sd2151ewf";
+        String mockUserName = "AdelMahmoud";
+        Long mockProductId = 14L;
+        Customer mockCustomer = new Customer();
+
+        when(customerRepository.findByEmail(mockUserName)).thenReturn(Optional.of(mockCustomer));
+        when(customerCartRepository.existsByCustomerAndProduct_Id(mockCustomer,mockProductId)).thenReturn(false);
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
+           cartService.deleteFromCart(mockToken,mockProductId);
+        });
+
+        assertEquals("Product is not in the cart", exception.getMessage());
+    }
+    //-------End deleteFromCart Tests--------------------------------------------------------------
+
+
+    //-------getCartElements Tests--------------------------------------------------------------
+    @Test
+    void convertToCartElementTest() {
+        // Mock data
+        String mockToken = "sd2151ewf";
+        CustomerCart mockCustomerCart = mock(CustomerCart.class);
+        Product mockProduct = mock(Product.class);
+
+        // Set up expectations for the mocks
+        when(mockCustomerCart.getProduct()).thenReturn(mockProduct);
+        when(mockProduct.getId()).thenReturn(1L);
+        when(mockProduct.getProductName()).thenReturn("Mock Product");
+        when(mockProduct.getPrice()).thenReturn(20.0f);
+        when(mockProduct.getDescription()).thenReturn("Mock Description");
+        when(mockProduct.getImageLink()).thenReturn("mock_image_link");
+        when(mockCustomerCart.getQuantity()).thenReturn(3);
+
+        // Call the method to be tested
+        CartElement result = cartService.convertToCartElement(mockCustomerCart, mockToken);
+
+        // Verify the result
+        assertEquals(1L, result.getId());
+        assertEquals("Mock Product", result.getProductName());
+        assertEquals(20.0f, result.getPrice());
+        assertEquals("Mock Description", result.getDescription());
+        assertEquals("mock_image_link", result.getImageLink());
+        assertEquals(3, result.getQuantity());
+        assertEquals("sd2151ewf", result.getToken());
+    }
+
+    // Helper method to create a mock CustomerCart
+    private CustomerCart createMockCustomerCart(Customer customer, Long productId, int quantity) {
+        CustomerCart mockCustomerCart = mock(CustomerCart.class);
+        Product mockProduct = mock(Product.class);
+
+        when(mockCustomerCart.getCustomer()).thenReturn(customer);
+        when(mockCustomerCart.getProduct()).thenReturn(mockProduct);
+        when(mockProduct.getId()).thenReturn(productId);
+        when(mockCustomerCart.getQuantity()).thenReturn(quantity);
+
+        return mockCustomerCart;
+    }
+    @Test
+    void getAllCartElementsForCustomerTest() {
+        // Mock data
+        String mockToken = "sd2151ewf";
+        Long customerId = 1L;
+        Customer mockCustomer = mock(Customer.class);
+
+        // Mock the repository behavior
+        when(customerRepository.findByEmail(anyString())).thenReturn(Optional.of(mockCustomer));
+        when(mockCustomer.getId()).thenReturn(customerId);
+
+        // Mock the cart elements
+        List<CustomerCart> mockCustomerCartList = Arrays.asList(
+                createMockCustomerCart(mockCustomer, 1L, 2),
+                createMockCustomerCart(mockCustomer, 3L, 4)
+        );
+        when(customerCartRepository.findByCustomer_Id(customerId)).thenReturn(mockCustomerCartList);
+
+        // Call the method to be tested
+        List<CartElement> result = cartService.getCartElements(mockToken);
+
+        // Verify the result
+        assertEquals(2, result.size()); // Adjust based on your mock data
+        // Add more assertions based on the expected behavior of your service
+    }
+    //-------End getCartElements Tests--------------------------------------------------------------
+
 }
+

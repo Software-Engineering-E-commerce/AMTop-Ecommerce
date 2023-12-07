@@ -14,11 +14,12 @@ import java.util.Optional;
 public interface CustomerCartRepository extends JpaRepository<CustomerCart, CustomerProductPK> {
     List<CustomerCart> findByCustomer_Id(Long customerId);
 
-    // Or if you only want the products
-    List<Product> findProductsByCustomer_Id(Long customerId);
 
     Optional<CustomerCart> findByCustomerAndProduct_Id(Customer customer, Long productId);
 
     // Check if a specific product exists in the customer's cart
     boolean existsByCustomerAndProduct_Id(Customer customer, Long productId);
+
+    //delete a product from customer's cart
+    void deleteByCustomerAndProduct_Id(Customer customer, Long productId);
 }

@@ -1,6 +1,7 @@
 package com.example.BackEnd.Services;
 
 import com.example.BackEnd.Config.JwtService;
+import com.example.BackEnd.DTO.CartElement;
 import com.example.BackEnd.Model.Customer;
 import com.example.BackEnd.Model.CustomerCart;
 import com.example.BackEnd.Model.Product;
@@ -11,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,6 +29,18 @@ public class CartService {
         return customerRepository.findByEmail(username).orElse(null);
     }
 
+    public CartElement convertToCartElement(CustomerCart customerCart, String token) {
+        // Convert CustomerCart entity to CartElement DTO
+        return CartElement.builder()
+                .id(customerCart.getProduct().getId())
+                .productName(customerCart.getProduct().getProductName())
+                .price(customerCart.getProduct().getPrice())
+                .description(customerCart.getProduct().getDescription())
+                .imageLink(customerCart.getProduct().getImageLink())
+                .quantity(customerCart.getQuantity())
+                .token(token)
+                .build();
+    }
     public void addToCart(String token, Long productID) throws IllegalAccessException {
         Customer customer = getCustomer(token);
         if(customer != null){
@@ -77,5 +92,26 @@ public class CartService {
         }
     }
 
+    public void deleteFromCart(String token, Long productID){
+        Customer customer = getCustomer(token);
+        if(customerCartRepository.existsByCustomerAndProduct_Id(customer,productID)){
+            //then we need to delete the entry in the table of customer and productId
+            customerCartRepository.deleteByCustomerAndProduct_Id(customer, productID);
+        }else{
+            //product not in the cart
+            throw new IllegalStateException("Product is not in the cart");
+        }
+    }
 
+    public List<CartElement> getCartElements(String token){
+        Customer customer = getCustomer(token);
+        List<CartElement> cartElements = new ArrayList<>();
+        List<CustomerCart> customerCarts =  customerCartRepository.findByCustomer_Id(customer.getId());
+        for(CustomerCart customerCart : customerCarts){
+            CartElement cartElement = convertToCartElement(customerCart, token);
+            cartElements.add(cartElement);
+        }
+        return cartElements;
+    }
+    
 }

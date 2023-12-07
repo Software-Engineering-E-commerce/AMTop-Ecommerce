@@ -1,5 +1,6 @@
 package com.example.BackEnd.Controllers;
 
+import com.example.BackEnd.DTO.CartElement;
 import com.example.BackEnd.DTO.CartRequest;
 import com.example.BackEnd.Services.CartService;
 import lombok.RequiredArgsConstructor;
@@ -8,34 +9,68 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @RestController
 @CrossOrigin(origins = "http://localhost:3000/")
 @RequestMapping("/cart")
 public class CartController {
+
     private final CartService cartService;
 
+    private String extractToken(String authorizationHeader) {
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            return authorizationHeader.substring(7); // Skip "Bearer " prefix
+        } else {
+            throw new IllegalArgumentException("Authorization header doesn't exist or is in the wrong format");
+        }
+    }
     @PostMapping("/add")
-    ResponseEntity<String> addToCart(@RequestBody CartRequest cartRequest){
-        try{
-            cartService.addToCart(cartRequest.getToken(),cartRequest.getProductId());
+    public ResponseEntity<String> addToCart(@RequestHeader("Authorization") String authorizationHeader, @RequestBody CartRequest cartRequest) {
+        String token = extractToken(authorizationHeader);
+        try {
+            cartService.addToCart(token, cartRequest.getProductId());
             return ResponseEntity.status(HttpStatus.OK).body("Product is added successfully to the cart");
-        }catch(IllegalStateException e){
-            return  ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
-        }catch(IllegalAccessException | UsernameNotFoundException e){
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (IllegalAccessException | UsernameNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
     @PostMapping("/setQuantity")
-    ResponseEntity<String> setQuantity(@RequestBody CartRequest cartRequest, @RequestParam int quantity){
-        try{
-            cartService.setQuantity(cartRequest.getToken(),cartRequest.getProductId(),quantity);
+    public ResponseEntity<String> setQuantity(@RequestHeader("Authorization") String authorizationHeader, @RequestBody CartRequest cartRequest, @RequestParam("quantity") int quantity) {
+        String token = extractToken(authorizationHeader);
+        if (quantity == 0) {
+            return deleteFromCart(authorizationHeader, cartRequest);
+        }
+        try {
+            cartService.setQuantity(token, cartRequest.getProductId(), quantity);
             return ResponseEntity.status(HttpStatus.OK).body("Quantity is set successfully for this product");
-        }catch (IllegalStateException e){
-            return  ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         }
     }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteFromCart(@RequestHeader("Authorization") String authorizationHeader, @RequestBody CartRequest cartRequest) {
+        String token = extractToken(authorizationHeader);
+        try {
+            cartService.deleteFromCart(token, cartRequest.getProductId());
+            return ResponseEntity.status(HttpStatus.OK).body("Product is deleted successfully from the cart");
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/getCartElements")
+    public ResponseEntity<List<CartElement>> getCartElements(@RequestHeader("Authorization") String authorizationHeader){
+        String token = extractToken(authorizationHeader);
+        List<CartElement> cartElements = cartService.getCartElements(token);
+        return ResponseEntity.status(HttpStatus.OK).body(cartElements);
+    }
+
 
 
 
