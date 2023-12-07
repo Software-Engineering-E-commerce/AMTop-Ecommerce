@@ -7,3 +7,10 @@ interface Order {
     status: string;
     products: Product[];
 }
+
+// an interface for the Product entity
+interface Product {
+    id: number;
+    price: number;
+    name: string;
+}
