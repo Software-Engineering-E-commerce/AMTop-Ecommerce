@@ -28,6 +28,9 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
 
+    /**
+     * This method is used to send verification email to the customer
+     */
     private void setupVerification(Customer customer) throws Exception {
         var jwtToken = jwtService.generateToken(customer);
         try {
