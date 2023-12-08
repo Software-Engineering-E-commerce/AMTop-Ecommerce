@@ -1,0 +1,111 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+.profile-container {
+    width: 50%; 
+    height: auto; 
+    background-color: #f0f0f0;
+    text-align: center; /* Center content horizontally */
+    padding: 20px;
+    border: 1px solid #ccc;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.input-group {
+    margin-bottom: 10px;
+}
+
+.input-group label, .input-group input, .input-group button {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 15px;
+    background-color: #f0f0f0;
+}
+
+.input-group label {
+    width: auto;
+}
+
+.input-group input {
+    width: 85%;
+}
+
+.input-group button {
+    background-color: beige;
+    border: 1px solid black;
+}
+.input-group button:hover {
+    background-color: white;
+    color: grey;
+}
+
+.addresses-container {
+    border: 1.75px solid black; 
+    padding: 10px; 
+    margin-top: 20px;
+    box-sizing: border-box; /* include padding and border in the width */
+    position: relative;
+}
+
+.address-label {
+    background-color: #f0f0f0;
+    margin-left: 15px;
+    margin-bottom: 50px;
+}
+
+.address {
+    display: flex;
+    margin-top: 10px; 
+}
+
+.address input {
+    flex-grow: 1; /* Allows the input to grow and fill space */
+    margin-right: 10px; /* Space between the input and the buttons */
+    border: 1px solid #ccc;
+}
+
+.save-btn {
+    background-color: green;
+    border: 1px solid #ccc;
+    color: white; /* Change as desired */
+    padding: 5px 10px;
+    margin-right: 10px; /* Space between the save and delete buttons */
+}
+.save-btn:hover{
+    background-color: white;
+    color: green;
+}
+
+.remove-btn {
+    background-color: red;
+    border: 1px solid #ccc;
+    color: white;
+    padding: 5px 10px;
+}
+.remove-btn:hover{
+    background-color: white;
+    color: red;
+}
+
+.add-btn {
+    background-color: rgba(255, 255, 0, 0.367);
+    border: 1px solid #ccc;
+    color: black; /* Change as desired */
+    padding: 5px 10px;
+    margin-top: 10px; /* Space between the last address and the button */
+}
+.add-btn:hover{
+    background-color: #bfbbbb;
+    color: yellow;
+}
+.btn:focus {
+    box-shadow: 0 0 0 1px black;
+}
+
+.btn:active {
+    transform: scale(0.95);
+}
