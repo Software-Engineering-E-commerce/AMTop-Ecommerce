@@ -1,30 +1,21 @@
 package com.example.BackEnd.Services;
-
 import com.example.BackEnd.Config.JwtService;
 import com.example.BackEnd.DTO.CartElement;
 import com.example.BackEnd.Model.Customer;
 import com.example.BackEnd.Model.CustomerCart;
 import com.example.BackEnd.Model.Product;
-import com.example.BackEnd.Repositories.AdminRepository;
 import com.example.BackEnd.Repositories.CustomerCartRepository;
 import com.example.BackEnd.Repositories.CustomerRepository;
 import com.example.BackEnd.Repositories.ProductRepository;
-import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-
 import static org.mockito.Mockito.*;
-
 import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 class CartServiceTest {
@@ -153,18 +144,6 @@ class CartServiceTest {
         assertEquals(exception.getMessage(), "Product out of stock");
     }
 
-    @Test
-    void UserNotFound(){
-        String mockToken = "sd2151ewf";
-        String mockUserName = "AdelMahmoud";
-        Long mockProductId = 14L;
-
-        when(customerRepository.findByEmail(mockUserName)).thenReturn(Optional.empty());
-
-        UsernameNotFoundException exception = assertThrows(UsernameNotFoundException.class, () ->
-                cartService.addToCart(mockToken,mockProductId));
-        assertEquals(exception.getMessage(), "Customer is not found");
-    }
 
     //------End addToCart Tests----------------------------------------------------------
 

@@ -8,8 +8,8 @@ import com.example.BackEnd.Model.Product;
 import com.example.BackEnd.Repositories.CustomerCartRepository;
 import com.example.BackEnd.Repositories.CustomerRepository;
 import com.example.BackEnd.Repositories.ProductRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -43,29 +43,24 @@ public class CartService {
     }
     public void addToCart(String token, Long productID) throws IllegalAccessException {
         Customer customer = getCustomer(token);
-        if(customer != null){
-            //then our customer exist, and he must exist, but we're checking anyway
-            //now let's add the product to the cart
-            if(customerCartRepository.existsByCustomerAndProduct_Id(customer,productID)){
-                //Customer wants to add a product that alrady exists to his cart
-                throw new IllegalStateException("Product's already in the cart");
-            }else{
-                //here our customer exists and the product is not in his cart.
-                Optional<Product> product = productRepository.findProductById(productID);
-                if(product.isEmpty()){
-                    throw new IllegalAccessException("Product not exist");
-                }else if(product.get().getProductCountAvailable() == 0){
-                    throw new IllegalAccessException("Product out of stock");
-                }else{
-                    //here all is set, then we add it to his cart
-                    CustomerCart customerCart = new CustomerCart(customer,product.get(),1);
-                    customerCartRepository.save(customerCart);
-                }
-            }
-
+        //now let's add the product to the cart
+        if(customerCartRepository.existsByCustomerAndProduct_Id(customer,productID)){
+            //Customer wants to add a product that alrady exists to his cart
+            throw new IllegalStateException("Product's already in the cart");
         }else{
-            throw new UsernameNotFoundException("Customer is not found");
+            //here our customer exists and the product is not in his cart.
+            Optional<Product> product = productRepository.findProductById(productID);
+            if(product.isEmpty()){
+                throw new IllegalAccessException("Product not exist");
+            }else if(product.get().getProductCountAvailable() == 0){
+                throw new IllegalAccessException("Product out of stock");
+            }else{
+                //here all is set, then we add it to his cart
+                CustomerCart customerCart = new CustomerCart(customer,product.get(),1);
+                customerCartRepository.save(customerCart);
+            }
         }
+
     }
 
     public void setQuantity(String token, Long productID, int quantity){
@@ -92,6 +87,7 @@ public class CartService {
         }
     }
 
+    @Transactional
     public void deleteFromCart(String token, Long productID){
         Customer customer = getCustomer(token);
         if(customerCartRepository.existsByCustomerAndProduct_Id(customer,productID)){
@@ -113,5 +109,5 @@ public class CartService {
         }
         return cartElements;
     }
-    
+
 }

@@ -19,7 +19,7 @@ public class CartController {
 
     private final CartService cartService;
 
-    private String extractToken(String authorizationHeader) {
+    public String extractToken(String authorizationHeader) {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             return authorizationHeader.substring(7); // Skip "Bearer " prefix
         } else {
@@ -34,7 +34,7 @@ public class CartController {
             return ResponseEntity.status(HttpStatus.OK).body("Product is added successfully to the cart");
         } catch (IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
-        } catch (IllegalAccessException | UsernameNotFoundException e) {
+        } catch (IllegalAccessException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
@@ -70,8 +70,5 @@ public class CartController {
         List<CartElement> cartElements = cartService.getCartElements(token);
         return ResponseEntity.status(HttpStatus.OK).body(cartElements);
     }
-
-
-
 
 }
