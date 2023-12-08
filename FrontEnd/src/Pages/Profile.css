@@ -3,7 +3,7 @@ body {
 }
 
 .profile-container {
-    width: 50%; 
+    width: 35%; 
     height: auto; 
     background-color: #f0f0f0;
     text-align: center; /* Center content horizontally */
@@ -31,16 +31,7 @@ body {
 }
 
 .input-group input {
-    width: 85%;
-}
-
-.input-group button {
-    background-color: beige;
-    border: 1px solid black;
-}
-.input-group button:hover {
-    background-color: white;
-    color: grey;
+    width: 100%;
 }
 
 .addresses-container {
@@ -54,12 +45,11 @@ body {
 .address-label {
     background-color: #f0f0f0;
     margin-left: 15px;
-    margin-bottom: 50px;
 }
 
 .address {
     display: flex;
-    margin-top: 10px; 
+    margin-top: 10px;
 }
 
 .address input {
@@ -74,10 +64,6 @@ body {
     color: white; /* Change as desired */
     padding: 5px 10px;
     margin-right: 10px; /* Space between the save and delete buttons */
-}
-.save-btn:hover{
-    background-color: white;
-    color: green;
 }
 
 .remove-btn {
@@ -108,4 +94,15 @@ body {
 
 .btn:active {
     transform: scale(0.95);
+}
+
+.update-btn {
+    margin-top: 10px;
+    background-color: beige;
+    border: 1px solid black;
+}
+
+.update-btn:hover {
+    background-color: white;
+    color: grey;
 }
