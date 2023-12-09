@@ -269,6 +269,7 @@ class CartServiceTest {
         when(mockProduct.getDescription()).thenReturn("Mock Description");
         when(mockProduct.getImageLink()).thenReturn("mock_image_link");
         when(mockCustomerCart.getQuantity()).thenReturn(3);
+        when(mockCustomerCart.getProduct().getDiscountPercentage()).thenReturn((float)1.2);
 
         // Call the method to be tested
         CartElement result = cartService.convertToCartElement(mockCustomerCart, mockToken);
@@ -281,6 +282,7 @@ class CartServiceTest {
         assertEquals("mock_image_link", result.getImageLink());
         assertEquals(3, result.getQuantity());
         assertEquals("sd2151ewf", result.getToken());
+        assertEquals((float)1.2, result.getDiscountPercentage());
     }
 
     // Helper method to create a mock CustomerCart

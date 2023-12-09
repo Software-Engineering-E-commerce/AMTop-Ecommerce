@@ -34,6 +34,7 @@ public class CartService {
         return CartElement.builder()
                 .id(customerCart.getProduct().getId())
                 .productName(customerCart.getProduct().getProductName())
+                .discountPercentage(customerCart.getProduct().getDiscountPercentage())
                 .price(customerCart.getProduct().getPrice())
                 .description(customerCart.getProduct().getDescription())
                 .imageLink(customerCart.getProduct().getImageLink())

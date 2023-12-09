@@ -268,7 +268,7 @@ class CartControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("quantity", "11")
                         .content(asJsonString(cartRequest)))
-                .andExpect(MockMvcResultMatchers.status().isForbidden())
+                .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string(expectedMessage));
     }
 
@@ -284,11 +284,10 @@ class CartControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.delete("/cart/delete")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(cartRequest)))
+                        .param("productId", cartRequest.getProductId().toString()))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string(expectedMessage));
     }
-
     @Test
     void deleteProductNotInCart() throws Exception {
         CartRequest cartRequest = new CartRequest();
@@ -298,7 +297,7 @@ class CartControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.delete("/cart/delete")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(cartRequest)))
+                        .param("productId", cartRequest.getProductId().toString()))
                 .andExpect(MockMvcResultMatchers.status().isForbidden())
                 .andExpect(MockMvcResultMatchers.content().string(expectedMessage));
     }

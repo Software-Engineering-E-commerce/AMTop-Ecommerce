@@ -25,4 +25,5 @@ public class CartElement {
     private String imageLink;
     private int quantity;
     private String token;
+    private float discountPercentage;
 }

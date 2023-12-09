@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -43,21 +44,22 @@ public class CartController {
     public ResponseEntity<String> setQuantity(@RequestHeader("Authorization") String authorizationHeader, @RequestBody CartRequest cartRequest, @RequestParam("quantity") int quantity) {
         String token = extractToken(authorizationHeader);
         if (quantity == 0) {
-            return deleteFromCart(authorizationHeader, cartRequest);
+            return deleteFromCart(authorizationHeader, cartRequest.getProductId());
         }
         try {
             cartService.setQuantity(token, cartRequest.getProductId(), quantity);
             return ResponseEntity.status(HttpStatus.OK).body("Quantity is set successfully for this product");
         } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+            //the status is OK because we want the message in e.getMessage() to show up there
+            return ResponseEntity.status(HttpStatus.OK).body(e.getMessage());
         }
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteFromCart(@RequestHeader("Authorization") String authorizationHeader, @RequestBody CartRequest cartRequest) {
+    public ResponseEntity<String> deleteFromCart(@RequestHeader("Authorization") String authorizationHeader, @RequestParam("productId") Long productId) {
         String token = extractToken(authorizationHeader);
         try {
-            cartService.deleteFromCart(token, cartRequest.getProductId());
+            cartService.deleteFromCart(token, productId);
             return ResponseEntity.status(HttpStatus.OK).body("Product is deleted successfully from the cart");
         } catch (IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
