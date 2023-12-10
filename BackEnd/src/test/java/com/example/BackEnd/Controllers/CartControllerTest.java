@@ -191,8 +191,10 @@ class CartControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string(expectedMessage));
 
+        assertEquals(1, customerCartRepository.findByCustomerAndProduct_Id(testCustomer,testProduct2.getId()).get().getQuantity());
         //then we delete back the tuple that's been added
         customerCartRepository.deleteByCustomerAndProduct_Id(testCustomer, testProduct2.getId());
+        assertFalse(customerCartRepository.findByCustomerAndProduct_Id(testCustomer, testProduct2.getId()).isPresent());
     }
 
     @Test
@@ -207,6 +209,7 @@ class CartControllerTest {
                         .content(asJsonString(cartRequest)))
                 .andExpect(MockMvcResultMatchers.status().isForbidden())
                 .andExpect(MockMvcResultMatchers.content().string(expectedMessage));
+        assertTrue(customerCartRepository.findByCustomerAndProduct_Id(testCustomer, testProduct.getId()).isPresent());
     }
 
     @Test
@@ -221,6 +224,7 @@ class CartControllerTest {
                         .content(asJsonString(cartRequest)))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andExpect(MockMvcResultMatchers.content().string(expectedMessage));
+        assertFalse(customerCartRepository.findByCustomerAndProduct_Id(testCustomer, testProduct2.getId()+5).isPresent());
     }
 
     @Test
@@ -235,6 +239,7 @@ class CartControllerTest {
                         .content(asJsonString(cartRequest)))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andExpect(MockMvcResultMatchers.content().string(expectedMessage));
+        assertFalse(customerCartRepository.findByCustomerAndProduct_Id(testCustomer, testProduct3.getId()).isPresent());
     }
 
     //--------End addToCart Tests----------------------------------------------------------
@@ -246,6 +251,7 @@ class CartControllerTest {
         CartRequest cartRequest = new CartRequest();
         cartRequest.setProductId(testProduct.getId());
 
+        assertTrue(customerCartRepository.findByCustomerAndProduct_Id(testCustomer, testProduct.getId()).isPresent());
         String expectedMessage = "Quantity is set successfully for this product";
         mockMvc.perform(MockMvcRequestBuilders.post("/cart/setQuantity")
                         .header("Authorization", "Bearer " + token)
@@ -254,6 +260,7 @@ class CartControllerTest {
                         .content(asJsonString(cartRequest)))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string(expectedMessage));
+        assertEquals(5,customerCartRepository.findByCustomerAndProduct_Id(testCustomer, testProduct.getId()).get().getQuantity());
     }
 
     @Test
@@ -261,7 +268,7 @@ class CartControllerTest {
         //setting quantity for a product in my cart with quantity < available
         CartRequest cartRequest = new CartRequest();
         cartRequest.setProductId(testProduct.getId());
-
+        int oldQunatity = customerCartRepository.findByCustomerAndProduct_Id(testCustomer,testProduct.getId()).get().getQuantity();
         String expectedMessage = "Sorry, the requested quantity exceeds the available count for this product";
         mockMvc.perform(MockMvcRequestBuilders.post("/cart/setQuantity")
                         .header("Authorization", "Bearer " + token)
@@ -270,6 +277,7 @@ class CartControllerTest {
                         .content(asJsonString(cartRequest)))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string(expectedMessage));
+        assertEquals(oldQunatity,customerCartRepository.findByCustomerAndProduct_Id(testCustomer,testProduct.getId()).get().getQuantity());
     }
 
     //--------End setQuantity tests-----------------------------------------------------
@@ -279,7 +287,6 @@ class CartControllerTest {
     void happyScenarioDelete() throws Exception {
         CartRequest cartRequest = new CartRequest();
         cartRequest.setProductId(testProduct.getId());
-
         String expectedMessage = "Product is deleted successfully from the cart";
         mockMvc.perform(MockMvcRequestBuilders.delete("/cart/delete")
                         .header("Authorization", "Bearer " + token)
@@ -287,12 +294,14 @@ class CartControllerTest {
                         .param("productId", cartRequest.getProductId().toString()))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string(expectedMessage));
+        assertFalse(customerCartRepository.findByCustomerAndProduct_Id(testCustomer,testProduct.getId()).isPresent());
     }
     @Test
     void deleteProductNotInCart() throws Exception {
         CartRequest cartRequest = new CartRequest();
         cartRequest.setProductId(testProduct2.getId());
 
+        assertFalse(customerCartRepository.findByCustomerAndProduct_Id(testCustomer,testProduct2.getId()).isPresent());
         String expectedMessage = "Product is not in the cart";
         mockMvc.perform(MockMvcRequestBuilders.delete("/cart/delete")
                         .header("Authorization", "Bearer " + token)
@@ -316,6 +325,7 @@ class CartControllerTest {
                         .content(asJsonString(cartRequest)))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string(expectedMessage));
+        assertFalse(customerCartRepository.findByCustomerAndProduct_Id(testCustomer,testProduct2.getId()).isPresent());
     }
     //--------End deleteFromCart Tests----------------------------------------------------------
 
