@@ -133,7 +133,7 @@ const Form = ({
     try {
       const response = await axios({
         method: "post",
-        url: "http://localhost:9080/googleAuth/googleRegister",
+        url: "http://localhost:9090/googleAuth/googleRegister",
         data: tokenObject,
       });
       console.log(response);
@@ -295,7 +295,7 @@ const Form = ({
   //note that there's conditional rendering for some fields
   return (
     <>
-      <div className="col-lg-5 col-sm-12 container">
+      <div className="col-lg-5 col-sm-12 container form-container">
         <form className="row g-3" onSubmit={handleFormSubmit} noValidate>
           <header style={{ marginBottom: "0px" }}>
             <h3 style={{ marginBottom: "10px", color: "#007bff" }}>
