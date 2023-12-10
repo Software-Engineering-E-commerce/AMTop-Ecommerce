@@ -1,43 +1,86 @@
 package com.example.BackEnd.Controllers;
 
-import com.example.BackEnd.Model.Order;
-import com.example.BackEnd.Model.OrderItem;
+import com.example.BackEnd.Config.JwtService;
+import com.example.BackEnd.DTO.DeleteItemRequest;
+import com.example.BackEnd.DTO.DeleteOrderRequest;
+import com.example.BackEnd.DTO.UpdateOrderRequest;
+import com.example.BackEnd.Model.*;
+import com.example.BackEnd.Repositories.*;
 import com.example.BackEnd.Services.DashboardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/dash")
 @CrossOrigin(origins = "http://localhost:3000/")
 @RequiredArgsConstructor
 public class DashboardController {
-    // This controller is not compilable.
-    // It requires the Dashboard Service implementation to become functional
-    // Merge with branch EC-105 to have a functional controller
     private final DashboardService dashboardService;
+    private final JwtService jwtService;
+    private final AdminRepository adminRepository;
+
+    public String extractToken(String authorizationHeader) {
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            return authorizationHeader.substring(7); // Skip "Bearer " prefix
+        } else {
+            throw new IllegalArgumentException("Authorization header doesn't exist or is in the wrong format");
+        }
+    }
 
     @GetMapping("/getOrders")
-    public ResponseEntity<List<Order>> getOrders() {
-        return ResponseEntity.ok(dashboardService.retrieveOrders());
-    }
-
-    @PostMapping("/deleteOrder")
-    public ResponseEntity<String> deleteOrder(@RequestBody Long orderId) {
-        if(dashboardService.cancelOrder(orderId)) return ResponseEntity.ok("Order Deleted");
-        else return ResponseEntity.ok("Order Not Found");
-    }
-
-    @GetMapping("/getOrderItems")
-    public ResponseEntity<List<OrderItem>> getOrderItems(@RequestBody Long orderId) {
-        return ResponseEntity.ok(dashboardService.getOrderItems(orderId));
+    public ResponseEntity<List<Order>> getOrders(@RequestHeader("Authorization") String authorizationHeader) {
+        String token = extractToken(authorizationHeader);
+        String email = jwtService.extractUsername(token);
+        Optional<Admin> adminCheck = adminRepository.findByEmail(email);
+        if(adminCheck.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ArrayList<>());
+        } else {
+            return ResponseEntity.ok(dashboardService.retrieveOrders());
+        }
     }
 
     @PostMapping("/updateOrderStatus")
-    public ResponseEntity<String> updateOrderStatus(@RequestBody Long orderId, @RequestBody String newStatus) {
-        if(dashboardService.updateOrderStatus(orderId, newStatus)) return ResponseEntity.ok("Order Status Updated");
-        else return ResponseEntity.ok("Order Not Found Or Status Couldn't Change");
+    public ResponseEntity<String> updateOrderStatus(@RequestHeader("Authorization") String authorizationHeader,
+                                                    @RequestBody UpdateOrderRequest request) {
+        String token = extractToken(authorizationHeader);
+        String email = jwtService.extractUsername(token);
+        Optional<Admin> adminCheck = adminRepository.findByEmail(email);
+        if(adminCheck.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied");
+        } else {
+            return ResponseEntity.ok(dashboardService.updateOrderStatus(request.getOrderId(), request.getNewStatus()));
+        }
+    }
+
+    @DeleteMapping("/deleteOrder")
+    public ResponseEntity<String> deleteOrder(@RequestHeader("Authorization") String authorizationHeader,
+                                              @RequestBody DeleteOrderRequest request) {
+        String token = extractToken(authorizationHeader);
+        String email = jwtService.extractUsername(token);
+        Optional<Admin> adminCheck = adminRepository.findByEmail(email);
+        if(adminCheck.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied");
+        } else {
+            return ResponseEntity.ok(dashboardService.cancelOrder(request.getOrderId()));
+        }
+    }
+
+    @DeleteMapping("/deleteItem")
+    public ResponseEntity<String> deleteItem(@RequestHeader("Authorization") String authorizationHeader,
+                                              @RequestBody DeleteItemRequest request) {
+        String token = extractToken(authorizationHeader);
+        String email = jwtService.extractUsername(token);
+        Optional<Admin> adminCheck = adminRepository.findByEmail(email);
+        if(adminCheck.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied");
+        } else {
+            return ResponseEntity.ok(dashboardService.deleteOrderItem(request.getOrderId(), request.getProductId()));
+        }
     }
 }
