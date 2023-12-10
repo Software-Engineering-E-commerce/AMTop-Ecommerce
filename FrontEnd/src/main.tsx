@@ -7,7 +7,7 @@ import SignUp from "./Pages/SignUp.tsx";
 import Home from "./Pages/Home.tsx";
 import LogIn from "./Pages/LogIn.tsx";
 import Verification from "./Pages/Verification.tsx";
-
+import Cart from "./Pages/Cart.tsx";
 
 const router = createBrowserRouter([
   {
@@ -16,11 +16,15 @@ const router = createBrowserRouter([
   },
   {
     path: "/home",
-    element: <Home/>,
+    element: <Home />,
   },
   {
     path: "/verification",
     element: <Verification />,
+  },
+  {
+    path: "/cart",
+    element: <Cart />,
   },
   {
     path: "/login",
