@@ -1,19 +1,40 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Pagination from './Pagination';
-import ConfirmationModal from './confirmationModal';
 import { Modal, Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import './OrdersList.css';
+import AlertModal from './AlertModal';
+import ConfirmationModal from './ConfirmationModal';
 
-const OrderList = () => {
+interface Props {
+  getOrders: () => Promise<Order[]>;
+  deleteOrder: (orderId: number) => Promise<string>;
+  deleteOrderItem: (order: Order, product: Product) => Promise<string>;
+  updateOrderStatus: (orderId: number, newStatus: string) => Promise<string>;
+}
+
+const OrderList = ({
+  getOrders,
+  deleteOrder,
+  deleteOrderItem,
+  updateOrderStatus
+}: Props) => {
+  const nullCustomer: Customer = {
+    id: 0,
+    firstName: '',
+    lastName: ''
+  }
   const nullOrder: Order = {
     id: 0,
-    customerName: '',
-    customerID: 0,
-    price: 0,
+    startDate: '',
+    deliveryDate: '',
+    address: '',
+    totalAmount: 0,
+    totalCost: 0,
     status: '',
-    products: []
+    customer: nullCustomer,
+    orderItems: []
   };
   const [orders, setOrders] = useState<Order[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -24,44 +45,8 @@ const OrderList = () => {
   const [fadeAnimationSingle, setFadeAnimationSingle] = useState('');
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [confirmModalContent, setConfirmModalContent] = useState({ message: '', onConfirm: () => {} });
-
-  const dummyProducts: Product[] = [
-    {
-      id: 1,
-      price: 20.99,
-      name: 'Product 1'
-    },
-    {
-      id: 2,
-      price: 45.5,
-      name: 'Product 2'
-    },
-    {
-      id: 3,
-      price: 30.75,
-      name: 'Product 3'
-    },
-    {
-      id: 4,
-      price: 15.0,
-      name: 'Product 4'
-    },
-    {
-      id: 5,
-      price: 158.0,
-      name: 'Product 5'
-    },
-    {
-      id: 6,
-      price: 158.0,
-      name: 'Product 5'
-    },
-    {
-      id: 7,
-      price: 158.0,
-      name: 'Product 5'
-    }
-  ];
+  const [showAlertModal, setShowAlertModal] = useState(false);
+  const [alertModalContent, setAlertModalContent] = useState({ message: '', onConfirm: () => {} });
 
   const handleOrderClick = (order: Order) => {
     setSelectedOrder(order);
@@ -72,29 +57,64 @@ const OrderList = () => {
     setShowModal(false);
   };
 
-  const handleStatusChange = (newStatus: string) => {
-    selectedOrder.status = newStatus;
-    handleClose();
-    setTimeout(() => {
-      handleOrderClick(selectedOrder);
-    }, 0);
+  const handleStatusChange = (order: Order, newStatus: string) => {
+    updateOrderStatus(order.id, newStatus).then(response => {
+      if(response.includes("Status updated")) {
+        selectedOrder.status = newStatus;
+        setAlertModalContent({
+          message: "Status updated successfully",
+          onConfirm: () => {
+            handleClose();
+            setTimeout(() => {
+              handleOrderClick(selectedOrder);
+            }, 0);
+          }
+        });
+      } else {
+        setAlertModalContent({
+          message: response,
+          onConfirm: () => {
+            handleClose();
+            setTimeout(() => {
+              handleOrderClick(selectedOrder);
+            }, 0);
+          }
+        });
+      }
+    });
+    setShowAlertModal(true);
   };
 
-  const handleRemoveProduct = (productId: number) => {
+  const handleRemoveProduct = (order: Order, product: Product) => {
     setConfirmModalContent({
       message: "Are you sure you want to delete this product? This action is irreversible.",
       onConfirm: () => {
-        setFadeAnimationSingle('fade-out');
-        setTimeout(() => {
-          selectedOrder.products = selectedOrder.products.filter(product => product.id !== productId);
-          handleClose();
-          setTimeout(() => {
-            handleOrderClick(selectedOrder);
-          }, 0);
-        }, 300);
-        setTimeout(() => {
-          setFadeAnimationSingle('fade-in');
-        }, 300);
+        deleteOrderItem(order, product).then(response => {
+          if(response.includes("Item deleted")) {
+            setFadeAnimationSingle('fade-out');
+            setTimeout(() => {
+              selectedOrder.orderItems = selectedOrder.orderItems.filter(orderItem => orderItem.product.id !== product.id);
+              handleClose();
+              setTimeout(() => {
+                handleOrderClick(selectedOrder);
+              }, 0);
+            }, 300);
+            setTimeout(() => {
+              setFadeAnimationSingle('fade-in');
+            }, 300);
+          } else {
+            setAlertModalContent({
+              message: response,
+              onConfirm: () => {
+                handleClose();
+                setTimeout(() => {
+                  handleOrderClick(selectedOrder);
+                }, 0);
+              }
+            });
+            setShowAlertModal(true);
+          }
+        });
       }
     });
     setShowConfirmModal(true);
@@ -104,126 +124,41 @@ const OrderList = () => {
     setConfirmModalContent({
       message: "Are you sure you want to delete this order? This action is irreversible.",
       onConfirm: () => {
-        setFadeAnimation('fade-out');
-        setTimeout(() => {
-          setOrders(orders => orders.filter(order => order.id !== orderId));
-          setFadeAnimation('fade-in');
-        }, 300);
+        deleteOrder(orderId).then(response => {
+          if(response.includes("Order deleted")) {
+            setFadeAnimation('fade-out');
+            setTimeout(() => {
+              setOrders(orders => orders.filter(order => order.id !== orderId));
+              setFadeAnimation('fade-in');
+            }, 300);
+          } else {
+            setAlertModalContent({
+              message: response,
+              onConfirm: () => {
+                handleClose();
+                setTimeout(() => {
+                  handleOrderClick(selectedOrder);
+                }, 0);
+              }
+            });
+            setShowAlertModal(true);
+          }
+        });
       }
     });
     setShowConfirmModal(true);
   };
 
+  // To not fetch orders twice on mounting the component
+  const hasFetchedOrders = useRef(false);
   useEffect(() => {
+    if (hasFetchedOrders.current) {
+        return;
+    }
+    hasFetchedOrders.current = true;
     const fetchOrders = async () => {
-      const dummyOrders: Order[] = [
-        {
-          id: 1,
-          price: 20.99,
-          customerName: 'John Doe',
-          customerID: 1,
-          status: 'Pending',
-          products: dummyProducts
-        },
-        {
-          id: 2,
-          price: 45.5,
-          customerName: 'Jane Smith',
-          customerID: 2,
-          status: 'Shipped',
-          products: dummyProducts
-        },
-        {
-          id: 3,
-          price: 30.75,
-          customerName: 'Bob Johnson',
-          customerID: 3,
-          status: 'Delivered',
-          products: dummyProducts
-        },
-        {
-          id: 4,
-          price: 15.0,
-          customerName: 'Alice Brown',
-          customerID: 4,
-          status: 'Pending',
-          products: dummyProducts
-        },
-        {
-          id: 5,
-          price: 55.25,
-          customerName: 'Charlie White',
-          customerID: 5,
-          status: 'Shipped',
-          products: dummyProducts
-        }
-        ,
-        {
-          id: 6,
-          price: 55.25,
-          customerName: 'Charlie White',
-          customerID: 5,
-          status: 'Shipped',
-          products: dummyProducts
-        }
-        ,
-        {
-          id: 7,
-          price: 55.25,
-          customerName: 'Charlie White',
-          customerID: 5,
-          status: 'Shipped',
-          products: dummyProducts
-        }
-        ,
-        {
-          id: 8,
-          price: 55.25,
-          customerName: 'Charlie White',
-          customerID: 5,
-          status: 'Shipped',
-          products: dummyProducts
-        }
-        ,
-        {
-          id: 9,
-          price: 55.25,
-          customerName: 'Charlie White',
-          customerID: 5,
-          status: 'Shipped',
-          products: dummyProducts
-        }
-        ,
-        {
-          id: 10,
-          price: 55.25,
-          customerName: 'Charlie White',
-          customerID: 5,
-          status: 'Shipped',
-          products: dummyProducts
-        }
-        ,
-        {
-          id: 11,
-          price: 55.25,
-          customerName: 'Charlie White',
-          customerID: 5,
-          status: 'Shipped',
-          products: dummyProducts
-        }
-        ,
-        {
-          id: 12,
-          price: 55.25,
-          customerName: 'Charlie White',
-          customerID: 5,
-          status: 'Shipped',
-          products: dummyProducts
-        } 
-      ];
-      setOrders(dummyOrders);
+      getOrders().then(orders => setOrders(orders));
     };
-
     fetchOrders();
   }, []);
 
@@ -249,8 +184,8 @@ const OrderList = () => {
         {currentOrders.map(order => (
           <div key={order.id} className='order-card' onClick={() => handleOrderClick(order)}>
             <p><strong>ID:</strong> {order.id}</p>
-            <p><strong>Customer:</strong> {order.customerName}</p>
-            <p><strong>Price:</strong> ${order.price}</p>
+            <p><strong>Customer:</strong> {order.customer.firstName} {order.customer.lastName}</p>
+            <p><strong>Price:</strong> ${order.totalCost}</p>
             <p><strong>Status:</strong> {order.status}</p>
             <button className="order-delete-button" onClick={(e) => { e.stopPropagation(); handleDeleteOrder(order.id); }}>
               <FontAwesomeIcon icon={faTrash} />
@@ -271,24 +206,41 @@ const OrderList = () => {
           <Modal.Title>Order Details</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p><strong>Customer's Name:</strong> {selectedOrder.customerName}</p>
-          <p><strong>Customer's ID:</strong> {selectedOrder.customerID}</p>
+          <p><strong>Customer's Name:</strong> {selectedOrder.customer.firstName} {selectedOrder.customer.lastName}</p>
+          <p><strong>Customer's ID:</strong> {selectedOrder.customer.id}</p>
           <p>Modify the status or remove products from this order.</p>
           <div className={`products-container ${fadeAnimationSingle}`}>
-            {selectedOrder?.products.map(product => (
-              <div key={product.id} className='product-container'>
-                <p>
-                  {product.name}
-                  <Button className='remove-btn' variant="danger" onClick={() => handleRemoveProduct(product.id)}>Remove Product</Button>
-                </p>
-              </div>
-            ))}
+            <table className="order-items-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Cost</th>
+                  <th>Quantity</th>
+                </tr>
+              </thead>
+              <tbody>
+                {selectedOrder?.orderItems.map(orderItem => (
+                  <tr key={orderItem.product.id}>
+                    <td>{orderItem.product.id}</td>
+                    <td>{orderItem.product.productName}</td>
+                    <td>{orderItem.originalCost} $</td>
+                    <td>{orderItem.quantity}</td>
+                    <td>
+                      <Button className='remove-btn' variant="danger" onClick={() => handleRemoveProduct(selectedOrder, orderItem.product)}>
+                        Remove Product
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
           <div className='status-btn-container'>
             <p>Status: <span className={`status ${selectedOrder?.status?.toLowerCase()}`}>{selectedOrder?.status}</span></p>
-            <Button className='status-btn' onClick={() => handleStatusChange('Pending')}>Mark as Pending</Button>
-            <Button className='status-btn' onClick={() => handleStatusChange('Shipped')}>Mark as Shipped</Button>
-            <Button className='status-btn' onClick={() => handleStatusChange('Delivered')}>Mark as Delivered</Button>
+            <Button className='status-btn' onClick={() => handleStatusChange(selectedOrder, 'Pending')}>Mark as Pending</Button>
+            <Button className='status-btn' onClick={() => handleStatusChange(selectedOrder, 'Shipped')}>Mark as Shipped</Button>
+            <Button className='status-btn' onClick={() => handleStatusChange(selectedOrder, 'Delivered')}>Mark as Delivered</Button>
           </div>
         </Modal.Body>
         <Modal.Footer>
@@ -305,6 +257,14 @@ const OrderList = () => {
           setShowConfirmModal(false);
         }}
         onCancel={() => setShowConfirmModal(false)}
+      />
+      <AlertModal
+        show={showAlertModal}
+        message={alertModalContent.message}
+        onConfirm={() => {
+          alertModalContent.onConfirm();
+          setShowAlertModal(false);
+        }}
       />
     </div>
   );
