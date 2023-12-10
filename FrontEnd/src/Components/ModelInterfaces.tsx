@@ -1,10 +1,13 @@
 // an interface for the Order entity
 interface Order {
     id: number;
-    price: number;
-    customerName: string;
-    customerID: number;
+    startDate: string;
+    deliveryDate: string;
+    address: string;
+    totalAmount: number;
+    totalCost: number;
     status: string;
+    customer: Customer;
     orderItems: OrderItem[];
 }
 
@@ -12,13 +15,25 @@ interface Order {
 interface Product {
     id: number;
     price: number;
-    name: string;
+    productName: string;
 }
 
 // an interface for the Order Item entity
 interface OrderItem {
-    orderId: number;
-    productId: number;
+    product: Product;
     originalCost: number;
     quantity: number;
+}
+
+// an interface for the Order Item key
+interface OrderItemPK {
+    order: Order;
+    product: Product;
+}
+
+// an interface for the Customer entity
+interface Customer {
+    id: number;
+    firstName: string;
+    lastName: string;
 }
