@@ -7,7 +7,6 @@ import com.example.BackEnd.Repositories.*;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +20,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
-
-
 
 
 @SpringBootTest
@@ -146,7 +142,7 @@ class CartControllerTest {
     void testingExtractTokenAgainstInvalidFormat(){
         String authorizationHeader = "BearervalidToken";
         assertThrows(IllegalArgumentException.class, () -> {
-           cartController.extractToken(authorizationHeader);
+            cartController.extractToken(authorizationHeader);
         });
     }
 

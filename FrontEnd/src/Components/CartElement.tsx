@@ -3,21 +3,15 @@ import "./cartElement.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
-const CartElement = ({
-  id,
-  productName,
-  price,
-  description,
-  imageLink,
-  quantity,
-  token,
-  discountPercentage,
-}: CartElement) => {
-  const [Qnty, setQnty] = useState(quantity);
+interface CartElementProps {
+  cartElement: CartElement;
+  causeRemountCart: () => void;
+}
 
-  var navigate = useNavigate();
+const CartElement = ({ cartElement, causeRemountCart }: CartElementProps) => {
+  const [Qnty, setQnty] = useState(cartElement.quantity);
+  //var navigate = useNavigate();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Allow only numeric values and limit to three digits
@@ -35,24 +29,25 @@ const CartElement = ({
   const handleUpdateQuantity = async () => {
     const q = Qnty; //const instance of Qnty
     const url = `http://localhost:9090/cart/setQuantity?quantity=${q}`;
-    let cartRequest: CartRequest = { productId: id };
+    let cartRequest: CartRequest = { productId: cartElement.id };
     try {
       const response = await axios.post(url, cartRequest, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${cartElement.token}`,
           "Content-Type": "application/json",
         },
       });
+
       if (
-        (response.status == 200 &&
-          q === 0 &&
+        response.status == 200 &&
+        ((q === 0 &&
           response.data === "Product is deleted successfully from the cart") ||
-        (response.data == 200 &&
           response.data === "Quantity is set successfully for this product")
       ) {
         //so here we'll need here to navigate to the cart page to see the changes
-        navigate("/cart"); //TODO make sure that if there's a useLocation we need to set it each time we navigate ther or not
+        causeRemountCart();
       } else {
+        causeRemountCart();
         alert(response.data);
       }
     } catch (error) {
@@ -61,20 +56,22 @@ const CartElement = ({
   };
 
   const handleDeleteFromCart = async () => {
-    const url = `http://localhost:9090/cart/delete?productId=${id}`;
+    const url = `http://localhost:9090/cart/delete?productId=${cartElement.id}`;
     try {
       const response = await axios.delete(url, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${cartElement.token}`,
           "Content-Type": "application/json",
         },
       });
-      alert(response.data);
       if (
         response.status == 200 &&
         response.data == "Product is deleted successfully from the cart"
       ) {
-        navigate("/cart"); //TODO make sure that if there's a useLocation we need to set it each time we navigate ther or not
+        causeRemountCart();
+      }else{
+        alert(response.data);
+        causeRemountCart()
       }
     } catch (error) {
       alert("Product is not in your cart!");
@@ -86,7 +83,7 @@ const CartElement = ({
     <>
       <div className="col-12 product">
         <div className="col-3 imageDiv">
-          <img src={imageLink} alt="productImage" />
+          <img src={cartElement.imageLink} alt="productImage" />
         </div>
 
         <div
@@ -95,13 +92,13 @@ const CartElement = ({
         >
           <div className="seperator"></div>
           <div className="productName">
-            <h3>{productName}</h3>
+            <h3>{cartElement.productName}</h3>
           </div>
           <div
             className="description"
             style={{ fontWeight: "450", maxWidth: "90%" }}
           >
-            {description}
+            {cartElement.description}
           </div>
 
           <div className="qty_and_delete">
@@ -144,7 +141,7 @@ const CartElement = ({
         </div>
 
         <div className="col-2 priceDiv">
-          {discountPercentage !== 0 && (
+          {cartElement.discountPercentage !== 0 && (
             <>
               <div className="the-whole-price">
                 <div className="originalPrice">
@@ -156,22 +153,26 @@ const CartElement = ({
                       textDecoration: "line-through",
                     }}
                   >
-                    ${price}
+                    ${cartElement.price}
                   </h5>
                 </div>
                 <div className="discountPrice">
                   <h5 style={{ fontWeight: "650", marginLeft: "10px" }}>
-                    ${(((100.0 - discountPercentage) / 100) * price).toFixed(2)}
+                    $
+                    {(
+                      ((100.0 - cartElement.discountPercentage) / 100) *
+                      cartElement.price
+                    ).toFixed(2)}
                   </h5>
                 </div>
               </div>
             </>
           )}
-          {discountPercentage === 0 && (
+          {cartElement.discountPercentage === 0 && (
             <>
               <div className="the-whole-price">
                 <h5 style={{ fontWeight: "650", marginLeft: "10px" }}>
-                  ${price}
+                  ${cartElement.price}
                 </h5>
               </div>
             </>
