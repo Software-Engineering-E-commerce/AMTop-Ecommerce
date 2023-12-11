@@ -25,8 +25,6 @@ const OrderList = ({
     firstName: '',
     lastName: ''
   }
-  updateOrderStatus
-}: Props) => {
   const nullOrder: Order = {
     id: 0,
     startDate: '',
@@ -38,7 +36,6 @@ const OrderList = ({
     customer: nullCustomer,
     orderItems: []
   };
-  const [response, setResponse] = useState('');
   const [orders, setOrders] = useState<Order[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [ordersPerPage] = useState(9);
