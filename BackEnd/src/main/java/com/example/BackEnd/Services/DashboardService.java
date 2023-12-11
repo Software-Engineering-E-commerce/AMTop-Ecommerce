@@ -9,6 +9,7 @@ import com.example.BackEnd.Repositories.OrderRepository;
 import com.example.BackEnd.Repositories.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import jakarta.transaction.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +25,7 @@ public class DashboardService {
         return orderRepository.findAll();
     }
 
+    @Transactional
     public String cancelOrder(Long orderId) {
         Optional<Order> orderToDelete = orderRepository.findById(orderId);
         if (orderToDelete.isPresent()) {
@@ -33,6 +35,7 @@ public class DashboardService {
                 " please contact one of the development team members.";
     }
 
+    @Transactional
     public String updateOrderStatus(Long orderId, String newStatus) {
         Optional<Order> orderToUpdate = orderRepository.findById(orderId);
         if (orderToUpdate.isPresent()) {
@@ -44,6 +47,7 @@ public class DashboardService {
                 " please contact one of the development team members.";
     }
 
+    @Transactional
     public String deleteOrderItem(Long orderId, Long productId) {
         Optional<Order> order = orderRepository.findById(orderId);
         Optional<Product> product = productRepository.findById(productId);
