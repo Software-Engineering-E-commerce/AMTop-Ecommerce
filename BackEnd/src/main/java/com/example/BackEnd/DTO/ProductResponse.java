@@ -25,4 +25,5 @@ public class ProductResponse {
     private String categoryName;
     private String categoryUrl;
     private List<ReviewResponse> reviews;
+    private boolean isAdmin;
 }

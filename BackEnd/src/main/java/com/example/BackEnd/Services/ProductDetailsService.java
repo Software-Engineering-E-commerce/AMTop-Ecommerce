@@ -1,9 +1,12 @@
 package com.example.BackEnd.Services;
 
+import com.example.BackEnd.Config.JwtService;
 import com.example.BackEnd.DTO.ProductResponse;
 import com.example.BackEnd.DTO.ReviewResponse;
 import com.example.BackEnd.Model.Product;
 import com.example.BackEnd.Model.Review;
+import com.example.BackEnd.Repositories.AdminRepository;
+import com.example.BackEnd.Repositories.CustomerRepository;
 import com.example.BackEnd.Repositories.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,9 +21,17 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ProductDetailsService {
     private final ProductRepository productRepository;
+    private final AdminRepository adminRepository;
+    private final CustomerRepository customerRepository;
+    private final JwtService jwtService;
+
+    private boolean isAdmin(String token){
+        String email = jwtService.extractUsername(token);
+        return adminRepository.findByEmail(email).isPresent();
+    }
 
     //function to get the product by its id and return its DTO if found else return null
-    public ProductResponse getProduct(Long productID){
+    public ProductResponse getProduct(Long productID, String token){
         try {
             Optional<Product> optionalProduct = productRepository.findById(productID);
             if(optionalProduct.isPresent()){
@@ -50,6 +61,7 @@ public class ProductDetailsService {
                         .categoryName(product.getCategory().getCategoryName())
                         .categoryUrl(product.getCategory().getImageLink())
                         .reviews(reviewResponses)
+                        .isAdmin(isAdmin(token))
                         .build();
             }else{
                 return null;

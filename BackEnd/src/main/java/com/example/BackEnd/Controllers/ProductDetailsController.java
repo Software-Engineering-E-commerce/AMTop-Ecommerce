@@ -13,14 +13,13 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "http://localhost:3000/")
 @RequiredArgsConstructor
 public class ProductDetailsController {
-    private final JwtService jwtService;
     private final ProductDetailsService productDetailsService;
     @GetMapping("/viewProduct")
     public ResponseEntity<ProductResponse> viewProduct(HttpServletRequest request, @RequestParam("productID") Long productID){
-        // Extract the token from the Authorization header
         String authorizationHeader = request.getHeader("Authorization");
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            return ResponseEntity.ok(productDetailsService.getProduct(productID));
+            String token = authorizationHeader.substring(7);
+            return ResponseEntity.ok(productDetailsService.getProduct(productID, token));
         } else {
             return ResponseEntity.badRequest().body(null);
         }
