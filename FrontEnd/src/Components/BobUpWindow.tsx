@@ -1,14 +1,15 @@
 import "./BobUpWindow.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import {
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
 import React, { ReactNode, useState } from "react";
 
 interface Props {
   children: ReactNode;
-  setResponseStatus?: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const BobUpWindow = ({ children, setResponseStatus }: Props) => {
+const BobUpWindow = ({ children }: Props) => {
   const [xClicked, setXclicked] = useState(true);
 
   return (
@@ -33,18 +34,13 @@ const BobUpWindow = ({ children, setResponseStatus }: Props) => {
         style={{ display: xClicked ? "block" : "none" }}
       >
         <div className="x-container">
-          <button
-            className="x-button"
-            onClick={() => {
-              setXclicked(false);
-              setResponseStatus!("");
-            }}
-          >
+          <button className="x-button" onClick={() => setXclicked(false)}>
             <FontAwesomeIcon icon={faXmark} />
           </button>
         </div>
         <div className="content">{children}</div>
       </div>
+      
     </>
   );
 };
