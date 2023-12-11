@@ -8,6 +8,9 @@ import Home from "./Pages/Home.tsx";
 import LogIn from "./Pages/LogIn.tsx";
 import Verification from "./Pages/Verification.tsx";
 import Cart from "./Pages/Cart.tsx";
+import Dashboard from "./Pages/Dashboard.tsx";
+
+
 
 const router = createBrowserRouter([
   {
@@ -33,6 +36,10 @@ const router = createBrowserRouter([
   {
     path: "/signup",
     element: <SignUp />,
+  },
+  {
+    path: "/dashboard",
+    element: <Dashboard />,
   },
   {
     path: "*",

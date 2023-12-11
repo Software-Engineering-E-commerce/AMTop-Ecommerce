@@ -35,3 +35,22 @@ interface CartElement {
 interface CartRequest {
   productId: number;
 }
+
+
+//the OTD for the delete order request
+interface DeleteOrderRequest {
+    orderId: number;
+}
+
+//the OTD for the delete item request
+interface DeleteItemRequest {
+    orderId: number;
+    productId: number;
+}
+
+//the OTD for the update order request
+interface UpdateOrderRequest {
+    orderId: number;
+    newStatus: string;
+}
+
