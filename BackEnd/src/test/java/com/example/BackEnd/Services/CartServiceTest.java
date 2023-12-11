@@ -502,9 +502,6 @@ class CartServiceTest {
         verify(customerCartRepository, never()).deleteByCustomer(any());
     }
 
-
-
-
     //-------End Checkout tests-----------------------------------------------------------------------
 }
 

@@ -2,14 +2,8 @@ package com.example.BackEnd.Controllers;
 import com.example.BackEnd.Config.JwtService;
 import com.example.BackEnd.DTO.CartElement;
 import com.example.BackEnd.DTO.CartRequest;
-import com.example.BackEnd.Model.Category;
-import com.example.BackEnd.Model.Customer;
-import com.example.BackEnd.Model.CustomerCart;
-import com.example.BackEnd.Model.Product;
-import com.example.BackEnd.Repositories.CategoryRepository;
-import com.example.BackEnd.Repositories.CustomerCartRepository;
-import com.example.BackEnd.Repositories.CustomerRepository;
-import com.example.BackEnd.Repositories.ProductRepository;
+import com.example.BackEnd.Model.*;
+import com.example.BackEnd.Repositories.*;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
@@ -25,6 +19,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -54,7 +49,11 @@ class CartControllerTest {
     @Autowired
     private CustomerCartRepository customerCartRepository;
 
+    @Autowired
+    private OrderRepository orderRepository;
 
+    @Autowired
+    private OrderItemRepository orderItemRepository;
     @Autowired
     private CartController cartController;
 
@@ -67,6 +66,8 @@ class CartControllerTest {
     private Category testCategory;
     private String token;
 
+    // Note here this is executed before each @Test method but thanks to @Transactional annotation it ensures
+    // That any transaction that has occured in this test is rolled back as nothing's ever happened
     @BeforeEach
     void setUp() {
         testCustomer = new Customer();
@@ -97,6 +98,7 @@ class CartControllerTest {
         testProduct.setProductSoldCount(2);
         testProduct.setProductName("test product name");
         productRepository.save(testProduct);
+
 
         testProduct2 = new Product();
         testProduct2.setBrand("testBrand2");
@@ -131,26 +133,16 @@ class CartControllerTest {
         customerCartRepository.save(testCustomerCart);
     }
 
-    @AfterEach
-    void tearDown(){
-        // Delete child records first
-        customerCartRepository.delete(testCustomerCart);
-
-        // Delete parent records
-        productRepository.delete(testProduct);
-        productRepository.delete(testProduct2);
-        productRepository.delete(testProduct3);
-        categoryRepository.delete(testCategory);
-        customerRepository.delete(testCustomer);
-    }
 
     @Test
+    @Transactional
     void testingExtractTokenAgainstValidFormat(){
         String authorizationHeader = "Bearer validToken";
         assertEquals("validToken", cartController.extractToken(authorizationHeader));
     }
 
     @Test
+    @Transactional
     void testingExtractTokenAgainstInvalidFormat(){
         String authorizationHeader = "BearervalidToken";
         assertThrows(IllegalArgumentException.class, () -> {
@@ -159,6 +151,7 @@ class CartControllerTest {
     }
 
     @Test
+    @Transactional
     void testingExtractTokenAgainstBeingNull(){
         String authorizationHeader = null;
         assertThrows(IllegalArgumentException.class, () -> {
@@ -192,12 +185,10 @@ class CartControllerTest {
                 .andExpect(MockMvcResultMatchers.content().string(expectedMessage));
 
         assertEquals(1, customerCartRepository.findByCustomerAndProduct_Id(testCustomer,testProduct2.getId()).get().getQuantity());
-        //then we delete back the tuple that's been added
-        customerCartRepository.deleteByCustomerAndProduct_Id(testCustomer, testProduct2.getId());
-        assertFalse(customerCartRepository.findByCustomerAndProduct_Id(testCustomer, testProduct2.getId()).isPresent());
     }
 
     @Test
+    @Transactional
     void addingProductAlreadyInCartTest() throws Exception {
         CartRequest cartRequest = new CartRequest();
         cartRequest.setProductId(testProduct.getId());
@@ -213,6 +204,7 @@ class CartControllerTest {
     }
 
     @Test
+    @Transactional
     void addingProductThatDosntExist() throws Exception {
         CartRequest cartRequest = new CartRequest();
         cartRequest.setProductId(testProduct2.getId() + 5);
@@ -228,6 +220,7 @@ class CartControllerTest {
     }
 
     @Test
+    @Transactional
     void productOutOfStock() throws Exception {
         CartRequest cartRequest = new CartRequest();
         cartRequest.setProductId(testProduct3.getId());
@@ -246,6 +239,7 @@ class CartControllerTest {
 
     //--------setQuantity Tests----------------------------------------------------------
     @Test
+    @Transactional
     void happyScenarioSet() throws Exception {
         //setting quantity for a product in my cart with quantity < available
         CartRequest cartRequest = new CartRequest();
@@ -264,6 +258,7 @@ class CartControllerTest {
     }
 
     @Test
+    @Transactional
     void AddingExceedingQuantity() throws Exception {
         //setting quantity for a product in my cart with quantity < available
         CartRequest cartRequest = new CartRequest();
@@ -284,6 +279,7 @@ class CartControllerTest {
 
     //--------deleteFromCart Tests----------------------------------------------------------
     @Test
+    @Transactional
     void happyScenarioDelete() throws Exception {
         CartRequest cartRequest = new CartRequest();
         cartRequest.setProductId(testProduct.getId());
@@ -297,6 +293,7 @@ class CartControllerTest {
         assertFalse(customerCartRepository.findByCustomerAndProduct_Id(testCustomer,testProduct.getId()).isPresent());
     }
     @Test
+    @Transactional
     void deleteProductNotInCart() throws Exception {
         CartRequest cartRequest = new CartRequest();
         cartRequest.setProductId(testProduct2.getId());
@@ -312,6 +309,7 @@ class CartControllerTest {
     }
 
     @Test
+    @Transactional
     void settingQuantityTo0() throws Exception {
         //setting quantity for a product in my cart with quantity < available
         CartRequest cartRequest = new CartRequest();
@@ -358,8 +356,6 @@ class CartControllerTest {
 
         assertEquals(3, cartElements.size());
 
-        customerCartRepository.delete(testCustomerCart2);
-        customerCartRepository.delete(testCustomerCart3);
     }
 
     @Test
@@ -392,4 +388,103 @@ class CartControllerTest {
     }
     //-------End getCartElements Tests--------------------------------------------------------------
 
+    //-------Checkout tests------------------------------------------------------------------------
+    @Test
+    @Transactional
+    void successFulCheckout() throws Exception {
+        // adding test product two as well
+        CustomerCart testCustomerCart2 = new CustomerCart();
+        testCustomerCart2.setCustomer(testCustomer);
+        testCustomerCart2.setProduct(testProduct2);
+        testCustomerCart2.setQuantity(4);
+        customerCartRepository.save(testCustomerCart2);
+        assertEquals(2,customerCartRepository.findByCustomer_Id(testCustomer.getId()).size());
+
+        // adding an address to our customer for successful checkout
+        CustomerAddress customerAddress = new CustomerAddress(testCustomer,"123 main street");
+        testCustomer.setAddresses(Arrays.asList(customerAddress));
+
+        String expectedMessage = "Order has been placed successfully !";
+        mockMvc.perform(MockMvcRequestBuilders.post("/cart/checkout")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string(expectedMessage))
+                .andReturn();
+
+        // at this point the order is built successfully so let's check our tables
+        assertEquals(1, orderRepository.findByCustomer(testCustomer).size());
+        assertEquals(2, orderItemRepository.findByOrder(orderRepository.findByCustomer(testCustomer).get(0)).size());
+        assertEquals(0,customerCartRepository.findByCustomer_Id(testCustomer.getId()).size());
+    }
+
+    @Test
+    @Transactional
+    void addressNotProvidedCheckout_thenThrowAnException() throws Exception {
+        // adding test product two as well
+        CustomerCart testCustomerCart2 = new CustomerCart();
+        testCustomerCart2.setCustomer(testCustomer);
+        testCustomerCart2.setProduct(testProduct2);
+        testCustomerCart2.setQuantity(4);
+        customerCartRepository.save(testCustomerCart2);
+        assertEquals(2,customerCartRepository.findByCustomer_Id(testCustomer.getId()).size());
+
+        //our customer has no address let's check what happens when he places an order
+        String expectedMessage = "No address provided yet !";
+        mockMvc.perform(MockMvcRequestBuilders.post("/cart/checkout")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(MockMvcResultMatchers.status().isForbidden())
+                .andExpect(MockMvcResultMatchers.content().string(expectedMessage))
+                .andReturn();
+
+        // at this point the order is built successfully so let's check our tables
+        assertEquals(0, orderRepository.findByCustomer(testCustomer).size());
+        assertEquals(2,customerCartRepository.findByCustomer_Id(testCustomer.getId()).size());
+    }
+
+    @Test
+    @Transactional
+    void customerCartEmpty_thenThrowException() throws Exception {
+        // Delete the testCustomer
+        customerCartRepository.deleteByCustomer(testCustomer);
+        assertEquals(0,customerCartRepository.findByCustomer_Id(testCustomer.getId()).size());
+
+        // Our customer has no address let's check what happens when he places an order
+        String expectedMessage = "Can't happen, your cart is empty !";
+        mockMvc.perform(MockMvcRequestBuilders.post("/cart/checkout")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(MockMvcResultMatchers.status().isForbidden())
+                .andExpect(MockMvcResultMatchers.content().string(expectedMessage))
+                .andReturn();
+
+        // At this point the order is built successfully so let's check our tables
+        assertEquals(0, orderRepository.findByCustomer(testCustomer).size());
+    }
+
+    @Test
+    @Transactional
+    void ifOneProductHasQuantityGreaterThanWhatsAvailable_thenThrowException() throws Exception {
+
+        // Adding test product two as well
+        CustomerCart testCustomerCart2 = new CustomerCart();
+        testCustomerCart2.setCustomer(testCustomer);
+        testCustomerCart2.setProduct(testProduct2);
+        testCustomerCart2.setQuantity(21); //greater than what's available of this product
+        customerCartRepository.save(testCustomerCart2);
+        assertEquals(2,customerCartRepository.findByCustomer_Id(testCustomer.getId()).size());
+
+        // Adding an address to our customer for successful checkout
+        CustomerAddress customerAddress = new CustomerAddress(testCustomer,"123 main street");
+        testCustomer.setAddresses(Arrays.asList(customerAddress));
+
+        String expectedMessage = "The available in stock right now for test product2 name product is only 20";
+        mockMvc.perform(MockMvcRequestBuilders.post("/cart/checkout")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(MockMvcResultMatchers.status().isForbidden())
+                .andExpect(MockMvcResultMatchers.content().string(expectedMessage))
+                .andReturn();
+        // At this point the order is built successfully so let's check our tables
+        assertEquals(0, orderRepository.findByCustomer(testCustomer).size());
+        assertEquals(2,customerCartRepository.findByCustomer_Id(testCustomer.getId()).size());
+    }
+    //-------End Checkout tests---------------------------------------------------------------------
 }
