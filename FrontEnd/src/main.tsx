@@ -7,7 +7,8 @@ import SignUp from "./Pages/SignUp.tsx";
 import Home from "./Pages/Home.tsx";
 import LogIn from "./Pages/LogIn.tsx";
 import Verification from "./Pages/Verification.tsx";
-
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 const router = createBrowserRouter([
   {
@@ -16,7 +17,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/home",
-    element: <Home/>,
+    element: <Home />,
   },
   {
     path: "/verification",
