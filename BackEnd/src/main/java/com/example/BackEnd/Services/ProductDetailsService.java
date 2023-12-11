@@ -3,8 +3,10 @@ package com.example.BackEnd.Services;
 import com.example.BackEnd.Config.JwtService;
 import com.example.BackEnd.DTO.ProductResponse;
 import com.example.BackEnd.DTO.ReviewResponse;
+import com.example.BackEnd.Model.Customer;
 import com.example.BackEnd.Model.Product;
 import com.example.BackEnd.Model.Review;
+import com.example.BackEnd.Model.WishList;
 import com.example.BackEnd.Repositories.AdminRepository;
 import com.example.BackEnd.Repositories.CustomerRepository;
 import com.example.BackEnd.Repositories.ProductRepository;
@@ -30,12 +32,21 @@ public class ProductDetailsService {
         return adminRepository.findByEmail(email).isPresent();
     }
 
+    private boolean checkInWishlist(String token, Product product){
+        String email = jwtService.extractUsername(token);
+        Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
+        if(optionalCustomer.isPresent()){
+            Customer customer = optionalCustomer.get();
+            return customer.getWishList().contains(new WishList(customer, product));
+        }
+        return false;
+    }
+
     //function to get the product by its id and return its DTO if found else return null
     public ProductResponse getProduct(Long productID, String token){
         try {
             Optional<Product> optionalProduct = productRepository.findById(productID);
             if(optionalProduct.isPresent()){
-                //to reformat the local date time
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
                 Product product = optionalProduct.get();
                 List<ReviewResponse> reviewResponses = new ArrayList<>();
@@ -62,10 +73,10 @@ public class ProductDetailsService {
                         .categoryUrl(product.getCategory().getImageLink())
                         .reviews(reviewResponses)
                         .isAdmin(isAdmin(token))
+                        .isInWishlist(checkInWishlist(token, product))
                         .build();
-            }else{
-                return null;
             }
+            return null;
         }catch (Exception e){
             return null;
         }
