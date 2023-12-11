@@ -1,45 +1,54 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { ReactNode, useEffect, useRef, useState } from "react";
 import "./Cart.css";
 import axios from "axios";
 import CartElement from "../Components/CartElement";
 
+
 const Cart = () => {
+  console.log("Cart component rendered");
   const [cartElements, setCartElements] = useState<CartElement[]>([]); // Use state to manage cartElements
   const [totalItems, setTotalItems] = useState(0); //useState to get the total number of items for the customer
   const [totalPrice, setTotalPrice] = useState(""); //and here for the total price
 
+
   //TODO change it when the home page is done such that it's a useLocation string that's set when clicked on the cart icon
   const userTok =
-    "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0Y3VzdG9tZXJAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDIxNDY0MzUsImV4cCI6MTcwMjIzMjgzNX0.3LBsm64lYk-pTG3jg6xB3_M_pGtG1AqLPNQPi1EoseA";
+    "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0Y3VzdG9tZXJAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDIzMDg3MjAsImV4cCI6MTcwMjM5NTEyMH0.VNkjOKE6pbuwGiFk8uesLujrrRvDWNWT4JQ_J9Tr4lY";
 
   // useRef to track whether the component is mounted
   const isMounted = useRef(true);
 
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:9090/cart/getCartElements",
+        {
+          headers: {
+            Authorization: `Bearer ${userTok}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setCartElements([]);
+      setCartElements(response.data);
+      processResponse(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   // useEffect runs on component mount
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:9090/cart/getCartElements",
-          {
-            headers: {
-              Authorization: `Bearer ${userTok}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        setCartElements(response.data);
-        processResponse(response.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
     if (isMounted.current) {
       fetchData();
       isMounted.current = false;
     }
-  }, [userTok]);
+  }, []);
+
+  // Function to handle successful delete operation
+  const causeRemountCart = () => {
+    fetchData();
+  };
 
   const processResponse = (arr: CartElement[]) => {
     let totalQuantity: number = 0;
@@ -53,6 +62,47 @@ const Cart = () => {
     }
     setTotalPrice(totalPrice.toFixed(2));
     setTotalItems(totalQuantity);
+  };
+
+  //function to handle the checkout request
+  const handleCheckout = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:9090/cart/checkout",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${userTok}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+       alert(response.data);
+       causeRemountCart(); 
+      // You can perform additional actions based on the response if needed
+    } catch (error) {
+      // Handle errors here
+      if (axios.isAxiosError(error)) {
+        // This type assertion tells TypeScript that error is an AxiosError
+        const axiosError = error as import("axios").AxiosError;
+        if (axiosError.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          alert(axiosError.response.data);
+          console.error("Response data:", axiosError.response.data);
+          console.error("Response status:", axiosError.response.status);
+        } else if (axiosError.request) {
+          // The request was made but no response was received
+          console.error("No response received:", axiosError.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.error("Error:", axiosError.message);
+        }
+      } else {
+        // Handle non-Axios errors
+        console.error("Non-Axios error:", error);
+      }
+    }
   };
 
   return (
@@ -69,15 +119,8 @@ const Cart = () => {
           <div className="cart-elements">
             {cartElements.map((cartElement) => (
               <CartElement
-                key={cartElement.id}
-                imageLink={cartElement.imageLink}
-                id={cartElement.id}
-                productName={cartElement.productName}
-                description={cartElement.description}
-                price={cartElement.price}
-                quantity={cartElement.quantity}
-                token={cartElement.token}
-                discountPercentage={cartElement.discountPercentage}
+                cartElement={cartElement}
+                causeRemountCart={causeRemountCart}
               />
             ))}
           </div>
@@ -87,7 +130,6 @@ const Cart = () => {
               <h5 className="totalPrice">Your subtotal is: ${totalPrice}</h5>
             </>
           )}
-
         </div>
 
         {totalItems >= 1 && (
@@ -107,6 +149,7 @@ const Cart = () => {
                 <button
                   type="button"
                   className="btn btn-success"
+                  onClick={handleCheckout}
                   style={{ marginTop: "30px", width: "100%" }}
                 >
                   Proceed to Checkout

@@ -69,4 +69,14 @@ public class CartController {
         return ResponseEntity.status(HttpStatus.OK).body(cartElements);
     }
 
+    @PostMapping("/checkout")
+    public ResponseEntity<String> checkout(@RequestHeader("Authorization") String authorizationHeader){
+        String token = extractToken(authorizationHeader);
+        try{
+            cartService.checkout(token);
+            return ResponseEntity.status(HttpStatus.OK).body("Order has been placed successfully !");
+        } catch (IllegalStateException exception){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exception.getMessage());
+        }
+    }
 }

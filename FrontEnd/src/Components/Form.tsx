@@ -311,7 +311,7 @@ const Form = ({
           {!isLogin && (
             <>
               <div className="col-md-6 input-cont">
-                <label className="form-label">First name</label>
+                <label className="form-label formLabel">First name</label>
                 <input
                   type="text"
                   placeholder="At least 3 characters"
@@ -331,7 +331,7 @@ const Form = ({
               </div>
 
               <div className="col-md-6 input-cont">
-                <label className="form-label">Last name</label>
+                <label className="form-label formLabel">Last name</label>
                 <input
                   type="text"
                   placeholder="At least 3 characters"
@@ -353,7 +353,7 @@ const Form = ({
           )}
 
           <div className="col-12 input-cont">
-            <label className="form-label">Email</label>
+            <label className="form-label formLabel">Email</label>
             <input
               type="email"
               style={{ padding: "0.8rem 0.75rem" }}
@@ -370,7 +370,7 @@ const Form = ({
             )}
           </div>
           <div className="col-12 input-cont">
-            <label className="form-label">Password</label>
+            <label className="form-label formLabel">Password</label>
             <input
               type="password"
               className={`form-control ${
@@ -391,7 +391,7 @@ const Form = ({
           {!isLogin && (
             <>
               <div className="col-12 input-cont">
-                <label className="form-label">Confirm password</label>
+                <label className="form-label formLabel ">Confirm password</label>
                 <input
                   type="password"
                   style={{ padding: "0.8rem 0.75rem" }}

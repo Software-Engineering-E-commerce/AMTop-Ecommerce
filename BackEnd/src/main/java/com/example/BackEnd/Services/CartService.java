@@ -2,16 +2,13 @@ package com.example.BackEnd.Services;
 
 import com.example.BackEnd.Config.JwtService;
 import com.example.BackEnd.DTO.CartElement;
-import com.example.BackEnd.Model.Customer;
-import com.example.BackEnd.Model.CustomerCart;
-import com.example.BackEnd.Model.Product;
-import com.example.BackEnd.Repositories.CustomerCartRepository;
-import com.example.BackEnd.Repositories.CustomerRepository;
-import com.example.BackEnd.Repositories.ProductRepository;
+import com.example.BackEnd.Model.*;
+import com.example.BackEnd.Repositories.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -19,9 +16,11 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class CartService {
+    private final CustomerAddressRepository customerAddressRepository;
     private final CustomerCartRepository customerCartRepository;
     private final CustomerRepository customerRepository;
     private final ProductRepository productRepository;
+    private final OrderRepository orderRepository;
     private final JwtService jwtService;
 
     // Get the Customer object given his token
@@ -122,4 +121,71 @@ public class CartService {
         return cartElements;
     }
 
+    // The checkout service function
+    @Transactional
+    public void checkout(String token){
+        // First we need to get our customer object
+        Customer customer = getCustomer(token);
+        // Then we need to check that he has at least one element in the cart
+        List<CustomerCart> customerCarts =  customerCartRepository.findByCustomer_Id(customer.getId());
+        if (customerCarts.size() != 0){
+            List<CustomerAddress> customerAddresses = customerAddressRepository.findAllByCustomer_Id(customer.getId());
+            // Checking that there's at least one address in the list
+            if (!customerAddresses.isEmpty()){
+                // Here our customer has an address and products in his cart
+                String address = customerAddresses.get(0).getAddress();
+                for(CustomerCart customerCart: customerCarts){
+                    if (customerCart.getQuantity() > customerCart.getProduct().getProductCountAvailable()){
+                        // Here we have a product whose quantity is greater than the available
+                        throw new IllegalStateException("The available in stock right now " +
+                                "for " + customerCart.getProduct().getProductName() + " product is only " + customerCart.getProduct().getProductCountAvailable());
+                    }
+                }
+                // Here means that we're all set for building the order parts
+                buildOrder(customerCarts,address);
+
+            } else{
+                // Here there's no address provided for this customer, so we throw an exception
+                throw new IllegalStateException("No address provided yet !");
+            }
+
+        } else{
+            // Here the cart is empty !
+            throw new IllegalStateException("Can't happen, your cart is empty !");
+        }
+    }
+
+    @Transactional
+    public void buildOrder(List<CustomerCart> customerCarts, String address){
+        Order order = new Order();
+        List<OrderItem> orderItems = new ArrayList<>();
+        float total_cost = (float) 0.0;
+        int total_amount = 0;
+        for(CustomerCart customerCart: customerCarts){
+            OrderItem orderItem = new OrderItem();
+            Product product = customerCart.getProduct();
+            total_cost += ((100.0 - product.getDiscountPercentage())/100.0)
+                            * product.getPrice() * customerCart.getQuantity();
+            total_amount += customerCart.getQuantity();
+
+            // Let's build OrderItem one at a time
+            orderItem.setOrder(order);
+            orderItem.setProduct(product);
+            orderItem.setOriginalCost(product.getPrice());
+            orderItem.setQuantity(customerCart.getQuantity());
+            orderItems.add(orderItem);
+        }
+        // Let's build our order
+        order.setStartDate(LocalDateTime.now());
+        order.setDeliveryDate(LocalDateTime.now().plusDays(7)); // Default number of days for delivery
+        order.setAddress(address);
+        order.setTotalAmount(total_amount);
+        order.setTotalCost(total_cost);
+        order.setCustomer(customerCarts.get(0).getCustomer());
+        order.setOrderItems(orderItems);
+        // And now we save the order we just built
+        orderRepository.save(order);
+        // Then we delete all the products in the cart of this customer
+        customerCartRepository.deleteByCustomer(customerCarts.get(0).getCustomer());
+    }
 }
