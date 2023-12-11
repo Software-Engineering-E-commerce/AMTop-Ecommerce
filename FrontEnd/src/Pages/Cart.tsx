@@ -2,14 +2,16 @@ import React, { ReactNode, useEffect, useRef, useState } from "react";
 import "./Cart.css";
 import axios from "axios";
 import CartElement from "../Components/CartElement";
-
+import GenericAlertModal from "../Components/GenericAlertModal";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 
 const Cart = () => {
   console.log("Cart component rendered");
   const [cartElements, setCartElements] = useState<CartElement[]>([]); // Use state to manage cartElements
   const [totalItems, setTotalItems] = useState(0); //useState to get the total number of items for the customer
   const [totalPrice, setTotalPrice] = useState(""); //and here for the total price
-
+  const [checkOutResponse, setCheckOutResponse] = useState("");
 
   //TODO change it when the home page is done such that it's a useLocation string that's set when clicked on the cart icon
   const userTok =
@@ -19,6 +21,7 @@ const Cart = () => {
   const isMounted = useRef(true);
 
   const fetchData = async () => {
+    setCheckOutResponse("");
     try {
       const response = await axios.get(
         "http://localhost:9090/cart/getCartElements",
@@ -77,8 +80,8 @@ const Cart = () => {
           },
         }
       );
-       alert(response.data);
-       causeRemountCart(); 
+      setCheckOutResponse(response.data);
+      //causeRemountCart();
       // You can perform additional actions based on the response if needed
     } catch (error) {
       // Handle errors here
@@ -88,7 +91,8 @@ const Cart = () => {
         if (axiosError.response) {
           // The request was made and the server responded with a status code
           // that falls out of the range of 2xx
-          alert(axiosError.response.data);
+          //alert(axiosError.response.data);
+          setCheckOutResponse(axiosError.response.data as string);
           console.error("Response data:", axiosError.response.data);
           console.error("Response status:", axiosError.response.status);
         } else if (axiosError.request) {
@@ -107,6 +111,39 @@ const Cart = () => {
 
   return (
     <>
+      {checkOutResponse === "Order has been placed successfully !" && (
+        <GenericAlertModal
+          onConfirm={causeRemountCart}
+          show={true}
+          body={
+            <>
+              <h5 style={{ color: "green" }}>
+                <FontAwesomeIcon
+                  icon={faCircleCheck}
+                  style={{
+                    color: "green",
+                    fontSize: "18px",
+                    marginRight: "10px",
+                  }}
+                />
+                {checkOutResponse}
+              </h5>
+            </>
+          }
+        />
+      )}
+      {checkOutResponse !== "" &&
+        checkOutResponse !== "Order has been placed successfully !" && (
+          <GenericAlertModal
+            onConfirm={causeRemountCart}
+            show={true}
+            body={
+              <>
+                <h5 style={{ color: "red" }}>{checkOutResponse}</h5>
+              </>
+            }
+          />
+        )}
       <div
         className="col-12 container cart-container"
         style={{ backgroundColor: "white", display: "flex" }}
