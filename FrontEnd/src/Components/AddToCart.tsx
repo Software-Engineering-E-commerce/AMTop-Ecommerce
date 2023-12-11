@@ -13,6 +13,7 @@ const AddToCart = ({ userTok, productId }: Props) => {
   const isMounted = useRef(true);
   const [responseData, setResponseData] = useState("");
 
+  // The function that handels the addToCart request to the api
   const addToCart = async () => {
     try {
       let cartRequst: CartRequest = { productId: productId };
@@ -62,6 +63,7 @@ const AddToCart = ({ userTok, productId }: Props) => {
     setResponseData("");
   };
 
+  // The final return HTML element 
   return (
     <>
       {responseData === "Product is added successfully to the cart" && (
