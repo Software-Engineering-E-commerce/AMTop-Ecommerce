@@ -133,7 +133,7 @@ const Form = ({
     try {
       const response = await axios({
         method: "post",
-        url: "http://localhost:9090/googleAuth/googleRegister",
+        url: "http://localhost:9080/googleAuth/googleRegister",
         data: tokenObject,
       });
       console.log(response);

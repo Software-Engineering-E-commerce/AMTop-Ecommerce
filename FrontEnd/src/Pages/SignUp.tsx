@@ -25,7 +25,7 @@ const SignUp = () => {
     try {
       const response = await axios({
         method: "post",
-        url: "http://localhost:9090/api/auth/registerCustomer",
+        url: "http://localhost:9080/api/auth/registerCustomer",
         data: customer,
       });
       console.log(response);

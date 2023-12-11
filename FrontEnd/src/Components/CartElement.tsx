@@ -11,7 +11,6 @@ interface CartElementProps {
 
 const CartElement = ({ cartElement, causeRemountCart }: CartElementProps) => {
   const [Qnty, setQnty] = useState(cartElement.quantity);
-  //var navigate = useNavigate();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Allow only numeric values and limit to three digits
@@ -27,8 +26,8 @@ const CartElement = ({ cartElement, causeRemountCart }: CartElementProps) => {
   };
 
   const handleUpdateQuantity = async () => {
-    const q = Qnty; //const instance of Qnty
-    const url = `http://localhost:9090/cart/setQuantity?quantity=${q}`;
+    const q = Qnty; // const instance of Qnty
+    const url = `http://localhost:9080/cart/setQuantity?quantity=${q}`;
     let cartRequest: CartRequest = { productId: cartElement.id };
     try {
       const response = await axios.post(url, cartRequest, {
@@ -44,7 +43,7 @@ const CartElement = ({ cartElement, causeRemountCart }: CartElementProps) => {
           response.data === "Product is deleted successfully from the cart") ||
           response.data === "Quantity is set successfully for this product")
       ) {
-        //so here we'll need here to navigate to the cart page to see the changes
+        // So here we'll need here to navigate to the cart page to see the changes
         causeRemountCart();
       } else {
         causeRemountCart();
@@ -56,7 +55,7 @@ const CartElement = ({ cartElement, causeRemountCart }: CartElementProps) => {
   };
 
   const handleDeleteFromCart = async () => {
-    const url = `http://localhost:9090/cart/delete?productId=${cartElement.id}`;
+    const url = `http://localhost:9080/cart/delete?productId=${cartElement.id}`;
     try {
       const response = await axios.delete(url, {
         headers: {

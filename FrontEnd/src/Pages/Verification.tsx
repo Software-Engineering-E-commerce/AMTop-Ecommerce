@@ -28,7 +28,7 @@ const Verification = () => {
         console.log("In request");
         try {
           const response = await fetch(
-            `http://localhost:9090/api/verification`,
+            `http://localhost:9080/api/verification`,
             {
               method: "GET",
               headers: {

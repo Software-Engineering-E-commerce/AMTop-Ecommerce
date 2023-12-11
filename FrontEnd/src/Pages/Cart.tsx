@@ -24,7 +24,7 @@ const Cart = () => {
     setCheckOutResponse("");
     try {
       const response = await axios.get(
-        "http://localhost:9090/cart/getCartElements",
+        "http://localhost:9080/cart/getCartElements",
         {
           headers: {
             Authorization: `Bearer ${userTok}`,
@@ -71,7 +71,7 @@ const Cart = () => {
   const handleCheckout = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:9090/cart/checkout",
+        "http://localhost:9080/cart/checkout",
         {},
         {
           headers: {

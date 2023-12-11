@@ -128,7 +128,7 @@ public class CartService {
         Customer customer = getCustomer(token);
         // Then we need to check that he has at least one element in the cart
         List<CustomerCart> customerCarts =  customerCartRepository.findByCustomer_Id(customer.getId());
-        if (customerCarts.size() != 0){
+        if (customerCarts.isEmpty()){
             List<CustomerAddress> customerAddresses = customerAddressRepository.findAllByCustomer_Id(customer.getId());
             // Checking that there's at least one address in the list
             if (!customerAddresses.isEmpty()){
@@ -164,7 +164,7 @@ public class CartService {
         for(CustomerCart customerCart: customerCarts){
             OrderItem orderItem = new OrderItem();
             Product product = customerCart.getProduct();
-            total_cost += ((100.0 - product.getDiscountPercentage())/100.0)
+            total_cost += ((100.0F - product.getDiscountPercentage())/100.0F)
                             * product.getPrice() * customerCart.getQuantity();
             total_amount += customerCart.getQuantity();
 

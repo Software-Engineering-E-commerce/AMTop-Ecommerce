@@ -19,7 +19,7 @@ const LogIn = () => {
     try {
       const response = await axios({
         method: "post",
-        url: "http://localhost:9090/api/auth/authenticate", 
+        url: "http://localhost:9080/api/auth/authenticate", 
         data: customer,
       });
       console.log("Response: ", response);

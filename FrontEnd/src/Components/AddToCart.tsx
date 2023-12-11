@@ -17,7 +17,7 @@ const AddToCart = ({ userTok, productId }: Props) => {
   const addToCart = async () => {
     try {
       let cartRequst: CartRequest = { productId: productId };
-      let url: string = "http://localhost:9090/cart/add";
+      let url: string = "http://localhost:9080/cart/add";
 
       const response = await axios.post(url, cartRequst, {
         headers: {
@@ -25,7 +25,7 @@ const AddToCart = ({ userTok, productId }: Props) => {
           "Content-Type": "application/json",
         },
       });
-      //Here means that the response is Ok and the product is added successfully
+      // Here means that the response is Ok and the product is added successfully
       setResponseData(response.data);
     } catch (error) {
       // Handle errors here

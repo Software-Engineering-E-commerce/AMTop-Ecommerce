@@ -1,4 +1,4 @@
-//an OTD for the register r
+// An OTD for the register r
 interface RegisterRequest {
   firstName: string;
   lastName: string;
@@ -6,19 +6,19 @@ interface RegisterRequest {
   password: string;
 }
 
-//the OTD for the the authentication resonse
+// The OTD for the the authentication resonse
 interface AuthenticationResponse {
   token: string;
-  //can be [{token: "SUCCESS tok"}, {token: "Already Exist"}, {token: errorMessage}]
+  // Can be [{token: "SUCCESS tok"}, {token: "Already Exist"}, {token: errorMessage}]
 }
 
-//the OTD for the logIn request
+// The OTD for the logIn request
 interface LoginRequest {
   email: string;
   password: string;
 }
 
-//the DTO of the CartElemet recieved from the api
+// The DTO of the CartElemet recieved from the api
 interface CartElement {
   id: number;
   productName: string;
@@ -31,7 +31,7 @@ interface CartElement {
 }
 
 
-//the DTO of the cart request needed to send requests to the api and include this object in the body
+// The DTO of the cart request needed to send requests to the api and include this object in the body
 interface CartRequest {
   productId: number;
 }
