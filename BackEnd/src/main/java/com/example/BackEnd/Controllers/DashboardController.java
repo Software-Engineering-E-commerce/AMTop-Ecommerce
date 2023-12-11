@@ -25,9 +25,12 @@ public class DashboardController {
     private final JwtService jwtService;
     private final AdminRepository adminRepository;
 
-    public String extractToken(String authorizationHeader) {
+    public boolean isAdmin(String authorizationHeader) {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            return authorizationHeader.substring(7); // Skip "Bearer " prefix
+            String token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+            String email = jwtService.extractUsername(token);
+            Optional<Admin> adminCheck = adminRepository.findByEmail(email);
+            return adminCheck.isPresent();
         } else {
             throw new IllegalArgumentException("Authorization header doesn't exist or is in the wrong format");
         }
@@ -35,10 +38,7 @@ public class DashboardController {
 
     @GetMapping("/getOrders")
     public ResponseEntity<List<Order>> getOrders(@RequestHeader("Authorization") String authorizationHeader) {
-        String token = extractToken(authorizationHeader);
-        String email = jwtService.extractUsername(token);
-        Optional<Admin> adminCheck = adminRepository.findByEmail(email);
-        if(adminCheck.isEmpty()) {
+        if(!isAdmin(authorizationHeader)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ArrayList<>());
         } else {
             return ResponseEntity.ok(dashboardService.retrieveOrders());
@@ -48,10 +48,7 @@ public class DashboardController {
     @PostMapping("/updateOrderStatus")
     public ResponseEntity<String> updateOrderStatus(@RequestHeader("Authorization") String authorizationHeader,
                                                     @RequestBody UpdateOrderRequest request) {
-        String token = extractToken(authorizationHeader);
-        String email = jwtService.extractUsername(token);
-        Optional<Admin> adminCheck = adminRepository.findByEmail(email);
-        if(adminCheck.isEmpty()) {
+        if(!isAdmin(authorizationHeader)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied");
         } else {
             return ResponseEntity.ok(dashboardService.updateOrderStatus(request.getOrderId(), request.getNewStatus()));
@@ -61,10 +58,7 @@ public class DashboardController {
     @DeleteMapping("/deleteOrder")
     public ResponseEntity<String> deleteOrder(@RequestHeader("Authorization") String authorizationHeader,
                                               @RequestBody DeleteOrderRequest request) {
-        String token = extractToken(authorizationHeader);
-        String email = jwtService.extractUsername(token);
-        Optional<Admin> adminCheck = adminRepository.findByEmail(email);
-        if(adminCheck.isEmpty()) {
+        if(!isAdmin(authorizationHeader)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied");
         } else {
             return ResponseEntity.ok(dashboardService.cancelOrder(request.getOrderId()));
@@ -74,10 +68,7 @@ public class DashboardController {
     @DeleteMapping("/deleteItem")
     public ResponseEntity<String> deleteItem(@RequestHeader("Authorization") String authorizationHeader,
                                               @RequestBody DeleteItemRequest request) {
-        String token = extractToken(authorizationHeader);
-        String email = jwtService.extractUsername(token);
-        Optional<Admin> adminCheck = adminRepository.findByEmail(email);
-        if(adminCheck.isEmpty()) {
+        if(!isAdmin(authorizationHeader)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied");
         } else {
             return ResponseEntity.ok(dashboardService.deleteOrderItem(request.getOrderId(), request.getProductId()));
