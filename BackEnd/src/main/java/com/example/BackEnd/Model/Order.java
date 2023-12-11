@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import net.minidev.json.annotate.JsonIgnore;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,10 +27,11 @@ public class Order {
     private int totalAmount;
     @Column(nullable = false)
     private float totalCost;
+    @Column(nullable = false)
+    private String status;
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
     private List<OrderItem> orderItems = new ArrayList<>();
 }
