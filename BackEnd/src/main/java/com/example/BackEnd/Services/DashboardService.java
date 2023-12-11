@@ -55,8 +55,16 @@ public class DashboardService {
                 return "Item deleted";
             } else return "Item not found, please refresh the page and try again. If the problem persists," +
                     " please contact one of the development team members.";
-        } else
-            return "Either the order or the product associated with the item is missing from the database," +
-                    " please contact one of the development team members.";
+        } else {
+            if (order.isPresent())
+                return "The product associated with the item is missing from the database," +
+                        " please contact one of the development team members.";
+            else if (product.isPresent())
+                return "The order associated with the item is missing from the database," +
+                        " please contact one of the development team members.";
+            else
+                return "Both the order and the product associated with the item are missing from the database," +
+                        " please contact one of the development team members.";
+        }
     }
 }
