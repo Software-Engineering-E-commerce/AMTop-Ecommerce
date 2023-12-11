@@ -20,7 +20,7 @@ import java.util.Optional;
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private final ImageService ImageService;
+    private final ImageService imageService;
     private final CategoryRepository categoryRepository;
 
     public void addProduct(ProductDTO productDTO, MultipartFile image) throws IOException, IllegalStateException {
@@ -40,7 +40,7 @@ public class ProductService {
             productRepository.save(product);
 
             Long id = product.getId();
-            String imageLink = ImageService.saveImage(image, id);
+            String imageLink = imageService.saveImage(image, id);
             product.setImageLink(imageLink);
             productRepository.save(product);
         } catch (IOException e) {
