@@ -23,5 +23,4 @@ public class OrderItem {
     private float originalCost;
     @Column(nullable = false)
     private int quantity;
-
 }

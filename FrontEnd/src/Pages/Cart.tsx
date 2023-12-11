@@ -30,7 +30,7 @@ const Cart = () => {
         );
         setCartElements(response.data);
         processResponse(response.data);
-      } catch (error) {
+      }catch (error) {
         console.error(error);
       }
     };
