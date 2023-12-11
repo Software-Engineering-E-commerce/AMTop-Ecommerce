@@ -21,4 +21,6 @@ public interface CustomerCartRepository extends JpaRepository<CustomerCart, Cust
 
     // Delete a product from customer's cart given the customer object and productID
     void deleteByCustomerAndProduct_Id(Customer customer, Long productId);
+    // Delete all the products in customer's cart
+    void deleteByCustomer(Customer customer);
 }

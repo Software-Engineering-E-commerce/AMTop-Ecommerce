@@ -2,11 +2,10 @@ package com.example.BackEnd.Services;
 import com.example.BackEnd.Config.JwtService;
 import com.example.BackEnd.DTO.CartElement;
 import com.example.BackEnd.Model.Customer;
+import com.example.BackEnd.Model.CustomerAddress;
 import com.example.BackEnd.Model.CustomerCart;
 import com.example.BackEnd.Model.Product;
-import com.example.BackEnd.Repositories.CustomerCartRepository;
-import com.example.BackEnd.Repositories.CustomerRepository;
-import com.example.BackEnd.Repositories.ProductRepository;
+import com.example.BackEnd.Repositories.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -23,6 +22,12 @@ class CartServiceTest {
     private  CustomerCartRepository customerCartRepository;
     @Mock
     private  CustomerRepository customerRepository;
+
+    @Mock
+    private CustomerAddressRepository customerAddressRepository;
+
+    @Mock
+    private OrderRepository orderRepository;
     @Mock
     private  ProductRepository productRepository;
     @Mock
@@ -324,5 +329,182 @@ class CartServiceTest {
     }
     //-------End getCartElements Tests--------------------------------------------------------------
 
+    //-------Checkout tests-----------------------------------------------------------------------
+
+
+    @Test
+    void successfulCheckout() {
+        // Mock data
+        String mockToken = "sd2151ewf";
+        Long customerId = 1L;
+        // Mock Customer
+        Customer mockCustomer = mock(Customer.class);
+
+        // Mock Product
+        when(product.getId()).thenReturn(1L);
+        when(product.getProductCountAvailable()).thenReturn(20);
+
+        // Mock customer Cart
+        CustomerCart mockCustomerCart = mock(CustomerCart.class);
+        when(mockCustomerCart.getCustomer()).thenReturn(mockCustomer);
+        when(mockCustomerCart.getProduct()).thenReturn(product);
+        when(product.getId()).thenReturn(1L);
+        when(mockCustomerCart.getQuantity()).thenReturn(2);
+
+        // Mock the repository behavior
+        when(customerRepository.findByEmail(anyString())).thenReturn(Optional.of(mockCustomer));
+        when(mockCustomer.getId()).thenReturn(customerId);
+
+        // Mock the cart elements
+        List<CustomerCart> mockCustomerCartList = Arrays.asList(
+                mockCustomerCart
+        );
+
+        when(customerCartRepository.findByCustomer_Id(customerId)).thenReturn(mockCustomerCartList);
+
+        // Mock the customer addresses
+        List<CustomerAddress> mockCustomerAddresses = Arrays.asList(new CustomerAddress(mockCustomer, "Mock Address"));
+        when(customerAddressRepository.findAllByCustomer_Id(customerId)).thenReturn(mockCustomerAddresses);
+
+        // Mock product availability
+        when(productRepository.findProductById(1L)).thenReturn(Optional.of(product)); // Adjust based on your mock data
+
+
+        // Call the checkout method
+        cartService.checkout(mockToken);
+
+        // Verify the order is saved
+        verify(orderRepository, times(1)).save(any());
+
+        // Verify the customer cart is cleared
+        verify(customerCartRepository, times(1)).deleteByCustomer(any());
+    }
+
+
+    @Test
+    void ifProductQuantityGreaterThanAvailable_ThenThrowException() {
+        // Mock data
+        String mockToken = "sd2151ewf";
+        Long customerId = 1L;
+        Customer mockCustomer = mock(Customer.class);
+
+        // Mock Product
+        when(product.getId()).thenReturn(1L);
+        when(product.getProductCountAvailable()).thenReturn(10);
+        when(product.getProductName()).thenReturn("Mock Product Name");
+
+        // Mock customer Cart
+        CustomerCart mockCustomerCart = mock(CustomerCart.class);
+        when(mockCustomerCart.getCustomer()).thenReturn(mockCustomer);
+        when(mockCustomerCart.getProduct()).thenReturn(product);
+        when(product.getId()).thenReturn(1L);
+        when(mockCustomerCart.getQuantity()).thenReturn(11);
+
+        // Mock the repository behavior
+        when(customerRepository.findByEmail(anyString())).thenReturn(Optional.of(mockCustomer));
+        when(mockCustomer.getId()).thenReturn(customerId);
+
+        // Mock the cart elements
+        List<CustomerCart> mockCustomerCartList = Arrays.asList(
+               mockCustomerCart
+        );
+        when(customerCartRepository.findByCustomer_Id(customerId)).thenReturn(mockCustomerCartList);
+
+        // Mock the customer addresses
+        List<CustomerAddress> mockCustomerAddresses = Arrays.asList(new CustomerAddress(mockCustomer, "Mock Address"));
+        when(customerAddressRepository.findAllByCustomer_Id(customerId)).thenReturn(mockCustomerAddresses);
+
+        // Mock product availability
+        when(productRepository.findProductById(any())).thenReturn(Optional.of(product)); // Adjust based on your mock data
+
+        // Call the checkout method and expect an exception
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> cartService.checkout(mockToken));
+        System.out.println(exception.getMessage());
+        assertEquals("The available in stock right now for Mock Product Name product is only 10", exception.getMessage());
+
+        // Verify that no order is saved
+        verify(orderRepository, never()).save(any());
+
+        // Verify that the customer cart is not cleared
+        verify(customerCartRepository, never()).deleteByCustomer(any());
+    }
+
+
+    @Test
+    void noAddressCheckout_thenThrowException() {
+        // Mock data
+        String mockToken = "sd2151ewf";
+        Long customerId = 1L;
+        Customer mockCustomer = mock(Customer.class);
+
+        // Mock the repository behavior
+        when(customerRepository.findByEmail(anyString())).thenReturn(Optional.of(mockCustomer));
+        when(mockCustomer.getId()).thenReturn(customerId);
+
+        // Mock the cart elements
+        List<CustomerCart> mockCustomerCartList = Arrays.asList();
+        when(customerCartRepository.findByCustomer_Id(customerId)).thenReturn(mockCustomerCartList);
+
+        // Mock an empty list of customer addresses
+        when(customerAddressRepository.findAllByCustomer_Id(customerId)).thenReturn(Arrays.asList());
+
+        // Call the checkout method and expect an exception
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> cartService.checkout(mockToken));
+        assertEquals("Can't happen, your cart is empty !", exception.getMessage());
+
+        // Verify that no order is saved
+        verify(orderRepository, never()).save(any());
+
+        // Verify that the customer cart is not cleared
+        verify(customerCartRepository, never()).deleteByCustomer(any());
+    }
+
+    @Test
+    void cartIsEmptyCheckout_thenThrowException() {
+        // Mock data
+        String mockToken = "sd2151ewf";
+        Long customerId = 1L;
+        Customer mockCustomer = mock(Customer.class);
+
+        // Mock Product
+        when(product.getId()).thenReturn(1L);
+        when(product.getProductCountAvailable()).thenReturn(10);
+        when(product.getProductName()).thenReturn("Mock Product Name");
+
+        // Mock customer Cart
+        CustomerCart mockCustomerCart = mock(CustomerCart.class);
+        when(mockCustomerCart.getCustomer()).thenReturn(mockCustomer);
+        when(mockCustomerCart.getProduct()).thenReturn(product);
+        when(product.getId()).thenReturn(1L);
+        when(mockCustomerCart.getQuantity()).thenReturn(11);
+
+        // Mock the repository behavior
+        when(customerRepository.findByEmail(anyString())).thenReturn(Optional.of(mockCustomer));
+        when(mockCustomer.getId()).thenReturn(customerId);
+
+        // Mock the cart elements
+        List<CustomerCart> mockCustomerCartList = Arrays.asList(
+                mockCustomerCart
+        );
+        when(customerCartRepository.findByCustomer_Id(customerId)).thenReturn(mockCustomerCartList);
+
+        // Mock an empty list of customer addresses
+        when(customerAddressRepository.findAllByCustomer_Id(customerId)).thenReturn(Arrays.asList());
+
+        // Call the checkout method and expect an exception
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> cartService.checkout(mockToken));
+        assertEquals("No address provided yet !", exception.getMessage());
+
+        // Verify that no order is saved
+        verify(orderRepository, never()).save(any());
+
+        // Verify that the customer cart is not cleared
+        verify(customerCartRepository, never()).deleteByCustomer(any());
+    }
+
+
+
+
+    //-------End Checkout tests-----------------------------------------------------------------------
 }
 

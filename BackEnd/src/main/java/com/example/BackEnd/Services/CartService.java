@@ -168,6 +168,7 @@ public class CartService {
                             * product.getPrice() * customerCart.getQuantity();
             total_amount += customerCart.getQuantity();
 
+            // Let's build OrderItem one at a time
             orderItem.setOrder(order);
             orderItem.setProduct(product);
             orderItem.setOriginalCost(product.getPrice());
@@ -184,5 +185,7 @@ public class CartService {
         order.setOrderItems(orderItems);
         // And now we save the order we just built
         orderRepository.save(order);
+        // Then we delete all the products in the cart of this customer
+        customerCartRepository.deleteByCustomer(customerCarts.get(0).getCustomer());
     }
 }
