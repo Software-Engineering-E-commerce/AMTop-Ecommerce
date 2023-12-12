@@ -36,6 +36,10 @@ interface CartRequest {
   productId: number;
 }
 
+// The DTO of the wishlist request needed to send requests to the api and include this object in the body
+interface WishlistRequest {
+  productId: number;
+}
 
 //the OTD for the delete order request
 interface DeleteOrderRequest {
