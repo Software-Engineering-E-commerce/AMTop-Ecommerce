@@ -1,0 +1,198 @@
+.products-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 20px;
+    margin-left: 20px;
+    margin-top: 20px;
+}
+  
+.product-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    background-color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: calc(20% - 20px);
+    height: 450px;
+    padding-bottom: 1px;
+    text-align: center;
+    position: relative;
+}
+
+.product-delete-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: green;
+    margin-left: 90%;
+    margin-bottom: 10px;
+}
+  
+.product-delete-button:hover {
+    color: red;
+}
+
+.buttons-container {
+    display: block;
+    align-items: center;
+    text-align: center;
+    margin-top: 10%;
+}
+
+.product-wishlist-button {
+    position: relative;
+    font-size: 1.5vw;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: black;
+}
+  
+.product-wishlist-button.in-wishlist {
+    color: red;
+}
+  
+.product-cart-button {
+    position: relative;
+    font-size: 1.5vw;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: green;
+}
+  
+.button-text-go-left {
+    color: black;
+    font-size: 1vw;
+    position: absolute;
+    white-space: nowrap;
+    overflow: hidden;
+    left: 0px;
+    top: 50%;
+    transform: translate(0, -50%);
+    pointer-events: none;
+    opacity: 0;
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.button-text-go-right {
+    color: black;
+    font-size: 1vw;
+    position: absolute;
+    white-space: nowrap;
+    overflow: hidden;
+    right: 0px;
+    top: 50%;
+    transform: translate(0, -50%);
+    pointer-events: none;
+    opacity: 0;
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+  
+.product-cart-button:hover .button-text-go-left {
+    transform: translate(-100%, -50%);
+    opacity: 1;
+}
+
+.product-wishlist-button:hover .button-text-go-right {
+    transform: translate(100%, -50%);
+    opacity: 1;
+}
+
+.product-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
+}
+
+footer {
+    text-align: center;
+    padding: 10px;
+    position: relative;
+    bottom: 0;
+}
+
+.fade-out {
+    animation: fadeOut 0.5s;
+}
+  
+.fade-in {
+    animation: fadeIn 0.5s;
+}
+  
+@keyframes fadeOut {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+}
+  
+@keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .product-card {
+        width: 100%;
+        height: fit-content;
+        margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .product-card p {
+      font-size: 14px;
+    }
+  
+    .product-wishlist-button, .product-cart-button {
+      font-size: 5vw;
+    }
+  
+    .button-text-go-left, .button-text-go-right {
+      font-size: 3vw;
+    }
+}
+
+@media (max-width: 768px) {
+    .product-delete-button, .product-wishlist-button, .product-cart-button {
+      padding: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .product-card > div {
+      width: 100%;
+      height: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .pagination {
+      font-size: 14px;
+    }
+}
+
+@media (max-width: 768px) {
+    .products-list {
+      margin: 10px;
+      gap: 10px;
+    }
+  
+    footer {
+      padding: 5px;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal-body, .modal-header, .modal-footer {
+      padding: 10px;
+    }
+}

@@ -9,6 +9,7 @@ import LogIn from "./Pages/LogIn.tsx";
 import Verification from "./Pages/Verification.tsx";
 import Cart from "./Pages/Cart.tsx";
 import Dashboard from "./Pages/Dashboard.tsx";
+import Catalog from "./Pages/Catalog.tsx";
 
 
 
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: <Dashboard />,
+  },
+  {
+    path: "/catalog",
+    element: <Catalog />,
   },
   {
     path: "*",
