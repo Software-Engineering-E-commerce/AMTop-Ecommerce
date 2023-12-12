@@ -1,11 +1,9 @@
 package com.example.BackEnd.Controllers;
-
 import com.example.BackEnd.DTO.AuthenticationResponse;
 import com.example.BackEnd.Services.GmailAuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.Map;
 
 @RestController

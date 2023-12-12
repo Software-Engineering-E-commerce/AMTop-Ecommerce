@@ -1,5 +1,4 @@
 package com.example.BackEnd.Services;
-
 import com.example.BackEnd.Config.JwtService;
 import com.example.BackEnd.DTO.CartElement;
 import com.example.BackEnd.Model.*;
@@ -7,7 +6,6 @@ import com.example.BackEnd.Repositories.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -128,7 +126,7 @@ public class CartService {
         Customer customer = getCustomer(token);
         // Then we need to check that he has at least one element in the cart
         List<CustomerCart> customerCarts =  customerCartRepository.findByCustomer_Id(customer.getId());
-        if (customerCarts.isEmpty()){
+        if (customerCarts.size() != 0){
             List<CustomerAddress> customerAddresses = customerAddressRepository.findAllByCustomer_Id(customer.getId());
             // Checking that there's at least one address in the list
             if (!customerAddresses.isEmpty()){
@@ -164,8 +162,8 @@ public class CartService {
         for(CustomerCart customerCart: customerCarts){
             OrderItem orderItem = new OrderItem();
             Product product = customerCart.getProduct();
-            total_cost += ((100.0F - product.getDiscountPercentage())/100.0F)
-                            * product.getPrice() * customerCart.getQuantity();
+            total_cost += ((100.0 - product.getDiscountPercentage())/100.0)
+                    * product.getPrice() * customerCart.getQuantity();
             total_amount += customerCart.getQuantity();
 
             // Let's build OrderItem one at a time
@@ -183,6 +181,7 @@ public class CartService {
         order.setTotalCost(total_cost);
         order.setCustomer(customerCarts.get(0).getCustomer());
         order.setOrderItems(orderItems);
+        order.setStatus("Pending");
         // And now we save the order we just built
         orderRepository.save(order);
         // Then we delete all the products in the cart of this customer
