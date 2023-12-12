@@ -17,6 +17,4 @@ public interface WishListRepository extends JpaRepository<WishList, CustomerProd
 
     // Function to get all the products in the wishlist of the customer given his id
     List<WishList> findByCustomer_Id(Long customerId);
-
-
 }
