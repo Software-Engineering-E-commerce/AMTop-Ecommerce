@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import BobUpWindow from "../Components/BobUpWindow";
-import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
+import { faCircleCheck, faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./Profile.css";
 
@@ -41,9 +41,12 @@ const Profile = () => {
     const [addresses, setAddresses] = useState<string[]>([]);
     const [activeAddresses, setActiveAddresses] = useState<boolean[]>([]);
     const [isCustomer, setIsCustomer] = useState(true);
-    
+    const [updateStatus, setUpdateStatus] = useState<{ success: boolean | null, message: string }>({ success: null, message: '' });
+
     const updatePersonalInfo = async () => {
         // Filter out inactive addresses
+        setUpdateStatus({ success: null, message: '' });
+
         const filteredAddresses = addresses.filter((_, index) => activeAddresses[index]);
         const userInfo = {
             firstName,
@@ -52,17 +55,18 @@ const Profile = () => {
             phoneNumber,
             addresses: filteredAddresses,
         };
-    
+        console.log(userInfo);
+        
         try {
             const response = await axios(
-              `http://localhost:9080/home/updateProfile`,
-              {
+            `http://localhost:9080/home/updateProfile`,
+            {
                 method: "POST",
                 headers: {
-                  'Authorization': `Bearer ${userToken}`,
+                'Authorization': `Bearer ${userToken}`,
                 },
                 data: userInfo
-              }
+            }
             );
             console.log('Update response:', response.data);
             const {...newData } = response.data;
@@ -73,37 +77,15 @@ const Profile = () => {
                 setPhoneNumber(newData.phoneNumber);
                 setAddresses(newData.addresses);
                 setActiveAddresses(newData.addresses.map(() => true)); // Set all active since backend returned them
-                <BobUpWindow>
-                    <p style={{ color: "green" }}>
-                    <FontAwesomeIcon
-                        icon={faCircleCheck}
-                        style={{
-                        color: "green",
-                        fontSize: "18px",
-                        marginRight: "10px",
-                        }}
-                    />
-                        Your data have updated successfully 
-                    </p>
-                </BobUpWindow>
+
+                setUpdateStatus({ success: true, message: "Your data have been updated successfully" });
             }else{
-                <BobUpWindow>
-                    <p style={{ color: "green" }}>
-                    <FontAwesomeIcon
-                        icon={faCircleCheck}
-                        style={{
-                        color: "red",
-                        fontSize: "18px",
-                        marginRight: "10px",
-                        }}
-                    />
-                        Your data was not updated, Please try again
-                    </p>
-                </BobUpWindow>
+                setUpdateStatus({ success: false, message: "Your data was not updated, Please try again" });
             }
             // Update state with the new data
         } catch (error) {
             console.error('Error updating personal info:', error);
+            setUpdateStatus({ success: false, message: "An error occurred while updating your profile" });
         }
     };    
 
@@ -111,7 +93,7 @@ const Profile = () => {
         if (userToken) {
           sendTokenToBackend(userToken)
             .then(data => {
-              if (data !== "failed") {
+              if (data !== null) {
                 setFirstName(data.firstName);
                 setLastName(data.lastName);
                 setPhoneNumber(data.phoneNumber);
@@ -138,10 +120,12 @@ const Profile = () => {
 
     // Function to add a new address
     const addAddress = () => {
-        setAddresses(prevAddresses => [...prevAddresses, '']);
-        setActiveAddresses(prevActive => [...prevActive, true]); 
+        if (isCustomer || (!isCustomer && addresses.length === 0)) {
+            setAddresses(prevAddresses => [...prevAddresses, '']);
+            setActiveAddresses(prevActive => [...prevActive, true]);
+        }
     };
-
+    
     // Function to delete an address
     const deleteAddress = (index: number) => {
         // Remove the address at the given index
@@ -182,7 +166,7 @@ const Profile = () => {
                     <div className="input-group">
                         <label htmlFor="contactPhone">Contact phone</label>
                         <input 
-                            type="contactPhone" id="contactPhone" placeholder="Set contactPhone Address" value={contactPhone}
+                            type="tel" id="contactPhone" placeholder="Set contactPhone Address" value={contactPhone}
                             onChange={(e) => setContactPhone(e.target.value)} />
                     </div>
                 )}
@@ -200,12 +184,23 @@ const Profile = () => {
                             </div>
                         )
                     ))}
-                    {isCustomer && (
+                    {(isCustomer || addresses.length < 1) && (
                         <button className="btn add-btn" onClick={addAddress}>Add Address</button>
                     )}
                 </div>
                 <button className="btn update-btn" onClick={updatePersonalInfo}>Update Personal Info</button>
             </div>
+            {updateStatus.success !== null && (
+                <BobUpWindow>
+                    <p style={{ color: updateStatus.success ? "green" : "red" }}>
+                        <FontAwesomeIcon
+                            icon={updateStatus.success ? faCircleCheck : faCircleXmark}
+                            style={{ color: updateStatus.success ? "green" : "red", fontSize: "18px", marginRight: "10px" }}
+                        />
+                        {updateStatus.message}
+                    </p>
+                </BobUpWindow>
+            )}
         </>
     );
 };
