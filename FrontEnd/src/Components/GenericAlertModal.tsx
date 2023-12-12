@@ -3,15 +3,15 @@ import { Modal, Button } from "react-bootstrap";
 
 interface GenericAlertModalProps {
   show: boolean;
-  onClose: () => void;
-  resetResponseData: () => void;
+  onClose?: () => void;
+  resetResponseData?: () => void;
   body: ReactNode;
 }
 
 const GenericAlertModal = ({show,onClose,resetResponseData,body}:GenericAlertModalProps) => {
   const handleClose = () =>{
-    resetResponseData();
-    onClose();
+    resetResponseData!();
+    onClose!();
   }
 
   return (

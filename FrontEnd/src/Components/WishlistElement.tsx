@@ -1,56 +1,65 @@
 import React, { useState } from "react";
+import "./WishlishtElement.css";
 import "./cartElement.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleCheck, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faTrash,
+  faCartPlus,
+  faCircleCheck,
+} from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import GenericAlertModal from "./GenericAlertModal";
 
-interface CartElementProps {
-  cartElement: CartElement;
-  causeRemountCart: () => void;
+interface WishlistElementProps {
+  wishlistElement: WishlistElement;
+  causeRemountWishlist: () => void;
 }
 
-const CartElement = ({ cartElement, causeRemountCart }: CartElementProps) => {
+const WishlistElement = ({
+  wishlistElement,
+  causeRemountWishlist,
+}: WishlistElementProps) => {
   const [responseData, setResponseData] = useState("");
-  const [Qnty, setQnty] = useState(cartElement.quantity);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Allow only numeric values and limit to three digits
-    let numericValue = e.target.value.replace(/[^0-9]/g, "");
-
-    // Remove leading zeros for numbers with more than one digit
-    numericValue = numericValue.replace(/^0+/, "");
-
-    // Limit to three digits
-    numericValue = numericValue.slice(0, 3);
-
-    setQnty(numericValue == "" ? 0 : parseInt(numericValue, 10));
-  };
-
-  const handleUpdateQuantity = async () => {
-    const q = Qnty; // const instance of Qnty
-    const url = `http://localhost:9080/cart/setQuantity?quantity=${q}`;
-    let cartRequest: CartRequest = { productId: cartElement.id };
+  const handleDeleteFromWhishlist = async () => {
+    const url = `http://localhost:9080/wishlist/delete?productId=${wishlistElement.id}`;
     try {
-      const response = await axios.post(url, cartRequest, {
+      await axios.delete(url, {
         headers: {
-          Authorization: `Bearer ${cartElement.token}`,
+          Authorization: `Bearer ${wishlistElement.token}`,
           "Content-Type": "application/json",
         },
       });
-
-      setResponseData(response.data);
+      // Here means that the response is OK and the product's been deleted successfully
+      causeRemountWishlist();
     } catch (error) {
-      console.error(error);
+      // Handle errors here (non-OK responses)
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as import("axios").AxiosError;
+        if (axiosError.response) {
+          // Here means that a non-okay reponse has come
+          console.error("Response data:", axiosError.response.data);
+          console.error("Response status:", axiosError.response.status);
+          setResponseData(axiosError.response.data as string);
+        } else if (axiosError.request) {
+          console.error("No response received:", axiosError.request);
+        } else {
+          console.error("Error:", axiosError.message);
+        }
+      } else {
+        // Handle non-Axios errors
+        console.error("Non-Axios error:", error);
+      }
     }
   };
 
-  const handleDeleteFromCart = async () => {
-    const url = `http://localhost:9080/cart/delete?productId=${cartElement.id}`;
+  const handleAddToCart = async () => {
+    const url = `http://localhost:9080/wishlist/addToCart`;
+    let wishlistRequest: WishlistRequest = { productId: wishlistElement.id };
     try {
-      const response = await axios.delete(url, {
+      let response = await axios.post(url, wishlistRequest, {
         headers: {
-          Authorization: `Bearer ${cartElement.token}`,
+          Authorization: `Bearer ${wishlistElement.token}`,
           "Content-Type": "application/json",
         },
       });
@@ -83,13 +92,12 @@ const CartElement = ({ cartElement, causeRemountCart }: CartElementProps) => {
   return (
     <>
       {responseData !== "" &&
-        (responseData === "Product is deleted successfully from the cart" ||
-          responseData === "Quantity is set successfully for this product") && (
+        responseData === "Product added successfully to your cart" && (
           <>
             <GenericAlertModal
               show={true}
               resetResponseData={resetResponseData}
-              onClose={causeRemountCart}
+              onClose={causeRemountWishlist}
               body={
                 <>
                   <h5 style={{ color: "green" }}>
@@ -109,13 +117,12 @@ const CartElement = ({ cartElement, causeRemountCart }: CartElementProps) => {
           </>
         )}
       {responseData !== "" &&
-        responseData !== "Product is deleted successfully from the cart" &&
-        responseData !== "Quantity is set successfully for this product" && (
+        responseData != "Product added successfully to your cart" && (
           <>
             <GenericAlertModal
               show={true}
               resetResponseData={resetResponseData}
-              onClose={causeRemountCart}
+              onClose={causeRemountWishlist}
               body={
                 <>
                   <h5 style={{ color: "red" }}>{responseData}</h5>
@@ -124,60 +131,49 @@ const CartElement = ({ cartElement, causeRemountCart }: CartElementProps) => {
             />
           </>
         )}
-
       <div className="col-12 product">
         <div className="col-3 imageDiv">
-          <img src={cartElement.imageLink} alt="productImage" />
+          <img src={wishlistElement.imageLink} alt="productImage" />
         </div>
 
         <div
           className="col-7 middleDiv"
-          style={{ backgroundColor: "transparent", paddingLeft: "10px" }}
+          style={{ paddingLeft: "10px", backgroundColor: "transparent" }}
         >
           <div className="seperator"></div>
           <div className="productName">
-            <h3>{cartElement.productName}</h3>
+            <h3>{wishlistElement.productName}</h3>
           </div>
           <div
             className="description"
             style={{ fontWeight: "450", maxWidth: "90%" }}
           >
-            {cartElement.description}
+            {wishlistElement.description}
           </div>
 
           <div className="qty_and_delete">
-            <div className="qty">
-              <label htmlFor="numericQty" style={{ fontWeight: "500" }}>
-                Qty:
-              </label>
-
-              <input
-                type="text"
-                id="numericQty"
-                style={{ fontWeight: "500" }}
-                value={Qnty}
-                onChange={handleInputChange}
-              />
-
-              <button
-                type="button"
-                onClick={handleUpdateQuantity}
-                className="update-qty"
-                style={{ fontWeight: "500", padding: "3px" }}
-              >
-                Update
-              </button>
-
-              <div className="vertical-line"></div>
-            </div>
-
-            <button className="delete" onClick={handleDeleteFromCart}>
+            <button
+              className="delete-from-wishlist"
+              onClick={handleDeleteFromWhishlist}
+            >
               <FontAwesomeIcon
                 icon={faTrash}
                 style={{
                   padding: "10px",
                   color: "red",
-                  fontSize: "28px",
+                  fontSize: "30px",
+                }}
+              />
+            </button>
+
+            <div className="vertical-line"></div>
+            <button className="add-to-cart" onClick={handleAddToCart}>
+              <FontAwesomeIcon
+                icon={faCartPlus}
+                style={{
+                  padding: "10px",
+                  color: "green",
+                  fontSize: "30px",
                 }}
               />
             </button>
@@ -185,7 +181,7 @@ const CartElement = ({ cartElement, causeRemountCart }: CartElementProps) => {
         </div>
 
         <div className="col-2 priceDiv">
-          {cartElement.discountPercentage !== 0 && (
+          {wishlistElement.discountPercentage !== 0 && (
             <>
               <div className="the-whole-price">
                 <div className="originalPrice">
@@ -197,26 +193,26 @@ const CartElement = ({ cartElement, causeRemountCart }: CartElementProps) => {
                       textDecoration: "line-through",
                     }}
                   >
-                    ${cartElement.price}
+                    ${wishlistElement.price}
                   </h5>
                 </div>
                 <div className="discountPrice">
                   <h5 style={{ fontWeight: "650", marginLeft: "10px" }}>
                     $
                     {(
-                      ((100.0 - cartElement.discountPercentage) / 100) *
-                      cartElement.price
+                      ((100.0 - wishlistElement.discountPercentage) / 100) *
+                      wishlistElement.price
                     ).toFixed(2)}
                   </h5>
                 </div>
               </div>
             </>
           )}
-          {cartElement.discountPercentage === 0 && (
+          {wishlistElement.discountPercentage === 0 && (
             <>
               <div className="the-whole-price">
                 <h5 style={{ fontWeight: "650", marginLeft: "10px" }}>
-                  ${cartElement.price}
+                  ${wishlistElement.price}
                 </h5>
               </div>
             </>
@@ -228,4 +224,4 @@ const CartElement = ({ cartElement, causeRemountCart }: CartElementProps) => {
   );
 };
 
-export default CartElement;
+export default WishlistElement;
