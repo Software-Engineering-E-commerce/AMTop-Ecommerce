@@ -2,12 +2,18 @@ package com.example.BackEnd.DTO;
 
 import com.example.BackEnd.Model.Category;
 import com.example.BackEnd.Model.Review;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class CustomerProduct {
     private Long id;
     private String productName;
