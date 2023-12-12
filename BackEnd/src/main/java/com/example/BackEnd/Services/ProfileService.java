@@ -59,7 +59,7 @@ public class ProfileService {
                 user.setAddresses(customerAddresses);
                 customerRepository.save(user);
 
-                return "Your Customer Information was updated successfully";
+                return "Updated Successfully";
             }
 
             // ... handle Admin case ...
