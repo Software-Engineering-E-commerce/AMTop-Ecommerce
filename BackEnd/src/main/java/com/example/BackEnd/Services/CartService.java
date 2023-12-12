@@ -166,6 +166,11 @@ public class CartService {
                     * product.getPrice() * customerCart.getQuantity();
             total_amount += customerCart.getQuantity();
 
+            // Here we need to decrement the availability count of this product by the quantity
+            // And as well increment the amount sold of this product by the quantity
+            product.setProductSoldCount(product.getProductSoldCount() + customerCart.getQuantity());
+            product.setProductCountAvailable(product.getProductCountAvailable() - customerCart.getQuantity());
+
             // Let's build OrderItem one at a time
             orderItem.setOrder(order);
             orderItem.setProduct(product);
