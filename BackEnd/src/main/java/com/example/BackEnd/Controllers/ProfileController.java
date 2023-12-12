@@ -22,7 +22,7 @@ public class ProfileController {
             String email = jwtService.extractUsername(token);
             return ResponseEntity.ok(service.retrieveData(email));
         } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new UserProfileDTO());
+            return null;
         }
     }
 

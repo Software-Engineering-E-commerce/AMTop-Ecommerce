@@ -19,24 +19,20 @@ public class ProfileService {
     private final CustomerAddressRepository customerAddressRepository;
     @Transactional
     public UserProfileDTO retrieveData(String email) {
-        try {
-            // First, try to find the user in the CustomerRepository
-            Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
-            if (optionalCustomer.isPresent()) {
-                Customer user = optionalCustomer.get();
-                return mapToCustomerProfileDTO(user);
-            }
-            // If not found, try to find the user in the AdminRepository
-            Optional<Admin> optionalAdmin = adminRepository.findByEmail(email);
-            if (optionalAdmin.isPresent()) {
-                Admin user = optionalAdmin.get();
-                return mapToAdminProfileDTO(user);
-            }
-            // If no user is found, throw an exception
-            return null;
-        } catch (Exception e) {
-            throw new RuntimeException("Error retrieving user data for email: " + email, e);
+        // First, try to find the user in the CustomerRepository
+        Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
+        if (optionalCustomer.isPresent()) {
+            Customer user = optionalCustomer.get();
+            return mapToCustomerProfileDTO(user);
         }
+        // If not found, try to find the user in the AdminRepository
+        Optional<Admin> optionalAdmin = adminRepository.findByEmail(email);
+        if (optionalAdmin.isPresent()) {
+            Admin user = optionalAdmin.get();
+            return mapToAdminProfileDTO(user);
+        }
+        // If no user is found
+        return null;
     }
 
     public String updateData(UserProfileDTO userProfileDTO, String email){
@@ -75,11 +71,13 @@ public class ProfileService {
                 user.setPhoneNumber(userProfileDTO.getPhoneNumber());
                 if(userProfileDTO.getAddresses().size() > 0){
                     user.setAddress(userProfileDTO.getAddresses().get(0));
+                }else{
+                    user.setAddress(null);
                 }
                 user.setContactPhone(userProfileDTO.getContactPhone());
                 adminRepository.save(user);
 
-                return "Your Admin Information was updated successfully";
+                return "Updated Successfully";
             }
             
             return "User not found with email: " + email;
