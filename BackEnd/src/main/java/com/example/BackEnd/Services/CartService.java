@@ -1,5 +1,4 @@
 package com.example.BackEnd.Services;
-
 import com.example.BackEnd.Config.JwtService;
 import com.example.BackEnd.DTO.CartElement;
 import com.example.BackEnd.Model.*;
@@ -31,7 +30,6 @@ public class CartService {
     }
 
     // Convert CustomerCart entity to CartElement DTO
-    @Transactional
     public CartElement convertToCartElement(CustomerCart customerCart, String token) {
         return CartElement.builder()
                 .id(customerCart.getProduct().getId())
@@ -72,22 +70,24 @@ public class CartService {
     // Setting a new quantity of a product in the customer's cart
     @Transactional
     public void setQuantity(String token, Long productID, int quantity){
-        Customer customer = getCustomer(token); //the customer is verified to exist when adding to the cart
+        Customer customer = getCustomer(token); // The customer is verified to exist when adding to the cart
         if(customerCartRepository.existsByCustomerAndProduct_Id(customer,productID)){
             // The product is in the cart
-            Optional<Product> product = productRepository.findProductById(productID); //there's at least one item of that product (tested in addToCart)
-            if(product.get().getProductCountAvailable() < quantity){
-                // Desired exceeds the available
-                throw new IllegalStateException("Sorry, the requested quantity exceeds the available count for this product");
-            }else{
-                // Here we can set the new quantity
-                Optional<CustomerCart> customerCart = customerCartRepository.findByCustomerAndProduct_Id(customer,productID);
-                customerCart.ifPresent(cartEntry -> {
-                    // Update the quantity
-                    cartEntry.setQuantity(quantity);
-                    // Set the updated entry to the DB
-                    customerCartRepository.save(cartEntry);
-                });
+            Optional<Product> product = productRepository.findProductById(productID); // There's at least one item of that product (tested in addToCart)
+            if (product.isPresent()){
+                if(product.get().getProductCountAvailable() < quantity){
+                    // Desired exceeds the available
+                    throw new IllegalStateException("Sorry, the requested quantity exceeds the available count for this product");
+                }else{
+                    // Here we can set the new quantity
+                    Optional<CustomerCart> customerCart = customerCartRepository.findByCustomerAndProduct_Id(customer,productID);
+                    customerCart.ifPresent(cartEntry -> {
+                        // Update the quantity
+                        cartEntry.setQuantity(quantity);
+                        // Set the updated entry to the DB
+                        customerCartRepository.save(cartEntry);
+                    });
+                }
             }
         }else{
             //product not in the cart
