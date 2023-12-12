@@ -6,7 +6,6 @@ import com.example.BackEnd.Repositories.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +29,7 @@ public class CartService {
     }
 
     // Convert CustomerCart entity to CartElement DTO
+    @Transactional
     public CartElement convertToCartElement(CustomerCart customerCart, String token) {
         return CartElement.builder()
                 .id(customerCart.getProduct().getId())
@@ -70,24 +70,22 @@ public class CartService {
     // Setting a new quantity of a product in the customer's cart
     @Transactional
     public void setQuantity(String token, Long productID, int quantity){
-        Customer customer = getCustomer(token); // The customer is verified to exist when adding to the cart
+        Customer customer = getCustomer(token); //the customer is verified to exist when adding to the cart
         if(customerCartRepository.existsByCustomerAndProduct_Id(customer,productID)){
             // The product is in the cart
-            Optional<Product> product = productRepository.findProductById(productID); // There's at least one item of that product (tested in addToCart)
-            if (product.isPresent()){
-                if(product.get().getProductCountAvailable() < quantity){
-                    // Desired exceeds the available
-                    throw new IllegalStateException("Sorry, the requested quantity exceeds the available count for this product");
-                }else{
-                    // Here we can set the new quantity
-                    Optional<CustomerCart> customerCart = customerCartRepository.findByCustomerAndProduct_Id(customer,productID);
-                    customerCart.ifPresent(cartEntry -> {
-                        // Update the quantity
-                        cartEntry.setQuantity(quantity);
-                        // Set the updated entry to the DB
-                        customerCartRepository.save(cartEntry);
-                    });
-                }
+            Optional<Product> product = productRepository.findProductById(productID); //there's at least one item of that product (tested in addToCart)
+            if(product.get().getProductCountAvailable() < quantity){
+                // Desired exceeds the available
+                throw new IllegalStateException("Sorry, the requested quantity exceeds the available count for this product");
+            }else{
+                // Here we can set the new quantity
+                Optional<CustomerCart> customerCart = customerCartRepository.findByCustomerAndProduct_Id(customer,productID);
+                customerCart.ifPresent(cartEntry -> {
+                    // Update the quantity
+                    cartEntry.setQuantity(quantity);
+                    // Set the updated entry to the DB
+                    customerCartRepository.save(cartEntry);
+                });
             }
         }else{
             //product not in the cart
@@ -128,7 +126,7 @@ public class CartService {
         Customer customer = getCustomer(token);
         // Then we need to check that he has at least one element in the cart
         List<CustomerCart> customerCarts =  customerCartRepository.findByCustomer_Id(customer.getId());
-        if (customerCarts.isEmpty()){
+        if (customerCarts.size() != 0){
             List<CustomerAddress> customerAddresses = customerAddressRepository.findAllByCustomer_Id(customer.getId());
             // Checking that there's at least one address in the list
             if (!customerAddresses.isEmpty()){
@@ -164,8 +162,8 @@ public class CartService {
         for(CustomerCart customerCart: customerCarts){
             OrderItem orderItem = new OrderItem();
             Product product = customerCart.getProduct();
-            total_cost += ((100.0F - product.getDiscountPercentage())/100.0F)
-                            * product.getPrice() * customerCart.getQuantity();
+            total_cost += ((100.0 - product.getDiscountPercentage())/100.0)
+                    * product.getPrice() * customerCart.getQuantity();
             total_amount += customerCart.getQuantity();
 
             // Let's build OrderItem one at a time
@@ -183,6 +181,7 @@ public class CartService {
         order.setTotalCost(total_cost);
         order.setCustomer(customerCarts.get(0).getCustomer());
         order.setOrderItems(orderItems);
+        order.setStatus("Pending");
         // And now we save the order we just built
         orderRepository.save(order);
         // Then we delete all the products in the cart of this customer
