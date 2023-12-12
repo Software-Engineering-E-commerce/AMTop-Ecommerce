@@ -80,8 +80,8 @@ public class WishlistService {
     // Removing the product from the customer's wishlist and adding it to his cart
     @Transactional
     public void addToCart(String token, Long productId) throws IllegalAccessException {
-        deleteFromWishlist(token, productId);
         cartService.addToCart(token,productId);
+        deleteFromWishlist(token, productId);
     }
 
     // Getting all the wishlist elements
