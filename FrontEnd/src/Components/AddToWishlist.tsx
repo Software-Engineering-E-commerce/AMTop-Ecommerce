@@ -8,9 +8,15 @@ interface Props {
   userTok: string;
   productId: number;
   setInWishlistBoolean: React.Dispatch<React.SetStateAction<boolean>>;
+  onCloseBobUp: () => void;
 }
 
-const AddToWishlist = ({ userTok, productId, setInWishlistBoolean }: Props) => {
+const AddToWishlist = ({
+  userTok,
+  productId,
+  setInWishlistBoolean,
+  onCloseBobUp,
+}: Props) => {
   const isMounted = useRef(true);
   const [responseData, setResponseData] = useState("");
 
@@ -108,7 +114,8 @@ const AddToWishlist = ({ userTok, productId, setInWishlistBoolean }: Props) => {
         responseData ===
           "Product is deleted successfully from the wishlist") && (
         <GenericAlertModal
-          onConfirm={resetResponseData}
+          onClose={onCloseBobUp}
+          resetResponseData={resetResponseData}
           show={true}
           body={
             <>
@@ -132,7 +139,8 @@ const AddToWishlist = ({ userTok, productId, setInWishlistBoolean }: Props) => {
         responseData !==
           "Product is deleted successfully from the wishlist" && (
           <GenericAlertModal
-            onConfirm={resetResponseData}
+            onClose={onCloseBobUp}
+            resetResponseData={resetResponseData}
             show={true}
             body={
               <>
