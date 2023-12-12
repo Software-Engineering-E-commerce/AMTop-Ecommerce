@@ -4,6 +4,8 @@ import com.example.BackEnd.Config.JwtService;
 import com.example.BackEnd.DTO.UserProfileDTO;
 import com.example.BackEnd.Services.ProfileService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,25 +16,25 @@ public class ProfileController {
     private final JwtService jwtService;
 
     @GetMapping("/home/profile")
-    public UserProfileDTO retrieve(@RequestHeader("Authorization") String authorizationHeader){
+    public ResponseEntity<UserProfileDTO> retrieve(@RequestHeader("Authorization") String authorizationHeader){
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String token = authorizationHeader.substring(7); // Skip "Bearer " prefix
             String email = jwtService.extractUsername(token);
-            return service.retrieveData(email);
+            return ResponseEntity.ok(service.retrieveData(email));
         } else {
-            throw new IllegalArgumentException("Authorization header doesn't exist or is in the wrong format");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new UserProfileDTO());
         }
     }
 
     @PostMapping("/home/updateProfile")
-    public String updateData(@RequestHeader("Authorization") String authorizationHeader,
+    public ResponseEntity<String> updateData(@RequestHeader("Authorization") String authorizationHeader,
                                      @RequestBody UserProfileDTO userProfileDTO) {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String token = authorizationHeader.substring(7); // Skip "Bearer " prefix
             String email = jwtService.extractUsername(token);
-            return service.updateData(userProfileDTO, email);
+            return ResponseEntity.ok(service.updateData(userProfileDTO ,email));
         } else {
-            throw new IllegalArgumentException("Authorization header doesn't exist or is in the wrong format");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied");
         }
     }
 }

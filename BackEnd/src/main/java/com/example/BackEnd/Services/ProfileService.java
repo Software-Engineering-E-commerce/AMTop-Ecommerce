@@ -18,24 +18,27 @@ public class ProfileService {
     private final CustomerRepository customerRepository;
     private final CustomerAddressRepository customerAddressRepository;
     @Transactional
-    public UserProfileDTO retrieveData(String email){
-        // First, try to find the user in the CustomerRepository
-        Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
-        if (optionalCustomer.isPresent()) {
-            Customer user = optionalCustomer.get();
-            return mapToCustomerProfileDTO(user);
+    public UserProfileDTO retrieveData(String email) {
+        try {
+            // First, try to find the user in the CustomerRepository
+            Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
+            if (optionalCustomer.isPresent()) {
+                Customer user = optionalCustomer.get();
+                return mapToCustomerProfileDTO(user);
+            }
+            // If not found, try to find the user in the AdminRepository
+            Optional<Admin> optionalAdmin = adminRepository.findByEmail(email);
+            if (optionalAdmin.isPresent()) {
+                Admin user = optionalAdmin.get();
+                return mapToAdminProfileDTO(user);
+            }
+            // If no user is found, throw an exception
+            return null;
+        } catch (Exception e) {
+            throw new RuntimeException("Error retrieving user data for email: " + email, e);
         }
-
-        // If not found, try to find the user in the AdminRepository
-        Optional<Admin> optionalAdmin = adminRepository.findByEmail(email);
-        if (optionalAdmin.isPresent()) {
-            Admin user = optionalAdmin.get();
-            return mapToAdminProfileDTO(user);
-        }
-
-        // If no user is found, throw an exception
-        throw new Error("User not found with email: " + email);
     }
+
     public String updateData(UserProfileDTO userProfileDTO, String email){
         try {
             Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
@@ -60,7 +63,7 @@ public class ProfileService {
                 user.setAddresses(customerAddresses);
                 customerRepository.save(user);
 
-                return "Your Customer Information updated successfully";
+                return "Your Customer Information was updated successfully";
             }
 
             // ... handle Admin case ...
@@ -70,13 +73,16 @@ public class ProfileService {
                 user.setFirstName(userProfileDTO.getFirstName());
                 user.setLastName(userProfileDTO.getLastName());
                 user.setPhoneNumber(userProfileDTO.getPhoneNumber());
-                user.setAddress(userProfileDTO.getAddresses().get(0));
+                if(userProfileDTO.getAddresses().size() > 0){
+                    user.setAddress(userProfileDTO.getAddresses().get(0));
+                }
                 user.setContactPhone(userProfileDTO.getContactPhone());
                 adminRepository.save(user);
 
-                return "Your Admin Information updated successfully";
+                return "Your Admin Information was updated successfully";
             }
-            throw new Error("User not found with email: " + email);
+            
+            return "User not found with email: " + email;
         } catch (Exception e) {
             return "An error occurred\nPlease try again";
         }
