@@ -9,8 +9,7 @@ import LogIn from "./Pages/LogIn.tsx";
 import Verification from "./Pages/Verification.tsx";
 import Cart from "./Pages/Cart.tsx";
 import Dashboard from "./Pages/Dashboard.tsx";
-
-
+import Wishlist from "./Pages/Wishlist.tsx";
 
 const router = createBrowserRouter([
   {
@@ -28,6 +27,10 @@ const router = createBrowserRouter([
   {
     path: "/cart",
     element: <Cart />,
+  },
+  {
+    path: "/wishlist",
+    element: <Wishlist />,
   },
   {
     path: "/login",
