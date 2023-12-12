@@ -1,16 +1,30 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
+import BobUpWindow from "../Components/BobUpWindow";
+import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./Profile.css";
 
 const sendTokenToBackend = async (token: string) => {
-    try {
-        const response = await axios.post('http://localhost:9080/home/profile', { token });
-        console.log('Response from backend:', response.data);
-        return response.data;
-    } catch (error) {
-        console.error('Error sending token to backend:', error);
-    }
+    const retrieveData = async () => {
+        try {
+            const response = await axios(
+                `http://localhost:9080/home/profile`,
+                {
+                    method: "GET",
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                }
+            );
+            return response.data;
+        } catch (error) {
+            console.log("Error: Data not found");
+            return "failed";
+        }
+    };
+    return retrieveData();
 };
 
 
@@ -19,85 +33,123 @@ const Profile = () => {
     const initialToken = location.state?.userToken || '';
     
     // Define the state variables
-    const [userToken, setUserToken] = useState(initialToken);
-    
-    // Define the state variables
+    const [userToken] = useState(initialToken);
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
-    const [email, setEmail] = useState('');
+    const [contactPhone, setContactPhone] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
-    const [addresses, setAddresses] = useState(['', '', '']);
-    const [activeAddresses, setActiveAddresses] = useState([false, false, false]);
-
+    const [addresses, setAddresses] = useState<string[]>([]);
+    const [activeAddresses, setActiveAddresses] = useState<boolean[]>([]);
+    const [isCustomer, setIsCustomer] = useState(true);
+    
     const updatePersonalInfo = async () => {
         // Filter out inactive addresses
-        const activeAddresses: string[] = addresses.filter((_, index) => activeAddresses[index]);
-    
+        const filteredAddresses = addresses.filter((_, index) => activeAddresses[index]);
         const userInfo = {
             firstName,
             lastName,
-            email,
+            contactPhone,
             phoneNumber,
-            addresses: activeAddresses,
+            addresses: filteredAddresses,
         };
     
         try {
-            const response = await axios.post('http://localhost:9080/home/updateProfile', {
-                token: userToken,
-                ...userInfo
-            });
+            const response = await axios(
+              `http://localhost:9080/home/updateProfile`,
+              {
+                method: "POST",
+                headers: {
+                  'Authorization': `Bearer ${userToken}`,
+                },
+                data: userInfo
+              }
+            );
             console.log('Update response:', response.data);
-            const { newToken, ...newData } = response.data;
-    
-            // Update state with the new data
-            setFirstName(newData.firstName);
-            setLastName(newData.lastName);
-            setEmail(newData.email);
-            setPhoneNumber(newData.phoneNumber);
-            setAddresses(newData.addresses);
-            setActiveAddresses(newData.addresses.map(() => true)); // Set all active since backend returned them
-    
-            if (newToken && newToken !== userToken) {
-                setUserToken(newToken);
+            const {...newData } = response.data;
+            if (response.status === 200){
+                setFirstName(newData.firstName);
+                setLastName(newData.lastName);
+                setContactPhone(newData.contactPhone);
+                setPhoneNumber(newData.phoneNumber);
+                setAddresses(newData.addresses);
+                setActiveAddresses(newData.addresses.map(() => true)); // Set all active since backend returned them
+                <BobUpWindow>
+                    <p style={{ color: "green" }}>
+                    <FontAwesomeIcon
+                        icon={faCircleCheck}
+                        style={{
+                        color: "green",
+                        fontSize: "18px",
+                        marginRight: "10px",
+                        }}
+                    />
+                        Your data have updated successfully 
+                    </p>
+                </BobUpWindow>
+            }else{
+                <BobUpWindow>
+                    <p style={{ color: "green" }}>
+                    <FontAwesomeIcon
+                        icon={faCircleCheck}
+                        style={{
+                        color: "red",
+                        fontSize: "18px",
+                        marginRight: "10px",
+                        }}
+                    />
+                        Your data was not updated, Please try again
+                    </p>
+                </BobUpWindow>
             }
+            // Update state with the new data
         } catch (error) {
             console.error('Error updating personal info:', error);
         }
-    };
-    
+    };    
+
     useEffect(() => {
         if (userToken) {
-            sendTokenToBackend(userToken)
+          sendTokenToBackend(userToken)
             .then(data => {
+              if (data !== "failed") {
                 setFirstName(data.firstName);
                 setLastName(data.lastName);
-                setEmail(data.email);
                 setPhoneNumber(data.phoneNumber);
-                setAddresses(data.addresses);
-                setActiveAddresses(data.addresses.map(() => true)); // Set all active since backend returned them
+                setIsCustomer(data.isCustomer);
+                if (data.addresses) {
+                  setAddresses(data.addresses);
+                  setActiveAddresses(data.addresses.map(() => true));
+                } else {
+                  // Handle case where no addresses are returned
+                  setAddresses([]);
+                  setActiveAddresses([]);
+                }
+              } else {
+                console.error('Failed to fetch data');
+              }
             })
             .catch(error => {
-                console.error('Error fetching data:', error);
+              console.error('Error fetching data:', error);
             });
         }
-    }, []);
+      }, [userToken]);
+      
     
-
-
-    const maxAddresses = 3; // Set the maximum number of addresses
 
     // Function to add a new address
     const addAddress = () => {
-        const index = activeAddresses.indexOf(false);
-        if (index !== -1) {
-            setActiveAddresses(activeAddresses.map((active, idx) => idx === index ? true : active));
-        }
+        setAddresses(prevAddresses => [...prevAddresses, '']);
+        setActiveAddresses(prevActive => [...prevActive, true]); 
     };
 
     // Function to delete an address
     const deleteAddress = (index: number) => {
-        setActiveAddresses(activeAddresses.map((active, idx) => idx === index ? false : active));
-        setAddresses(addresses.map((address, idx) => idx === index ? '' : address));
+        // Remove the address at the given index
+        const updatedAddresses = addresses.filter((_, idx) => idx !== index);
+        const updatedActiveAddresses = activeAddresses.filter((_, idx) => idx !== index);
+        
+        setAddresses(updatedAddresses);
+        setActiveAddresses(updatedActiveAddresses);
     };
     return (
         <>
@@ -118,12 +170,6 @@ const Profile = () => {
                         onChange={(e) => setLastName(e.target.value)} />
                 </div>
 
-                <div className="input-group">
-                    <label htmlFor="email">Email Address</label>
-                    <input 
-                        type="email" id="email" placeholder="Set Email Address" value={email}
-                        onChange={(e) => setEmail(e.target.value)} />
-                </div>
 
                 <div className="input-group">
                     <label htmlFor="phone">Phone Number</label>
@@ -132,8 +178,17 @@ const Profile = () => {
                         onChange={(e) => setPhoneNumber(e.target.value)} />
                 </div>
 
+                {!isCustomer && (
+                    <div className="input-group">
+                        <label htmlFor="contactPhone">Contact phone</label>
+                        <input 
+                            type="contactPhone" id="contactPhone" placeholder="Set contactPhone Address" value={contactPhone}
+                            onChange={(e) => setContactPhone(e.target.value)} />
+                    </div>
+                )}
+
                 <div className="addresses-container">
-                    <label className="address-label">Addresses</label>
+                    {addresses.length > 0 && (<h2 className="addresses-title">Your Addresses</h2>)}
                     {addresses.map((address, index) => (
                         activeAddresses[index] && (
                             <div className="address" key={index}>
@@ -145,7 +200,7 @@ const Profile = () => {
                             </div>
                         )
                     ))}
-                    {activeAddresses.includes(false) && (
+                    {isCustomer && (
                         <button className="btn add-btn" onClick={addAddress}>Add Address</button>
                     )}
                 </div>
