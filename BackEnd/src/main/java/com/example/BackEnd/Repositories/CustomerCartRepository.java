@@ -15,6 +15,8 @@ public interface CustomerCartRepository extends JpaRepository<CustomerCart, Cust
 
     Optional<CustomerCart> findByCustomerAndProduct_Id(Customer customer, Long productId);
 
+    Optional<CustomerCart> findByCustomer_IdAndProduct_Id(Long customerId, Long productId);
+
     // Check if a specific product exists in the customer's cart
     boolean existsByCustomerAndProduct_Id(Customer customer, Long productId);
 
