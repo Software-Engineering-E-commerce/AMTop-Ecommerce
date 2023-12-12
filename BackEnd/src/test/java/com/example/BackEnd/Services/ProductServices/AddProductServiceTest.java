@@ -1,10 +1,11 @@
-package com.example.BackEnd.Services;
+package com.example.BackEnd.Services.ProductServices;
 
 import com.example.BackEnd.DTO.ProductDTO;
 import com.example.BackEnd.Model.Category;
 import com.example.BackEnd.Model.Product;
 import com.example.BackEnd.Repositories.CategoryRepository;
 import com.example.BackEnd.Repositories.ProductRepository;
+import com.example.BackEnd.Services.ImageService;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,23 +19,27 @@ import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
-class ProductServiceTest {
+class AddProductServiceTest {
 
     @Mock
     private ProductRepository productRepository;
-
     @Mock
     private ImageService imageService;
-
     @Mock
     private CategoryRepository categoryRepository;
-
     @InjectMocks
-    private ProductService productService;
+    private AddProductService addProductService;
+
+    @Test
+    public void testSuccessMessage() {
+        assertEquals("Product added successfully", addProductService.getSuccessMessage());
+    }
 
     @Test
     @Transactional
@@ -60,7 +65,7 @@ class ProductServiceTest {
         when(imageService.saveImage(any(), any())).thenReturn("/path/to/image");
 
         // Act
-        productService.addProduct(productDTO, image);
+        addProductService.processProduct(productDTO, image);
 
         // Assert
         verify(categoryRepository, times(1)).findById(any());
@@ -87,7 +92,7 @@ class ProductServiceTest {
         when(categoryRepository.findById(any())).thenReturn(Optional.empty());
 
         // Act, Assert
-        assertThrows(NoSuchElementException.class, () -> productService.addProduct(productDTO, image));
+        assertThrows(NoSuchElementException.class, () -> addProductService.processProduct(productDTO, image));
         verify(categoryRepository, times(1)).findById(any());
         verify(productRepository, times(0)).save(any());
         verify(imageService, times(0)).saveImage(any(), any());
@@ -117,7 +122,7 @@ class ProductServiceTest {
         when(imageService.saveImage(any(), any())).thenThrow(new IOException());
 
         // Act, Assert
-        assertThrows(IOException.class, () -> productService.addProduct(productDTO, image));
+        assertThrows(IOException.class, () -> addProductService.processProduct(productDTO, image));
         verify(categoryRepository, times(1)).findById(any());
         verify(productRepository, times(1)).save(any());
         verify(imageService, times(1)).saveImage(any(), any());

@@ -4,6 +4,8 @@ import com.example.BackEnd.Model.Admin;
 import com.example.BackEnd.Model.Customer;
 import com.example.BackEnd.Repositories.AdminRepository;
 import com.example.BackEnd.Repositories.CustomerRepository;
+import com.example.BackEnd.Services.ProductServices.AddProductService;
+import com.example.BackEnd.Services.ProductServices.UpdateProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,6 +25,8 @@ import java.util.Optional;
 public class ApplicationConfiguration {
     private final AdminRepository adminRepository;
     private final CustomerRepository customerRepository;
+    private final AddProductService addProductService;
+    private final UpdateProductService updateProductService;
 
     @Bean
     public UserDetailsService userDetailsService() {
@@ -55,5 +59,4 @@ public class ApplicationConfiguration {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
-
 }
