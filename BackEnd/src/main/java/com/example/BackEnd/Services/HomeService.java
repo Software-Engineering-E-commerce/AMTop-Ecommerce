@@ -8,12 +8,11 @@ import com.example.BackEnd.Model.Customer;
 import com.example.BackEnd.Repositories.AdminRepository;
 import com.example.BackEnd.Repositories.CategoryRepository;
 import com.example.BackEnd.Repositories.CustomerRepository;
-import com.example.BackEnd.Repositories.ProductRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+
 import java.util.List;
 
 @Service
@@ -41,17 +40,17 @@ public class HomeService {
 
     //retrieve category list from database
     @Transactional
-    public List<Category> getCategories(String token){
+    public List<Category> getCategories(){
         return categoryRepository.findAll();
     }
 
     //create the information data transfer object.
     @Transactional
     public HomeInfo getHomeInfo(String token){
-        List<Category> cats = getCategories(token);
+        List<Category> cats = getCategories();
         Customer customer=getCustomer(token);
         Admin admin = getAdmin(token);
-        if(customer!=null){
+        if(customer != null){
             //customer
             return new HomeInfo(customer.getFirstName(),customer.getLastName(),false,cats);
         }
