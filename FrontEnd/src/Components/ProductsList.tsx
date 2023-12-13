@@ -4,13 +4,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCartShopping, faHeart, faTrash } from '@fortawesome/free-solid-svg-icons';
 import './ProductsList.css';
 import StarRating from './StarRating';
+import AddToCart from './AddToCart';
 
 interface Props {
   isAdmin: boolean,
   getProducts: () => Promise<Product[]>,
   addProduct: () => void,
-  removeProduct: () => void
-  updateProduct: () => void
+  removeProduct: () => void,
+  updateProduct: () => void,
+  userToken: string
 }
 
 const ProductsList = ({
@@ -18,7 +20,8 @@ const ProductsList = ({
   getProducts,
   addProduct,
   removeProduct,
-  updateProduct
+  updateProduct,
+  userToken
 }: Props) => {
   const nullCustomer: Customer = {
     id: 0,
@@ -29,11 +32,30 @@ const ProductsList = ({
     categoryName: '',
     imageLink: ''
   }
+  const nullProduct: Product = {
+    id: 0,
+    productName: '',
+    price: 0,
+    postedDate: new Date,
+    description: '',
+    productCountAvailable: 0,
+    productSoldCount: 0,
+    brand: '',
+    imageLink: '',
+    discountPercentage: 0,
+    category: nullCategory,
+    reviews: [],
+    inWishlist: false
+  }
   const [products, setProducts] = useState<Product[]>([]);
+  const [cartProductId, setCartProductId] = useState(0);
+  const [wishlistProductId, setWishlistProductId] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [productsPerPage] = useState(15);
   const [fadeAnimation, setFadeAnimation] = useState('');
   const [wishlistStatus, setWishlistStatus] = useState(new Map());
+  const [showCartPopUp, setShowCartPopUp] = useState(false);
+  const [showWishlistPopUp, setShowWishlistPopUp] = useState(false);
 
   const handleProductClick = (product: Product) => {
     // Route to the product page
@@ -44,12 +66,22 @@ const ProductsList = ({
   };
 
   const handleAddToWishlist = (productId: number) => {
-    // Handle add to wishlist
+    setWishlistProductId(productId);
+    setShowWishlistPopUp(true);
   };
 
   const handleAddToCart = (productId: number) => {
-    // Handle add to cart
+    setCartProductId(productId);
+    setShowCartPopUp(true);
   };
+
+  const handleCloseCartWindow = () => {
+    setShowCartPopUp(false);
+  }
+
+  const handleCloseWishlistWindow = () => {
+    setShowWishlistPopUp(false);
+  }
 
   const toggleWishlist = (productId: number) => {
     setWishlistStatus(prevStatus => new Map(prevStatus).set(productId, !prevStatus.get(productId)));
@@ -448,6 +480,21 @@ const ProductsList = ({
           currentPage={currentPage}
         />
       </footer>
+      {showCartPopUp && 
+        <AddToCart 
+          userTok = {userToken}
+          productId = {cartProductId}
+          onCloseBobUp = {handleCloseCartWindow}
+        />
+      }
+      {showWishlistPopUp &&
+        <AddToWishlist
+          userTok = {userToken}
+          productId = {wishlistProductId}
+          setInWishlistBoolean = {setWishlistStatus}
+          onCloseBobUp = {handleCloseWishlistWindow}
+        />
+      }
     </div>
   );
 };
