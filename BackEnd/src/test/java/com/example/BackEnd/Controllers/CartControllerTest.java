@@ -395,6 +395,23 @@ class CartControllerTest {
         testCustomerCart2.setQuantity(4);
         customerCartRepository.save(testCustomerCart2);
         assertEquals(2,customerCartRepository.findByCustomer_Id(testCustomer.getId()).size());
+        // Now we have both testProduct and testProduct2 in cart with quantity 3, 4 respectively
+
+        int quantity1 = customerCartRepository.findByCustomerAndProduct_Id(testCustomer
+                , testProduct.getId()).get().getQuantity();
+        int quantity2 = customerCartRepository.findByCustomerAndProduct_Id(testCustomer
+                , testProduct2.getId()).get().getQuantity();
+
+        int beforeAvailability1 =  customerCartRepository.findByCustomerAndProduct_Id(testCustomer
+                , testProduct.getId()).get().getProduct().getProductCountAvailable();
+        int beforeAvailability2 =  customerCartRepository.findByCustomerAndProduct_Id(testCustomer
+                , testProduct2.getId()).get().getProduct().getProductCountAvailable();
+
+        int beforeSoldCount1 = customerCartRepository.findByCustomerAndProduct_Id(testCustomer
+                , testProduct.getId()).get().getProduct().getProductSoldCount();
+
+        int beforeSoldCount2 = customerCartRepository.findByCustomerAndProduct_Id(testCustomer
+                , testProduct2.getId()).get().getProduct().getProductSoldCount();
 
         // adding an address to our customer for successful checkout
         CustomerAddress customerAddress = new CustomerAddress(testCustomer,"123 main street");
@@ -408,6 +425,15 @@ class CartControllerTest {
                 .andReturn();
 
         // at this point the order is built successfully so let's check our tables
+        int afterAvailability1 = testProduct.getProductCountAvailable();
+        int afterAvailability2 = testProduct2.getProductCountAvailable();
+        int afterSoldCount1 = testProduct.getProductSoldCount();
+        int afterSoldCount2 = testProduct2.getProductSoldCount();
+
+        assertEquals(beforeAvailability1 - quantity1, afterAvailability1);
+        assertEquals(beforeAvailability2 - quantity2, afterAvailability2);
+        assertEquals(beforeSoldCount1 + quantity1, afterSoldCount1);
+        assertEquals(beforeSoldCount2 + quantity2, afterSoldCount2);
         assertEquals(1, orderRepository.findByCustomer(testCustomer).size());
         assertEquals(2, orderItemRepository.findByOrder(orderRepository.findByCustomer(testCustomer).get(0)).size());
         assertEquals(0,customerCartRepository.findByCustomer_Id(testCustomer.getId()).size());

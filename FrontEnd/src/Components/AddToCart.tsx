@@ -7,6 +7,7 @@ import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 interface Props {
   userTok: string;
   productId: number;
+  onCloseBobUp: () => void;
 }
 
 const AddToCart = ({ userTok, productId }: Props) => {
@@ -63,12 +64,13 @@ const AddToCart = ({ userTok, productId }: Props) => {
     setResponseData("");
   };
 
-  // The final return HTML element 
+  // The final return HTML element
   return (
     <>
       {responseData === "Product is added successfully to the cart" && (
         <GenericAlertModal
-          onConfirm={resetResponseData}
+          onClose={resetResponseData}
+          resetResponseData={resetResponseData}
           show={true}
           body={
             <>
@@ -90,13 +92,12 @@ const AddToCart = ({ userTok, productId }: Props) => {
       {responseData !== "" &&
         responseData !== "Product is added successfully to the cart" && (
           <GenericAlertModal
-            onConfirm={resetResponseData}
+            onClose={resetResponseData}
+            resetResponseData={resetResponseData}
             show={true}
             body={
               <>
-                <h5 style={{ color: "red" }}>
-                  {responseData}
-                </h5>
+                <h5 style={{ color: "red" }}>{responseData}</h5>
               </>
             }
           />
