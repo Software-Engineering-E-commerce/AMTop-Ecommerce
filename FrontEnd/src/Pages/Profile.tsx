@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 import BobUpWindow from "../Components/BobUpWindow";
 import { faCircleCheck, faCircleXmark } from "@fortawesome/free-solid-svg-icons";
@@ -34,20 +35,25 @@ const Profile = () => {
     
     // Define the state variables
     const [userToken] = useState(initialToken);
+    const [email, setEmail] = useState('');
+    //setEmail(jwtDecode(userToken));
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [contactPhone, setContactPhone] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [addresses, setAddresses] = useState<string[]>([]);
     const [activeAddresses, setActiveAddresses] = useState<boolean[]>([]);
-    const [isCustomer, setIsCustomer] = useState(true);
+    const [isCustomer, setIsCustomer] = useState(false);
     const [updateStatus, setUpdateStatus] = useState<{ success: boolean | null, message: string }>({ success: null, message: '' });
 
     const updatePersonalInfo = async () => {
         // Filter out inactive addresses
         setUpdateStatus({ success: null, message: '' });
 
-        const filteredAddresses = addresses.filter((_, index) => activeAddresses[index]);
+        const filteredAddresses = addresses.filter((address, index) => {
+            // send only addresses that are created and have value (non empty)
+            return address !== '' && activeAddresses[index];
+        });
         const userInfo = {
             firstName,
             lastName,
@@ -71,13 +77,6 @@ const Profile = () => {
             console.log('Update response:', response.data);
             const {...newData } = response.data;
             if (response.status === 200){
-                setFirstName(newData.firstName);
-                setLastName(newData.lastName);
-                setContactPhone(newData.contactPhone);
-                setPhoneNumber(newData.phoneNumber);
-                setAddresses(newData.addresses);
-                setActiveAddresses(newData.addresses.map(() => true)); // Set all active since backend returned them
-
                 setUpdateStatus({ success: true, message: "Your data have been updated successfully" });
             }else{
                 setUpdateStatus({ success: false, message: "Your data was not updated, Please try again" });
@@ -94,18 +93,15 @@ const Profile = () => {
           sendTokenToBackend(userToken)
             .then(data => {
               if (data !== null) {
+                console.log(data)
+                const decodedToken = jwtDecode(userToken);
+                setEmail(decodedToken.sub || '');
                 setFirstName(data.firstName);
                 setLastName(data.lastName);
                 setPhoneNumber(data.phoneNumber);
-                setIsCustomer(data.isCustomer);
-                if (data.addresses) {
-                  setAddresses(data.addresses);
-                  setActiveAddresses(data.addresses.map(() => true));
-                } else {
-                  // Handle case where no addresses are returned
-                  setAddresses([]);
-                  setActiveAddresses([]);
-                }
+                setIsCustomer(data.customer);
+                setAddresses(data.addresses || []);
+                setActiveAddresses(data.addresses ? data.addresses.map(() => true) : []);
               } else {
                 console.error('Failed to fetch data');
               }
@@ -140,6 +136,10 @@ const Profile = () => {
             <div className="profile-container">
                 <h1>Personal Info</h1>
                 <div className="input-group">
+                    <label>Your Email</label>
+                    <div className="email-value">{email}</div>
+                </div>
+                <div className="input-group">
                     <label htmlFor="firstName">First Name</label>
                     <input 
                         type="text" id="firstName" placeholder="Set first name" value={firstName}
@@ -172,7 +172,7 @@ const Profile = () => {
                 )}
 
                 <div className="addresses-container">
-                    {addresses.length > 0 && (<h2 className="addresses-title">Your Addresses</h2>)}
+                    {addresses.length > 0 && (<h2 className="address-title">Your Addresses</h2>)}
                     {addresses.map((address, index) => (
                         activeAddresses[index] && (
                             <div className="address" key={index}>

@@ -22,4 +22,8 @@ public class UserProfileDTO {
     public void setIsCustomer(boolean b) {
         this.isCustomer = b;
     }
+
+    public boolean getIsCustomer() {
+        return isCustomer;
+    }
 }
