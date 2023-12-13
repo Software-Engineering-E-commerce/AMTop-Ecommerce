@@ -5,6 +5,7 @@ import { Action } from "history";
 import axios from "axios";
 
 export interface Product {
+  id: string;
   name: string;
   price: string;
   description: string;
@@ -23,6 +24,7 @@ interface editAddProps {
 
 const EditAddProduct = ({ adminToken, show, isEdit, product }: editAddProps) => {
   const [formData, setFormData] = useState<Product>({
+    id: "",
     name: "",
     price: "",
     description: "",
@@ -38,6 +40,7 @@ const EditAddProduct = ({ adminToken, show, isEdit, product }: editAddProps) => 
     if (product) {
       // If product prop is passed, set the initial values from the product
       setFormData({
+        id: product.id,
         name: product.name,
         price: product.price,
         description: product.description,
@@ -49,13 +52,14 @@ const EditAddProduct = ({ adminToken, show, isEdit, product }: editAddProps) => 
     } else {
       // If product prop is not passed, set the initial values to ""
       setFormData({
+        id: "",
         name: "",
         price: "",
         description: "",
         countAvailable: "0",
         brand: "",
         discountPercentage: "0.00",
-        category: "Action",
+        category: "Electronics",
       });
     }
   }, [product]);
@@ -142,26 +146,32 @@ const EditAddProduct = ({ adminToken, show, isEdit, product }: editAddProps) => 
 
   const convertToDto = () => {
     let productDto: ProductDTO = {
-      id: 0,
-      productName: "",
-      price: 0,
+      id: Number(product?.id),
+      productName: formData.name,
+      price: Number(formData.price),
       postedDate: new Date,
-      description: "",
-      productCountAvailable: 0,
-      brand: "",
-      discountPercentage: 0,
-      category: ""
+      description: formData.description,
+      productCountAvailable: Number(formData.countAvailable),
+      brand: formData.brand,
+      discountPercentage: Number(formData.discountPercentage),
+      category: formData.category
     };
     return productDto;
   }
 
   const handleEditRequest = async () => {
     try {
-      let url: string = `http://localhost:9080/updateProduct?productDTO=${encodeURIComponent(JSON.stringify(convertToDto()))}`;
+      let url: string = `http://localhost:9080/api/updateProduct?productDTO=${encodeURIComponent(JSON.stringify(convertToDto()))}`;
 
       const formData = new FormData();
+      // Remove the line formData.append("image", null);
       if (selectedFile) {
         formData.append('image', selectedFile);
+      }
+      else {
+        const dummyBlob = new Blob([''], { type: 'application/octet-stream' });
+        const dummyFile = new File([dummyBlob], '');
+        formData.append('image', dummyFile);
       }
 
       const response = await axios.post(url, formData,
@@ -203,7 +213,7 @@ const EditAddProduct = ({ adminToken, show, isEdit, product }: editAddProps) => 
 
   const handleAddRequest = async () => {
     try {
-      let url: string = `http://localhost:9080/addProduct?productDTO=${encodeURIComponent(JSON.stringify(convertToDto()))}`;
+      let url: string = `http://localhost:9080/api/addProduct?productDTO=${encodeURIComponent(JSON.stringify(convertToDto()))}`;
 
       const formData = new FormData();
       if (selectedFile) {
@@ -376,12 +386,12 @@ const EditAddProduct = ({ adminToken, show, isEdit, product }: editAddProps) => 
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
                   <Dropdown.Item onClick={() => handleCategorySelect("Action")}>
-                    Action
+                    Electronics
                   </Dropdown.Item>
                   <Dropdown.Item
                     onClick={() => handleCategorySelect("Another action")}
                   >
-                    Another action
+                    Laptops
                   </Dropdown.Item>
                   <Dropdown.Item
                     onClick={() => handleCategorySelect("Something else here")}
