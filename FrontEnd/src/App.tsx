@@ -1,11 +1,12 @@
 import "./App.css";
+import EditAddProduct from "./Components/EditAddProduct";
 import SignUp from "./Pages/SignUp";
 
 function App() {
 
   return (
     <>
-      <SignUp />
+      <EditAddProduct isEdit={false} show={true} />
     </>
   );
 }
