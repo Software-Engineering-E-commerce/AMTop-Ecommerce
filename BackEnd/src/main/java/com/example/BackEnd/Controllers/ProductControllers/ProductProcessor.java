@@ -39,11 +39,9 @@ public class ProductProcessor {
                 ProductDTO newProductDTO = map.readValue(jsonString, ProductDTO.class);
 
                 // add product
-                System.out.println(5);
                 productService.processProduct(newProductDTO, image);
                 return ResponseEntity.status(HttpStatus.OK).body(productService.getSuccessMessage());
             } catch (Exception e) { // can not add product
-                System.out.println(1);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
             }
         } else {

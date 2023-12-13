@@ -37,9 +37,11 @@ public class UpdateProductService extends AbstractProductService {
         try {
             Product product = productOptional.get();
             setProduct(productDTO, product, category.get());
-            imageService.deleteImage(product.getImageLink());
-            String imageLink = imageService.saveImage(image, productDTO.getId());
-            product.setImageLink(imageLink);
+            if (!image.isEmpty()) {
+                String imageLink = imageService.saveImage(image, productDTO.getId());
+                imageService.deleteImage(product.getImageLink());
+                product.setImageLink(imageLink);
+            }
             productRepository.save(product);
         } catch (IOException e) {
             throw new IOException("Could not save image");
