@@ -1,0 +1,35 @@
+.top-bar {
+  text-align: center;
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+.horizontal-line {
+  height: 3px;
+  background-color: lightgray;
+  margin-bottom: 15px;
+}
+
+.checkout-container {
+  margin-top: 20px;
+  margin-left: 50px;
+}
+
+.totalPrice{
+  font-family: monospace;
+    text-align: right;
+    font-weight: 650;
+    font-size: 16px;
+    font-size: 1.25rem;
+    margin-right: 5px;
+    
+}
+
+.checkout {
+  background-color: rgba(212, 212, 212, 0.2);
+  width: fit-content;
+  padding: 20px;
+  border-radius: 10px;
+  transition: 0.3s ease;
+  position: fixed;
+}
