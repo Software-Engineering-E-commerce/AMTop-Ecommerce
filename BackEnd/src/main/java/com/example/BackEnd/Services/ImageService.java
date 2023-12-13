@@ -31,15 +31,17 @@ public class ImageService {
         }
     }
 
-
-    // TODO: after implementing the add product method, implement this method
-    public void updateImage() {
-
-    }
-
-
-    // TODO: after implementing the update product method, implement this method
-    public void deleteImage(String imageLink) throws IOException {
-
+    public void deleteImage(String imageLink) {
+        try {
+            String path = new File("..").getCanonicalPath();
+            File file = new File(path + imageLink);
+            if (file.delete()) {
+                System.out.println("File deleted successfully");
+            } else {
+                System.out.println("Failed to delete the file");
+            }
+        } catch (IOException e) {
+            System.out.println("Could not delete image: " + imageLink);
+        }
     }
 }

@@ -12,11 +12,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductDTO {
+    private Long id;
     private String productName;
     private float price;
     private LocalDateTime postedDate;
     private String description;
     private int productCountAvailable;
     private String brand;
+    private float discountPercentage;
     private String category;
 }
