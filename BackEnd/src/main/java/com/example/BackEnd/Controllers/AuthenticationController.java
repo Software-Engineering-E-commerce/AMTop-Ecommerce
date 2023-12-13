@@ -1,7 +1,5 @@
 package com.example.BackEnd.Controllers;
-
 import com.example.BackEnd.DTO.AuthenticationResponse;
-
 import com.example.BackEnd.DTO.LoginRequest;
 import com.example.BackEnd.DTO.RegisterRequest;
 import com.example.BackEnd.Services.AuthenticationService;

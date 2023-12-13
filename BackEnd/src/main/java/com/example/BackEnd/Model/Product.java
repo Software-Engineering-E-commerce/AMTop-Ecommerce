@@ -30,7 +30,7 @@ public class Product {
     private int productSoldCount;
     @Column(nullable = false)
     private String brand;
-    @Column(nullable = false)
+    @Column
     private String imageLink;
     @Column(nullable = false, columnDefinition = "float default 0.0")
     private float discountPercentage;
