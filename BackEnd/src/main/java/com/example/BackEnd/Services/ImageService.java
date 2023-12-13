@@ -33,7 +33,7 @@ public class ImageService {
 
     public void deleteImage(String imageLink) {
         try {
-            String path = new File("..").getCanonicalPath();
+            String path = new File("..").getCanonicalPath() + "/FrontEnd/src/assets";
             File file = new File(path + imageLink);
             if (file.delete()) {
                 System.out.println("File deleted successfully");
