@@ -7,9 +7,16 @@ import SignUp from "./Pages/SignUp.tsx";
 import Home from "./Pages/Home.tsx";
 import LogIn from "./Pages/LogIn.tsx";
 import Verification from "./Pages/Verification.tsx";
+
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import ProductDetailsPage from "./Pages/ProductDetailsPage.tsx";
+
+import Cart from "./Pages/Cart.tsx";
+import Dashboard from "./Pages/Dashboard.tsx";
+
+
+
 
 const router = createBrowserRouter([
   {
@@ -25,6 +32,10 @@ const router = createBrowserRouter([
     element: <Verification />,
   },
   {
+    path: "/cart",
+    element: <Cart />,
+  },
+  {
     path: "/login",
     element: <LogIn />,
   },
@@ -33,8 +44,13 @@ const router = createBrowserRouter([
     element: <SignUp />,
   },
   {
+
     path: "/product-details",
     element: <ProductDetailsPage />,
+
+    path: "/dashboard",
+    element: <Dashboard />,
+
   },
   {
     path: "*",

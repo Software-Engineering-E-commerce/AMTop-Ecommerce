@@ -1,4 +1,4 @@
-.container {
+.form-container {
   border: 2px solid lightgrey;
   border-radius: 15px;
   overflow: auto;
@@ -35,7 +35,7 @@ form {
   padding: 20px;
 }
 
-label {
+.formLabel {
   font-weight: 500;
   position: absolute;
   top: -12px;
@@ -68,4 +68,3 @@ label {
 input {
   padding: 0.69rem 0.75rem;
 }
-

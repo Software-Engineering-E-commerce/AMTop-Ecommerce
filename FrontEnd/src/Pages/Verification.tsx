@@ -62,8 +62,6 @@ const Verification = () => {
       };
 
       sendVerificationRequest();
-
-
       // Set isMounted to false to prevent running the code on subsequent renders
     }
 
