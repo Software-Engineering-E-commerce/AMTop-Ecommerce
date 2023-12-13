@@ -52,7 +52,8 @@ public class ProductDetailsService {
                 for(Review review : product.getReviews()){
                     LocalDateTime date = review.getDate();
                     String formattedDate = date.format(formatter);
-                    ReviewResponse reviewResponse = new ReviewResponse(reviewId++, review.getCustomer().getEmail(), review.getRating(), review.getComment(), formattedDate);
+                    String customerName = review.getCustomer().getFirstName() + " " + review.getCustomer().getLastName();
+                    ReviewResponse reviewResponse = new ReviewResponse(reviewId++, customerName, review.getRating(), review.getComment(), formattedDate);
                     reviewResponses.add(reviewResponse);
                 }
                 String postDate = product.getPostedDate().format(formatter);
