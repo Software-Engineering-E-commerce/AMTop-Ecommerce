@@ -20,9 +20,9 @@ public class ImageService {
             throw new IllegalStateException("Cannot upload empty image");
         }
         String imageName = id + "-" + image.getOriginalFilename();
-        String imageLink = "/BackEnd/src/main/resources/static/images/Products/" + imageName;
+        String imageLink = "/products/" + imageName;
         try {
-            String path = new File("..").getCanonicalPath();
+            String path = new File("..").getCanonicalPath() + "/FrontEnd/src/assets";
             System.out.println(path);
             image.transferTo(new File(path + imageLink));
             return imageLink;
