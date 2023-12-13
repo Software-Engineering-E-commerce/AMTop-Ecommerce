@@ -1,68 +1,57 @@
-import React from "react";
-import NavBar from "../Components/NavBar";
+import React, { useEffect, useRef, useState } from "react";
+// import NavBar from "../Components/NavBar";
 import ProductDetails, { Product } from "../Components/ProductDetails";
 import CustomerReviews from "../Components/CustomerReviews";
-import sampleImage from "../assets/laptop.jpeg";
+import { useLocation } from "react-router-dom";
 
-interface ProductDetailsPageProps {
-  productID: number;
-}
+interface ProductDetailsPageProps {}
 
-const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({ productID }) => {
-  const sampleProduct: Product = {
-    id: 1,
-    name: "Sample Product",
-    imageUrl: sampleImage, // Use a placeholder image for demonstration
-    description:
-      "This is a sample product description. This is a sample product description. This is a sample product description.This is a sample product description.This is a sample product description.This is a sample product description. This is a sample product description. This is a sample product description. This is a sample product description.",
-    price: 49.99,
-    postedDate: "2023-12-15",
-    productCountAvailable: 10,
-    productCountSold: 20,
-    brand: "Sample Brand",
-    discountPercentage: 10,
-    categoryName: "Electronics",
-    categoryUrl: "/electronics",
-    reviews: [
-      {
-        id: 1,
-        customerName: "John Doe",
-        rating: 4.5,
-        reviewText:
-          "Great product! Highly recommended.Great product! Highly recommended.Great product! Highly recommended.Great product! Highly recommended.Great product! Highly recommended.Great product! Highly recommended.Great product! Highly recommended.Great product! Highly recommended.Great product! Highly recommended.Great product! Highly recommended.Great product! Highly recommended.Great product! Highly recommended.Great product! Highly recommended.Great product! Highly recommended.Great product! Highly recommended.Great product! Highly recommended.Great product! Highly recommended.Great product! Highly recommended.",
-        date: "2023-12-16",
-      },
-      {
-        id: 2,
-        customerName: "John Doe",
-        rating: 3.5,
-        reviewText: "Great product! Highly recommended.",
-        date: "2023-12-16",
-      },
-      {
-        id: 3,
-        customerName: "John Doe",
-        rating: 3,
-        reviewText: "Great product! Highly recommended.",
-        date: "2023-12-16",
-      },
-      {
-        id: 4,
-        customerName: "John Doe",
-        rating: 1,
-        reviewText: "Great product! Highly recommended.",
-        date: "2023-12-16",
-      },
-      // // Add more reviews as needed
-    ],
+const ProductDetailsPage: React.FC<ProductDetailsPageProps> = () => {
+  const isMounted = useRef<boolean>(true);
+  const location = useLocation();
+  const { productID, token } = location.state as {
+    productID: number;
+    token: string;
   };
+  const [product, setProduct] = useState<Product | null>(null);
+
+  useEffect(() => {
+    if (isMounted.current) {
+      isMounted.current = false;
+      console.log("productID: ", productID);
+      console.log("token: ", token);
+      // Fetch product details from the backend
+      fetch(
+        `http://localhost:9080/api/productDetails/viewProduct?productID=${productID}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => setProduct(data))
+        .catch((error) =>
+          console.error("Error fetching product details:", error)
+        );
+    }
+  }, []); // Empty dependency array means it runs once when component mounts
+
+  if (!product) {
+    return <div>Loading...</div>;
+  }
   return (
     <div style={{ overflowX: "hidden", overflowY: "auto", padding: "30px" }}>
-      <NavBar />
+      {/* <NavBar /> */}
       <div className=" mt-1 pt-4">
-        <ProductDetails product={sampleProduct} />
+        <ProductDetails product={product} token={token} />
         <hr className="my-4" /> {/* Separator line */}
-        <CustomerReviews reviews={sampleProduct.reviews} />
+        <CustomerReviews
+          reviews={product.reviews}
+          token={token}
+          isAdmin={product.isAdmin}
+        />
       </div>
     </div>
   );

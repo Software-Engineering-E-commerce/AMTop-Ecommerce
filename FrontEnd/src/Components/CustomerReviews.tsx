@@ -11,13 +11,18 @@ export interface Review {
 
 interface CustomerReviewsProps {
   reviews: Review[];
+  token: string;
+  isAdmin: boolean;
 }
 
-const CustomerReviews: React.FC<CustomerReviewsProps> = ({ reviews }) => {
+const CustomerReviews: React.FC<CustomerReviewsProps> = ({
+  reviews,
+  token,
+  isAdmin,
+}) => {
   return (
     <div>
       {reviews.length > 0 && <h3 className="mt-4 mb-3">Customer Reviews</h3>}
-
       {reviews.map((review) => (
         <div key={review.id} className="card mb-3">
           <div className="card-body">
@@ -32,8 +37,7 @@ const CustomerReviews: React.FC<CustomerReviewsProps> = ({ reviews }) => {
           </div>
         </div>
       ))}
-      {/* Add the button for adding reviews with a popup window here */}
-      <button className="btn btn-primary">Add Review</button>
+      {!isAdmin && <button className="btn btn-primary">Add Review</button>}
     </div>
   );
 };
