@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.annotation.DirtiesContext;
@@ -18,6 +20,8 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class ImageServiceTest {
 
+    @Mock
+    private File file;
     @InjectMocks
     private ImageService imageService;
 
@@ -75,5 +79,13 @@ class ImageServiceTest {
         // Act and Assert
         assertThrows(IllegalStateException.class, () ->
                 imageService.saveImage(mockMultipartFile, id));
+    }
+
+    @Test
+    void deleteImage_success() throws IOException {
+        // Arrange
+        String imageLink = "/BackEnd/src/main/resources/static/images/Products/3-test.png";
+        // Act and Assert
+        imageService.deleteImage(imageLink);
     }
 }

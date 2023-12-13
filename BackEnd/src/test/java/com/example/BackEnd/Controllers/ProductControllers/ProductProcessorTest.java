@@ -1,52 +1,45 @@
-package com.example.BackEnd.Controllers;
+package com.example.BackEnd.Controllers.ProductControllers;
 
 import com.example.BackEnd.Middleware.Permissions;
-import com.example.BackEnd.Services.ProductService;
+import com.example.BackEnd.Services.ProductServices.IProductService;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(MockitoExtension.class)
-@AutoConfigureMockMvc
-class ProductControllerTest {
-
-    @Mock
-    private ProductService productService;
+class ProductProcessorTest {
 
     @Mock
     private Permissions permissions;
-
+    @Mock
+    private IProductService productService;
     @InjectMocks
-    private ProductController productController;
-
-    private MockMvc mockMvc;
-
+    private ProductProcessor productProcessor;
 
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
-        this.mockMvc = MockMvcBuilders.standaloneSetup(productController).build();
     }
 
     @Test
-    void addProduct_Success() throws Exception {
+    @Transactional
+    @DirtiesContext
+    void processProduct_Success() throws Exception {
         // Arrange
         String jsonString = """
                 {
@@ -62,53 +55,51 @@ class ProductControllerTest {
         MultipartFile image = mock(MultipartFile.class);
         when(image.getBytes()).thenReturn(new byte[0]);
         String token = "validToken";
-
-        when(permissions.checkToken(anyString())).thenReturn(true);
+        String authorizationHeader = "Bearer " + token;
+        when(permissions.checkToken(authorizationHeader)).thenReturn(true);
         when(permissions.checkAdmin(token)).thenReturn(true);
-        doNothing().when(productService).addProduct(any(), any());
+        doNothing().when(productService).processProduct(any(), any());
 
         // Act
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/product/addProduct")
-                        .file("image", image.getBytes())
-                        .param("productDTO", jsonString)
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                        .contentType(MediaType.MULTIPART_FORM_DATA))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Product added successfully"))
-                .andReturn();
+        ResponseEntity<String> result = productProcessor.processProduct(jsonString, image, authorizationHeader);
+
+        // Assert
+        assertEquals(HttpStatus.OK, result.getStatusCode());
 
         // Verify
         verify(permissions, times(1)).checkToken(anyString());
         verify(permissions, times(1)).checkAdmin(token);
-        verify(productService, times(1)).addProduct(any(), any());
+        verify(productService, times(1)).processProduct(any(), any());
     }
 
     @Test
+    @Transactional
+    @DirtiesContext
     public void nullDto() throws Exception {
+        // Arrange
         String jsonString = "";
         MultipartFile image = mock(MultipartFile.class);
         when(image.getBytes()).thenReturn(new byte[0]);
         String token = "validToken";
-
-        when(permissions.checkToken(anyString())).thenReturn(true);
+        String authorizationHeader = "Bearer " + token;
+        when(permissions.checkToken(authorizationHeader)).thenReturn(true);
         when(permissions.checkAdmin(token)).thenReturn(true);
 
         // Act
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/product/addProduct")
-                        .file("image", image.getBytes())
-                        .param("productDTO", jsonString)
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                        .contentType(MediaType.MULTIPART_FORM_DATA))
-                .andExpect(status().isInternalServerError())
-                .andReturn();
+        ResponseEntity<String> result = productProcessor.processProduct(jsonString, image, authorizationHeader);
+
+        // Assert
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
 
         // Verify
         verify(permissions, times(1)).checkToken(anyString());
         verify(permissions, times(1)).checkAdmin(token);
-        verify(productService, times(0)).addProduct(any(), any());
+        verify(productService, times(0)).processProduct(any(), any());
     }
 
     @Test
+    @Transactional
+    @DirtiesContext
     public void incorrectJson() throws Exception {
         String jsonString = """
                 {
@@ -119,27 +110,27 @@ class ProductControllerTest {
         MultipartFile image = mock(MultipartFile.class);
         when(image.getBytes()).thenReturn(new byte[0]);
         String token = "validToken";
-
-        when(permissions.checkToken(anyString())).thenReturn(true);
+        String authorizationHeader = "Bearer " + token;
+        when(permissions.checkToken(authorizationHeader)).thenReturn(true);
         when(permissions.checkAdmin(token)).thenReturn(true);
 
         // Act
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/product/addProduct")
-                        .file("image", image.getBytes())
-                        .param("productDTO", jsonString)
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                        .contentType(MediaType.MULTIPART_FORM_DATA))
-                .andExpect(status().isInternalServerError())
-                .andReturn();
+        ResponseEntity<String> result = productProcessor.processProduct(jsonString, image, authorizationHeader);
+
+        // Assert
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
 
         // Verify
         verify(permissions, times(1)).checkToken(anyString());
         verify(permissions, times(1)).checkAdmin(token);
-        verify(productService, times(0)).addProduct(any(), any());
+        verify(productService, times(0)).processProduct(any(), any());
     }
 
     @Test
+    @Transactional
+    @DirtiesContext
     public void notAdmin() throws Exception {
+        // Arrange
         String jsonString = """
                 {
                   "productName": "Example Product",
@@ -153,28 +144,26 @@ class ProductControllerTest {
                 """;
         MultipartFile image = mock(MultipartFile.class);
         when(image.getBytes()).thenReturn(new byte[0]);
-        String token = "invalidToken";
-
-        when(permissions.checkToken(anyString())).thenReturn(true);
+        String token = "validToken";
+        String authorizationHeader = "Bearer " + token;
+        when(permissions.checkToken(authorizationHeader)).thenReturn(true);
         when(permissions.checkAdmin(token)).thenReturn(false);
 
         // Act
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/product/addProduct")
-                        .file("image", image.getBytes())
-                        .param("productDTO", jsonString)
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                        .contentType(MediaType.MULTIPART_FORM_DATA))
-                .andExpect(status().isUnauthorized())
-                .andExpect(content().string("Unauthorized access"))
-                .andReturn();
+        ResponseEntity<String> result = productProcessor.processProduct(jsonString, image, authorizationHeader);
+
+        // Assert
+        assertEquals(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access"), result);
 
         // Verify
         verify(permissions, times(1)).checkToken(anyString());
         verify(permissions, times(1)).checkAdmin(token);
-        verify(productService, times(0)).addProduct(any(), any());
+        verify(productService, times(0)).processProduct(any(), any());
     }
 
     @Test
+    @Transactional
+    @DirtiesContext
     public void invalidToken() throws Exception {
         String jsonString = """
                 {
@@ -194,20 +183,15 @@ class ProductControllerTest {
         when(permissions.checkToken(anyString())).thenReturn(false);
 
         // Act
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/product/addProduct")
-                        .file("image", image.getBytes())
-                        .param("productDTO", jsonString)
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                        .contentType(MediaType.MULTIPART_FORM_DATA))
-                .andExpect(status().isUnauthorized())
-                .andExpect(content().string("Invalid token"))
-                .andReturn();
+        ResponseEntity<String> result = productProcessor.processProduct(jsonString, image, token);
+
+        // Assert
+        assertEquals(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token"), result);
 
         // Verify
         verify(permissions, times(1)).checkToken(anyString());
         verify(permissions, times(0)).checkAdmin(token);
-        verify(productService, times(0)).addProduct(any(), any());
+        verify(productService, times(0)).processProduct(any(), any());
     }
 
-    // Add more test cases for different scenarios (e.g., unauthorized, invalid token, etc.)
 }
