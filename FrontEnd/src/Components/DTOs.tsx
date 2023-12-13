@@ -54,3 +54,14 @@ interface UpdateOrderRequest {
     newStatus: string;
 }
 
+interface ProductDTO {
+  id: number;
+  productName: string;
+  price: number;
+  postedDate: Date;
+  description: string;
+  productCountAvailable: number;
+  brand: string;
+  discountPercentage: number;
+  category: string;
+}

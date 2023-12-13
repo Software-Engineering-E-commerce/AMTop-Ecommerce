@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button, Form, Modal, ModalHeader, Dropdown } from "react-bootstrap";
 import "./EditAddProduct.css";
 import { Action } from "history";
+import axios from "axios";
 
 export interface Product {
   name: string;
@@ -14,12 +15,13 @@ export interface Product {
 }
 
 interface editAddProps {
+  adminToken: string;
   isEdit: Boolean;
   show: boolean;
   product?: Product;
 }
 
-const EditAddProduct = ({ show, isEdit, product }: editAddProps) => {
+const EditAddProduct = ({ adminToken, show, isEdit, product }: editAddProps) => {
   const [formData, setFormData] = useState<Product>({
     name: "",
     price: "",
@@ -126,12 +128,122 @@ const EditAddProduct = ({ show, isEdit, product }: editAddProps) => {
       formData.description &&
       formData.countAvailable &&
       formData.brand &&
-      formData.category && (isEdit || 
-      (!isEdit && selectedFile !== null))
+      formData.category &&
+      (isEdit || (!isEdit && selectedFile !== null))
     ) {
       // Process the form data
-      console.log("Hi from submit");
-      console.log("File is: ", selectedFile)
+      if (isEdit) {
+        handleEditRequest();
+      } else {
+        handleAddRequest();
+      }
+    }
+  };
+
+  const convertToDto = () => {
+    let productDto: ProductDTO = {
+      id: 0,
+      productName: "",
+      price: 0,
+      postedDate: new Date,
+      description: "",
+      productCountAvailable: 0,
+      brand: "",
+      discountPercentage: 0,
+      category: ""
+    };
+    return productDto;
+  }
+
+  const handleEditRequest = async () => {
+    try {
+      let url: string = `http://localhost:9080/updateProduct?productDTO=${encodeURIComponent(JSON.stringify(convertToDto()))}`;
+
+      const formData = new FormData();
+      if (selectedFile) {
+        formData.append('image', selectedFile);
+      }
+
+      const response = await axios.post(url, formData,
+        {
+          headers: {
+            "Content-Type": 'multipart/form-data',
+            "Authorization": `Bearer ${adminToken}`,
+          },
+        }
+      );
+      console.log(response);
+
+      // Here means that the response is Ok and the product is added successfully
+      // setResponseData(response.data);
+    } catch (error) {
+      // Handle errors here
+      if (axios.isAxiosError(error)) {
+        // This type assertion tells TypeScript that error is an AxiosError
+        const axiosError = error as import("axios").AxiosError;
+        if (axiosError.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          console.error("Response data:", axiosError.response.data);
+          console.error("Response status:", axiosError.response.status);
+          // setResponseData(axiosError.response.data as string);
+        } else if (axiosError.request) {
+          // The request was made but no response was received
+          console.error("No response received:", axiosError.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.error("Error:", axiosError.message);
+        }
+      } else {
+        // Handle non-Axios errors
+        console.error("Non-Axios error:", error);
+      }
+    }
+  };
+
+  const handleAddRequest = async () => {
+    try {
+      let url: string = `http://localhost:9080/addProduct?productDTO=${encodeURIComponent(JSON.stringify(convertToDto()))}`;
+
+      const formData = new FormData();
+      if (selectedFile) {
+        formData.append('image', selectedFile);
+      }
+
+      const response = await axios.post(url, formData,
+        {
+          headers: {
+            "Content-Type": 'multipart/form-data',
+            "Authorization": `Bearer ${adminToken}`,
+          },
+        }
+      );
+      console.log(response);
+
+      // Here means that the response is Ok and the product is added successfully
+      // setResponseData(response.data);
+    } catch (error) {
+      // Handle errors here
+      if (axios.isAxiosError(error)) {
+        // This type assertion tells TypeScript that error is an AxiosError
+        const axiosError = error as import("axios").AxiosError;
+        if (axiosError.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          console.error("Response data:", axiosError.response.data);
+          console.error("Response status:", axiosError.response.status);
+          // setResponseData(axiosError.response.data as string);
+        } else if (axiosError.request) {
+          // The request was made but no response was received
+          console.error("No response received:", axiosError.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.error("Error:", axiosError.message);
+        }
+      } else {
+        // Handle non-Axios errors
+        console.error("Non-Axios error:", error);
+      }
     }
   };
 
@@ -304,7 +416,7 @@ const EditAddProduct = ({ show, isEdit, product }: editAddProps) => {
                 id="formFile"
                 onChange={handleFileChange}
               />
-              {formSubmitted && selectedFile === null && isEdit==false && (
+              {formSubmitted && selectedFile === null && isEdit == false && (
                 <div className="text-danger">*Image is required</div>
               )}
             </div>
