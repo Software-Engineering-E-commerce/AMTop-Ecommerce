@@ -11,7 +11,7 @@ const Wishlist = () => {
   );
   // Use state to manage cartElements
   const location = useLocation();
-  var { userTok, isAdmin, firstName, lastName } = location.state || {};
+  var {userToken, isAdmin, firstName, lastName} = location.state || {};
 
   // useRef to track whether the component is mounted
   const isMounted = useRef(true);
@@ -22,7 +22,7 @@ const Wishlist = () => {
         "http://localhost:9080/wishlist/getWishlistElements",
         {
           headers: {
-            Authorization: `Bearer ${userTok}`,
+            Authorization: `Bearer ${userToken}`,
             "Content-Type": "application/json",
           },
         }
@@ -72,7 +72,7 @@ const Wishlist = () => {
         firstName={firstName}
         lastName={lastName}
         isAdmin={isAdmin}
-        token={userTok}
+        token={userToken} 
       />
       <div
         className="col-12 container wishlist-container"

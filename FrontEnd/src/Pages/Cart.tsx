@@ -16,7 +16,7 @@ const Cart = () => {
   const [checkOutResponse, setCheckOutResponse] = useState("");
 
   const location = useLocation();
-  var { userTok, isAdmin, firstName, lastName } = location.state || {};
+  var {userToken, isAdmin, firstName, lastName} = location.state || {};
 
   // useRef to track whether the component is mounted
   const isMounted = useRef(true);
@@ -28,7 +28,7 @@ const Cart = () => {
         "http://localhost:9080/cart/getCartElements",
         {
           headers: {
-            Authorization: `Bearer ${userTok}`,
+            Authorization: `Bearer ${userToken}`,
             "Content-Type": "application/json",
           },
         }
@@ -95,7 +95,7 @@ const Cart = () => {
         {},
         {
           headers: {
-            Authorization: `Bearer ${userTok}`,
+            Authorization: `Bearer ${userToken}`,
             "Content-Type": "application/json",
           },
         }
@@ -124,11 +124,11 @@ const Cart = () => {
 
   return (
     <>
-      <Navbar
-        firstName={firstName}
-        lastName={lastName}
-        isAdmin={isAdmin}
-        token={userTok}
+      <Navbar 
+          firstName = {firstName}
+          lastName = {lastName}
+          isAdmin = {isAdmin}
+          token = {userToken}
       />
       {checkOutResponse === "Order has been placed successfully !" && (
         <GenericAlertModal
