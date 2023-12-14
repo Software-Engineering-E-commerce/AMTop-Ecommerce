@@ -17,7 +17,7 @@ public class Customer extends User {
     private Long id;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore //to break the circular reference
+     //to break the circular reference
     private List<CustomerAddress> addresses = new ArrayList<>();
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

@@ -1,0 +1,124 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  /* Center the profile container */
+  .profile-container {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+    max-width: 400px;
+    margin: 40px auto;
+  }
+  
+  h1 {
+    color: #333;
+    text-align: center;
+    padding-bottom: 20px;
+  }
+
+  .email-value {
+    width: 100%;
+    padding: 10px; 
+    border: 1px solid #ced4da; 
+    border-radius: .25rem;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,.075);
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
+
+  .input-group {
+    margin-bottom: 15px;
+  }
+  
+  .input-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+  }
+  
+  .input-group input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    text-align: center;
+  }
+  
+  .btn:hover {
+    background-color: #0056b3;
+  }
+  
+  .btn.remove-btn {
+    margin-top: auto;
+    width: auto;
+    height: 53px;
+    cursor: pointer;
+    font-weight: bold;
+    background-color: #ff4d4d;
+    color: white;
+  }
+  
+  .remove-btn:hover {
+    background-color: #cc0000;
+  }
+  
+  .address {
+    display: flex; /* This will align items in a row */
+    justify-content: space-between; /* This will place the button to the end */
+    align-items: center; /* This will vertically align the input and button */
+    margin-bottom: 10px;
+  }
+
+  .address-title {
+    font-size: 18px;
+    color: #333;
+    margin-top: 20px; /* Adjust as needed */
+    margin-bottom: 10px; /* Adjust as needed */
+    text-align: left; /* Aligns the text to the left */
+  }
+  
+  
+  .address input {
+    flex-grow: 1; /* This will allow the input to fill the space */
+    margin-right: 10px; /* This adds some space between the input and the button */
+  }
+  .add-btn {
+    background-color: #28a745;
+  }
+  
+  .add-btn:hover {
+    background-color: #218838;
+  }
+  
+  .update-btn {
+    background-color: #0069d9;
+  }
+  
+  .update-btn:hover {
+    background-color: #005cbf;
+  }
+  
+  /* Optional: Add some padding at the bottom for better spacing */
+  body {
+    padding-bottom: 40px;
+  }
+  
