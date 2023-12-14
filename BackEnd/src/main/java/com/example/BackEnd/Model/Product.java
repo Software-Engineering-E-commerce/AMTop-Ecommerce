@@ -1,10 +1,10 @@
 package com.example.BackEnd.Model;
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ public class Product {
     private int productSoldCount;
     @Column(nullable = false)
     private String brand;
-    @Column(nullable = false)
+    @Column
     private String imageLink;
     @Column(nullable = false, columnDefinition = "float default 0.0")
     private float discountPercentage;

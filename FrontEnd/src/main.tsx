@@ -9,6 +9,16 @@ import LogIn from "./Pages/LogIn.tsx";
 import Verification from "./Pages/Verification.tsx";
 import Profile from "./Pages/Profile.tsx";
 
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import ProductDetailsPage from "./Pages/ProductDetailsPage.tsx";
+
+import Cart from "./Pages/Cart.tsx";
+import Dashboard from "./Pages/Dashboard.tsx";
+import Catalog from "./Pages/Catalog.tsx";
+import Wishlist from "./Pages/Wishlist.tsx";
+
+
 
 const router = createBrowserRouter([
   {
@@ -17,11 +27,19 @@ const router = createBrowserRouter([
   },
   {
     path: "/home",
-    element: <Home/>,
+    element: <Home />,
   },
   {
     path: "/verification",
     element: <Verification />,
+  },
+  {
+    path: "/cart",
+    element: <Cart />,
+  },
+  {
+    path: "/wishlist",
+    element: <Wishlist />,
   },
   {
     path: "/login",
@@ -32,8 +50,24 @@ const router = createBrowserRouter([
     element: <SignUp />,
   },
   {
+
     path: "/home/profile",
     element: <Profile/>,
+  },
+  {
+    path: "/product-details",
+    element: <ProductDetailsPage />,
+  },
+  {
+    path: "/dashboard",
+    element: <Dashboard />,
+
+  },
+  {
+
+    path: "/catalog",
+    element: <Catalog />,
+
   },
   {
     path: "*",

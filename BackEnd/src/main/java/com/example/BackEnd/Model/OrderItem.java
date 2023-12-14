@@ -1,5 +1,6 @@
 package com.example.BackEnd.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,6 +15,7 @@ public class OrderItem {
     @Id
     @ManyToOne
     @JoinColumn(name = "order_id", nullable = false)
+    @JsonIgnore
     private Order order;
     @Id
     @ManyToOne
@@ -23,5 +25,4 @@ public class OrderItem {
     private float originalCost;
     @Column(nullable = false)
     private int quantity;
-
 }
