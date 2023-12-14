@@ -3,7 +3,11 @@ package com.example.BackEnd.Services.ProductServices;
 import com.example.BackEnd.DTO.ProductDTO;
 import com.example.BackEnd.Model.Category;
 import com.example.BackEnd.Model.Product;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
+@Service
+@Transactional
 public abstract class AbstractProductService implements IProductService {
 
     protected void setProduct(ProductDTO productDTO, Product product, Category category) {
