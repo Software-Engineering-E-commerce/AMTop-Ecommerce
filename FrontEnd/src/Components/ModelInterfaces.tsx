@@ -14,8 +14,18 @@ interface Order {
 // an interface for the Product entity
 interface Product {
     id: number;
-    price: number;
     productName: string;
+    price: number;
+    postedDate: Date;
+    description: string;
+    productCountAvailable: number;
+    productSoldCount: number;
+    brand: string;
+    imageLink: string;
+    discountPercentage: number;
+    category: Category;
+    reviews: Review[];
+    inWishlist: boolean;
 }
 
 // an interface for the Order Item entity
@@ -36,4 +46,18 @@ interface Customer {
     id: number;
     firstName: string;
     lastName: string;
+}
+
+// an interface for the Category entity
+interface Category {
+    categoryName: string;
+    imageLink: string;
+}
+
+// an interface for the Review entity
+interface Review {
+    customer: Customer;
+    rating: number;
+    comment: string;
+    date: Date;
 }

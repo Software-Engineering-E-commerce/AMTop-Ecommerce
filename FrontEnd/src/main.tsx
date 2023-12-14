@@ -14,7 +14,9 @@ import ProductDetailsPage from "./Pages/ProductDetailsPage.tsx";
 
 import Cart from "./Pages/Cart.tsx";
 import Dashboard from "./Pages/Dashboard.tsx";
+import Catalog from "./Pages/Catalog.tsx";
 import Wishlist from "./Pages/Wishlist.tsx";
+
 
 
 const router = createBrowserRouter([
@@ -50,14 +52,17 @@ const router = createBrowserRouter([
 
     path: "/product-details",
     element: <ProductDetailsPage />,
-
+  },
+  {
     path: "/dashboard",
     element: <Dashboard />,
 
   },
   {
-    path: "/products",
-    element: <Dashboard />,
+
+    path: "/catalog",
+    element: <Catalog />,
+
   },
   {
     path: "*",

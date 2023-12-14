@@ -8,6 +8,7 @@ interface Props {
   userTok: string;
   productId: number;
   setInWishlistBoolean: React.Dispatch<React.SetStateAction<boolean>>;
+  setInWishlistBooleanMap?: React.Dispatch<React.SetStateAction<Map<any, any>>>;
   onCloseBobUp: () => void;
 }
 
@@ -15,6 +16,7 @@ const AddToWishlist = ({
   userTok,
   productId,
   setInWishlistBoolean,
+  setInWishlistBooleanMap,
   onCloseBobUp,
 }: Props) => {
   const isMounted = useRef(true);
@@ -36,6 +38,8 @@ const AddToWishlist = ({
       setResponseData(response.data);
       // Then we need to set the boolean useState to true (to have the heart colored in red)
       setInWishlistBoolean(true);
+      setInWishlistBooleanMap!(prevStatus => new Map(prevStatus).set(productId, true));
+
     } catch (error) {
       // Handle errors here (non-OK responses)
       if (axios.isAxiosError(error)) {
@@ -76,6 +80,7 @@ const AddToWishlist = ({
       setResponseData(response.data);
       // Then we need to set the useState boolean to false to notify the heart element that it's been deleted
       setInWishlistBoolean(false);
+      setInWishlistBooleanMap!(prevStatus => new Map(prevStatus).set(productId, false));
     } catch (error) {
       // Handle errors here (non-OK responses)
       if (axios.isAxiosError(error)) {
