@@ -10,7 +10,7 @@ interface Props {
   onCloseBobUp: () => void;
 }
 
-const AddToCart = ({ userTok, productId }: Props) => {
+const AddToCart = ({ userTok, productId, onCloseBobUp }: Props) => {
   const isMounted = useRef(true);
   const [responseData, setResponseData] = useState("");
 
@@ -69,7 +69,7 @@ const AddToCart = ({ userTok, productId }: Props) => {
     <>
       {responseData === "Product is added successfully to the cart" && (
         <GenericAlertModal
-          onClose={resetResponseData}
+          onClose={onCloseBobUp}
           resetResponseData={resetResponseData}
           show={true}
           body={
@@ -92,7 +92,7 @@ const AddToCart = ({ userTok, productId }: Props) => {
       {responseData !== "" &&
         responseData !== "Product is added successfully to the cart" && (
           <GenericAlertModal
-            onClose={resetResponseData}
+            onClose={onCloseBobUp}
             resetResponseData={resetResponseData}
             show={true}
             body={

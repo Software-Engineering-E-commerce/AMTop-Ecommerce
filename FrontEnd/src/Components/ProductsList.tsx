@@ -2,9 +2,11 @@ import { useState, useEffect, useRef } from 'react';
 import Pagination from './Pagination';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCartShopping, faHeart, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from "react-router-dom";
 import './ProductsList.css';
 import StarRating from './StarRating';
 import AddToCart from './AddToCart';
+import AddToWishlist from './AddToWishlist';
 
 interface Props {
   isAdmin: boolean,
@@ -30,11 +32,14 @@ const ProductsList = ({
   const [productsPerPage] = useState(15);
   const [fadeAnimation, setFadeAnimation] = useState('');
   const [wishlistStatus, setWishlistStatus] = useState(new Map());
+  const [dummyBool, setDummyBool] = useState(false);
   const [showCartPopUp, setShowCartPopUp] = useState(false);
   const [showWishlistPopUp, setShowWishlistPopUp] = useState(false);
+  const navigate = useNavigate();
 
   const handleProductClick = (product: Product) => {
-    // Route to the product page
+    const id = product.id;
+    navigate("/product-details", { state: { productID: id, token: userToken }});
   };
 
   const handleRemoveProduct = (productId: number) => {
@@ -60,7 +65,8 @@ const ProductsList = ({
   }
 
   const toggleWishlist = (productId: number) => {
-    setWishlistStatus(prevStatus => new Map(prevStatus).set(productId, !prevStatus.get(productId)));
+    setShowWishlistPopUp(true);
+    setWishlistProductId(productId);
     for (let i = 0; i < currentProducts.length; i++) {
       const product = currentProducts[i];
       if (product.id == productId){
@@ -92,21 +98,42 @@ const ProductsList = ({
   const hasFetchedProducts = useRef(false);
   useEffect(() => {
     if (hasFetchedProducts.current) {
-        return;
+      return;
     }
     hasFetchedProducts.current = true;
-    const fetchProducts = async () => {
-      getProducts().then(products => {
-        setProducts(products);
-        for (let i = 0; i < products.length; i++) {
-          const product = products[i];
-          if (product.inWishlist){
-            setWishlistStatus(prevStatus => new Map(prevStatus).set(product.id, true));
-          } else setWishlistStatus(prevStatus => new Map(prevStatus).set(product.id, false));
+  
+    const fetchData = async () => {
+      const products = await getProducts();
+  
+      // Fetch products
+      setProducts(products);
+  
+      // Set wishlist status
+      for (let i = 0; i < products.length; i++) {
+        const product = products[i];
+        if (product.inWishlist) {
+          setWishlistStatus(prevStatus => new Map(prevStatus).set(product.id, true));
+        } else {
+          setWishlistStatus(prevStatus => new Map(prevStatus).set(product.id, false));
         }
-      });
+      }
+  
+      // Load images
+      const updatedProducts = await Promise.all(products.map(async product => {
+        try {
+          const dynamicImportedImage = await import(`../assets${product.imageLink}`);
+          return { ...product, imageLink: dynamicImportedImage.default };
+        } catch (error) {
+          console.error("Error loading image:", error);
+          return product; // Return original product if image loading fails
+        }
+      }));
+
+      setProducts(updatedProducts);
     };
-    fetchProducts();
+  
+    fetchData();
+  
   }, []);
 
   // Get current products
@@ -132,11 +159,13 @@ const ProductsList = ({
             <div
             style={{ width: "90%", height: "50%", position: "relative", marginBottom: "8px",
                     top: "0", left: "50%", transform: "translate(-50%, 0)"}}>
-              <img
-                src={product.imageLink}
-                alt={product.productName}
-                style={{ width: "100%", height: "auto" }}
-              />
+              {product.imageLink && 
+                <img
+                  src={product.imageLink}
+                  alt={product.productName}
+                  style={{ width: "100%", height: "auto" }}
+                />
+              }
             </div>
             <div
             style={{ height: "50%", position: "relative" }}>
@@ -202,7 +231,7 @@ const ProductsList = ({
           currentPage={currentPage}
         />
       </footer>
-      {/* {showCartPopUp && 
+      {showCartPopUp && 
         <AddToCart 
           userTok = {userToken}
           productId = {cartProductId}
@@ -213,10 +242,11 @@ const ProductsList = ({
         <AddToWishlist
           userTok = {userToken}
           productId = {wishlistProductId}
-          setInWishlistBoolean = {setWishlistStatus}
+          setInWishlistBoolean = {setDummyBool}
+          setInWishlistBooleanMap = {setWishlistStatus}
           onCloseBobUp = {handleCloseWishlistWindow}
         />
-      } */}
+      }
     </div>
   );
 };
