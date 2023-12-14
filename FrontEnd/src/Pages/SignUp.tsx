@@ -1,6 +1,6 @@
 import axios from "axios";
 import Form from "../Components/Form";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import BobUpWindow from "../Components/BobUpWindow";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
@@ -86,8 +86,7 @@ const SignUp = () => {
         <>
           <BobUpWindow setResponseStatus={setResponseStatus}>
             <p style={{ color: "black" }}>
-              The email address you provided already exists so you might wanna
-              log in
+              The email address you provided already exists. Log in instead
             </p>
             <button
               type="button"

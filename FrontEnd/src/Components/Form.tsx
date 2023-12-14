@@ -23,7 +23,7 @@ const Form = ({
   getLogInCredentials,
 }: Props) => {
   const navigate = useNavigate(); //to navigate programatically milestone_1
-  const [userALreadyExist, setUserAlreadyExist] = useState(false);
+  const [userALreadyExist, setUserAlreadyExist] = useState("Not exist");
 
   //one use state for all of the form fields (sign up or login)
   const [formData, setFormData] = useState({
@@ -150,7 +150,7 @@ const Form = ({
     if (token.includes("Already Exists")) {
       //then this user have used this email address to sign up using basic credentials
       //so he shall not log in using Gmail
-      setUserAlreadyExist(true);
+      setUserAlreadyExist("Exist");
     } else {
       //here means that we have our token and this user is created if not exist or is authorized to login
       //so we can redirect him to the home page
@@ -270,7 +270,7 @@ const Form = ({
     console.log("log in = ", isLogin)
     if(!isLogin){
       if (!passwordRegex.test(formData.password)) {
-        comment = "Please use a stronger password and Don't use white spaces!";
+        comment = "Please use a stronger password and don't use white spaces!";
       }
     }
     if (formData.password.length < 8) {
@@ -430,12 +430,12 @@ const Form = ({
           )}
         </form>
       </div>
-      {userALreadyExist && (
+      {userALreadyExist === "Exist" && (
         <>
-          <BobUpWindow>
+          <BobUpWindow setResponseStatus={setUserAlreadyExist}>
             <p style={{ color: "black" }}>
               This email address is used prviously to sign up but with using the
-              basic credentials so you shall Log in this way
+              basic credentials so you shall log in this way
             </p>
             {!isLogin && (
               <button

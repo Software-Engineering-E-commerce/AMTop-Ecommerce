@@ -1,8 +1,5 @@
-import axios, { Axios, AxiosResponse } from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { PulseLoader } from "react-spinners";
-import { Component } from "react";
 import Loading from "../Components/Loading";
 
 const Verification = () => {
