@@ -62,22 +62,6 @@ const Home = () => {
     if (isMounted.current) {
       fetchData();
       isMounted.current = false;
-
-      // Make the GET request here
-      // fetch("http://localhost:9080/Home/startup", {
-      //   method: "GET",
-      //   headers: {
-      //     Authorization: `Bearer ${userToken}`,
-      //   },
-      // })
-      //   .then((response) => response.json())
-      //   .then((data) => {
-      //     // Update state with the fetched HomeInfo
-      //     setHomeInfo(data);
-      //   })
-      //   .catch((error) => {
-      //     console.error("Error fetching HomeInfo:", error);
-      //   });
     }
   }, []);
 
@@ -91,22 +75,6 @@ const Home = () => {
         isAdmin={homeInfo?.admin || false}
         token={userToken}
       />
-      {/* {(from === "logged-in" || from === "Signed-up") && (
-       
-        <BobUpWindow>
-          <p style={{ color: "green" }}>
-            <FontAwesomeIcon
-              icon={faCircleCheck}
-              style={{
-                color: "green",
-                fontSize: "18px",
-                marginRight: "10px",
-              }}
-            />
-            Congrats ! you've successfully {from}
-          </p>
-        </BobUpWindow>
-      )} */}
     </>
   );
 };
