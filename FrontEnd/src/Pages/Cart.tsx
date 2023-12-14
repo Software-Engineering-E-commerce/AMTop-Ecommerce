@@ -15,7 +15,7 @@ const Cart = () => {
 
   //TODO change it when the home page is done such that it's a useLocation string that's set when clicked on the cart icon
   const userTok =
-    "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0Y3VzdG9tZXJAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDIzMDg3MjAsImV4cCI6MTcwMjM5NTEyMH0.VNkjOKE6pbuwGiFk8uesLujrrRvDWNWT4JQ_J9Tr4lY";
+    "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0Y3VzdG9tZXJAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDI0MDc2MjMsImV4cCI6MTcwMjQ5NDAyM30.gkgWGTEs_jsgqfMKttq4FytpjPJiPyyQHTQjpYmk23o";
 
   // useRef to track whether the component is mounted
   const isMounted = useRef(true);
@@ -40,19 +40,6 @@ const Cart = () => {
     }
   };
 
-  // useEffect runs on component mount
-  useEffect(() => {
-    if (isMounted.current) {
-      fetchData();
-      isMounted.current = false;
-    }
-  }, []);
-
-  // Function to handle successful delete operation
-  const causeRemountCart = () => {
-    fetchData();
-  };
-
   const processResponse = (arr: CartElement[]) => {
     let totalQuantity: number = 0;
     let totalPrice: number = 0;
@@ -65,6 +52,23 @@ const Cart = () => {
     }
     setTotalPrice(totalPrice.toFixed(2));
     setTotalItems(totalQuantity);
+  };
+
+  // useEffect runs on component mount
+  useEffect(() => {
+    if (isMounted.current) {
+      fetchData();
+      isMounted.current = false;
+    }
+  }, []);
+
+  // Function that causes remount for the component
+  const causeRemountCart = () => {
+    fetchData();
+  };
+
+  const resetCheckoutResponse = () => {
+    setCheckOutResponse("");
   };
 
   //function to handle the checkout request
@@ -81,25 +85,18 @@ const Cart = () => {
         }
       );
       setCheckOutResponse(response.data);
-      //causeRemountCart();
-      // You can perform additional actions based on the response if needed
     } catch (error) {
       // Handle errors here
       if (axios.isAxiosError(error)) {
         // This type assertion tells TypeScript that error is an AxiosError
         const axiosError = error as import("axios").AxiosError;
         if (axiosError.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
-          //alert(axiosError.response.data);
           setCheckOutResponse(axiosError.response.data as string);
           console.error("Response data:", axiosError.response.data);
           console.error("Response status:", axiosError.response.status);
         } else if (axiosError.request) {
-          // The request was made but no response was received
           console.error("No response received:", axiosError.request);
         } else {
-          // Something happened in setting up the request that triggered an Error
           console.error("Error:", axiosError.message);
         }
       } else {
@@ -113,7 +110,8 @@ const Cart = () => {
     <>
       {checkOutResponse === "Order has been placed successfully !" && (
         <GenericAlertModal
-          onConfirm={causeRemountCart}
+          onClose={causeRemountCart}
+          resetResponseData={resetCheckoutResponse}
           show={true}
           body={
             <>
@@ -135,7 +133,8 @@ const Cart = () => {
       {checkOutResponse !== "" &&
         checkOutResponse !== "Order has been placed successfully !" && (
           <GenericAlertModal
-            onConfirm={causeRemountCart}
+            onClose={causeRemountCart}
+            resetResponseData={resetCheckoutResponse}
             show={true}
             body={
               <>
@@ -156,6 +155,7 @@ const Cart = () => {
           <div className="cart-elements">
             {cartElements.map((cartElement) => (
               <CartElement
+                key={cartElement.id}
                 cartElement={cartElement}
                 causeRemountCart={causeRemountCart}
               />

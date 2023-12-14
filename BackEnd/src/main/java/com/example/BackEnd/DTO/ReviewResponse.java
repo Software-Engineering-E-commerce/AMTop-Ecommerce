@@ -8,6 +8,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CartRequest {
-    private Long productId;
+public class ReviewResponse {
+    private long id;
+    private String customerName;
+    private float rating;
+    private String reviewText;
+    private String date;
 }

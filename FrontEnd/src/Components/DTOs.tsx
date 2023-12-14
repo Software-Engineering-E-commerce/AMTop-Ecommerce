@@ -30,12 +30,27 @@ interface CartElement {
   discountPercentage: number;
 }
 
+// The DTO of the WishlistElement recieved from the api
+interface WishlistElement {
+  id: number;
+  productName: string;
+  price: number;
+  description: string;
+  imageLink: string;
+  token: string;
+  discountPercentage: number;
+}
+
 
 // The DTO of the cart request needed to send requests to the api and include this object in the body
 interface CartRequest {
   productId: number;
 }
 
+// The DTO of the wishlist request needed to send requests to the api and include this object in the body
+interface WishlistRequest {
+  productId: number;
+}
 
 //the OTD for the delete order request
 interface DeleteOrderRequest {
