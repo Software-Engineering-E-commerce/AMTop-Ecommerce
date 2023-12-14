@@ -20,6 +20,7 @@ const CustomerReviews: React.FC<CustomerReviewsProps> = ({
   token,
   isAdmin,
 }) => {
+  console.log("isAdmin in reviews:" , isAdmin)
   return (
     <div>
       {reviews.length > 0 && <h3 className="mt-4 mb-3">Customer Reviews</h3>}

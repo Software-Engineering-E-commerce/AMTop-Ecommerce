@@ -72,7 +72,7 @@ const EditAddProduct = ({
         countAvailable: "0",
         brand: "",
         discountPercentage: "0.00",
-        category: "Electronics",
+        category: "Laptops",
       });
     }
   }, [product]);
@@ -276,7 +276,6 @@ const EditAddProduct = ({
     console.log("In reset response data ");
     setResponseData("");
     resetButton();
-    console.log("In reset response data22222222222222222 ");
 
     navigate("/catalog", {
       state: {
@@ -490,14 +489,19 @@ const EditAddProduct = ({
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
                   <Dropdown.Item
-                    onClick={() => handleCategorySelect("Electronics")}
-                  >
-                    Electronics
-                  </Dropdown.Item>
-                  <Dropdown.Item
                     onClick={() => handleCategorySelect("Laptops")}
                   >
                     Laptops
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    onClick={() => handleCategorySelect("Mobile phones")}
+                  >
+                    Mobile phones
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    onClick={() => handleCategorySelect("Smart Watches")}
+                  >
+                    Smart Watches
                   </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>

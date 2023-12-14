@@ -220,11 +220,18 @@ const ProductsList = ({
           />
         </>
       )}
-      <div className="addNewProduct">
-        <button className="btn btn-primary" onClick={() => setAddProduct(true)} style={{marginLeft:"20px", marginTop:"20px"}}>
-          +Add product
-        </button>
-      </div>
+      {isAdmin && (
+        <div className="addNewProduct">
+          <button
+            className="btn btn-primary"
+            onClick={() => setAddProduct(true)}
+            style={{ marginLeft: "20px", marginTop: "20px" }}
+          >
+            +Add product
+          </button>
+        </div>
+      )}
+
       <div className={`products-list ${fadeAnimation}`}>
         {currentProducts.map((product) => (
           <div
