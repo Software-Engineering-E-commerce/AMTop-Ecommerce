@@ -1,12 +1,12 @@
 import axios from "axios";
 import OrdersList from "../Components/OrdersList";
 import { useLocation } from "react-router";
+import Navbar from "../Components/HomeNavbar";
 
 const Dashboard = () => {
 
   const location = useLocation();
-  var {userToken, from} = location.state || {}; 
-  console.log(from);
+  var {userToken, isAdmin, firstName, lastName} = location.state || {};
 
   const getOrders = async () => {
     console.log("In get orders");
@@ -104,6 +104,12 @@ const Dashboard = () => {
 
   return (
     <div>
+      <Navbar 
+          firstName = {firstName}
+          lastName = {lastName}
+          isAdmin = {isAdmin}
+          token = {userToken}
+      />
       <OrdersList 
         getOrders = {getOrders}
         deleteOrder = {deleteOrder}

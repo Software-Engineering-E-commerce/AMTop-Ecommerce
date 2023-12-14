@@ -2,15 +2,16 @@ import React, { ReactNode, useEffect, useRef, useState } from "react";
 import WishlistElement from "../Components/WishlistElement";
 import "./Cart.css";
 import axios from "axios";
+import { useLocation } from "react-router-dom";
+import Navbar from "../Components/HomeNavbar";
 
 const Wishlist = () => {
   const [WishlistElements, setWishlistElements] = useState<WishlistElement[]>(
     []
   );
   // Use state to manage cartElements
-  //TODO change it when the home page is done such that it's a useLocation string that's set when clicked on the cart icon
-  const userTok =
-    "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0Y3VzdG9tZXJAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDI0MDc2MjMsImV4cCI6MTcwMjQ5NDAyM30.gkgWGTEs_jsgqfMKttq4FytpjPJiPyyQHTQjpYmk23o";
+  const location = useLocation();
+  var {userTok, isAdmin, firstName, lastName} = location.state || {};
 
   // useRef to track whether the component is mounted
   const isMounted = useRef(true);
@@ -48,6 +49,12 @@ const Wishlist = () => {
 
   return (
     <>
+      <Navbar 
+        firstName={firstName}
+        lastName={lastName}
+        isAdmin={isAdmin}
+        token={userTok} 
+      />
       <div
         className="col-12 container wishlist-container"
         style={{ backgroundColor: "white", display: "flex" }}

@@ -9,6 +9,8 @@ import AddToCart from './AddToCart';
 import AddToWishlist from './AddToWishlist';
 
 interface Props {
+  firstName: string,
+  lastName: string,
   isAdmin: boolean,
   getProducts: () => Promise<Product[]>,
   addProduct: () => void,
@@ -18,6 +20,8 @@ interface Props {
 }
 
 const ProductsList = ({
+  firstName,
+  lastName,
   isAdmin,
   getProducts,
   addProduct,
@@ -39,7 +43,7 @@ const ProductsList = ({
 
   const handleProductClick = (product: Product) => {
     const id = product.id;
-    navigate("/product-details", { state: { productID: id, token: userToken }});
+    navigate("/product-details", { state: { firstName: firstName, lastName: lastName, isAdmin: isAdmin ,productID: id, token: userToken }});
   };
 
   const handleRemoveProduct = (productId: number) => {

@@ -24,7 +24,6 @@ const Home = () => {
   var { userToken, from } = location.state || {};
   const [homeInfo, setHomeInfo] = useState<HomeInfo | null>(null);
   const isMounted = useRef<boolean>(true);
-  // const [registerStatus, setRegisterStatus] = useState<string>;
 
   const fetchData = async () => {
     try {

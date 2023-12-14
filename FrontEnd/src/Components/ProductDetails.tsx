@@ -24,10 +24,9 @@ export interface Product {
 
 interface ProductDetailsProps {
   product: Product;
-  token: string;
 }
 
-const ProductDetails: React.FC<ProductDetailsProps> = ({ product, token }) => {
+const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
 
   useEffect(() => {

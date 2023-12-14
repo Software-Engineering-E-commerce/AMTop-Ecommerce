@@ -36,12 +36,6 @@ const Navbar: React.FC<NavbarProps> = ({
   const [isProfileHovered, setIsProfileHovered] = useState(false);
   const [isLogoutHovered, setIsLogoutHovered] = useState(false);
 
-  console.log("hi from navbar")
-  console.log(firstName);
-  console.log(lastName);
-  console.log(token);
-  console.log(isAdmin);
-
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
   };
@@ -64,7 +58,7 @@ const Navbar: React.FC<NavbarProps> = ({
   }, []);
 
   const handleProductsClick = () => {
-    navigate("/Products", {
+    navigate("/catalog", {
       state: {
         userToken: token,
         isAdmin: isAdmin,
@@ -79,8 +73,8 @@ const Navbar: React.FC<NavbarProps> = ({
       state: {
         userToken: token,
         isAdmin: isAdmin,
-        firstName: firstName,
-        lastName: lastName,
+        firstNameNav: firstName,
+        lastNameNav: lastName,
       },
     });
   };

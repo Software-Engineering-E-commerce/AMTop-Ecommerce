@@ -3,13 +3,17 @@ import React, { useEffect, useRef, useState } from "react";
 import ProductDetails, { Product } from "../Components/ProductDetails";
 import CustomerReviews from "../Components/CustomerReviews";
 import { useLocation } from "react-router-dom";
+import Navbar from "../Components/HomeNavbar";
 
 interface ProductDetailsPageProps {}
 
 const ProductDetailsPage: React.FC<ProductDetailsPageProps> = () => {
   const isMounted = useRef<boolean>(true);
   const location = useLocation();
-  const { productID, token } = location.state as {
+  const { firstName, lastName, isAdmin, productID, token } = location.state as {
+    firstName: string;
+    lastName: string;
+    isAdmin: boolean;
     productID: number;
     token: string;
   };
@@ -43,9 +47,14 @@ const ProductDetailsPage: React.FC<ProductDetailsPageProps> = () => {
   }
   return (
     <div style={{ overflowX: "hidden", overflowY: "auto", padding: "30px" }}>
-      {/* <NavBar /> */}
+      <Navbar 
+        firstName={firstName}
+        lastName={lastName}
+        isAdmin={isAdmin}
+        token={token} 
+      />
       <div className=" mt-1 pt-4">
-        <ProductDetails product={product} token={token} />
+        <ProductDetails product={product} />
         <hr className="my-4" /> {/* Separator line */}
         <CustomerReviews
           reviews={product.reviews}
