@@ -16,7 +16,7 @@ const Wishlist = () => {
   // useRef to track whether the component is mounted
   const isMounted = useRef(true);
 
-  const fetchData = async () => {
+  const getWishlistElements = async () => {
     try {
       const response = await axios.get(
         "http://localhost:9080/wishlist/getWishlistElements",
@@ -27,30 +27,35 @@ const Wishlist = () => {
           },
         }
       );
-      setWishlistElements([]);
-      setWishlistElements(response.data);
-      // Load images
-      const updatedWishlistElements = (await Promise.all(
-        WishlistElements.map(async (wishlistElement) => {
-          try {
-            const dynamicImportedImage = await import(
-              `../assets${wishlistElement.imageLink}`
-            );
-            return {
-              ...wishlistElement,
-              imageLink: dynamicImportedImage.default,
-            };
-          } catch (error) {
-            console.error("Error loading image:", error);
-            return wishlistElement; // Return original wishistElement if image loading fails
-          }
-        })
-      )) as WishlistElement[];
-      setWishlistElements(updatedWishlistElements);
-      
+      const wishlistElements: WishlistElement[] = response.data;
+      return wishlistElements;
     } catch (error) {
-      console.error(error);
+      console.log("Error:", error);
+      const wishlistElements: WishlistElement[] = [];
+      return wishlistElements;
     }
+  };
+
+  const fetchData = async () => {
+    const wishlistElements = await getWishlistElements();
+    setWishlistElements(wishlistElements);
+    console.log(wishlistElements);
+    // Load images
+    const updatedWishlistElements = (await Promise.all(
+      wishlistElements.map(async (wishlistElement) => {
+        try {
+          const dynamicImportedImage = await import(
+            `../assets${wishlistElement.imageLink}`
+          );
+          return { ...wishlistElement, imageLink: dynamicImportedImage.default };
+        } catch (error) {
+          console.error("Error loading image:", error);
+          return wishlistElement; // Return original product if image loading fails
+        }
+      })
+    ));
+    setWishlistElements(updatedWishlistElements);
+    
   };
 
   // useEffect runs on component mount

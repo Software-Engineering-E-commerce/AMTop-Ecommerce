@@ -21,8 +21,7 @@ const Cart = () => {
   // useRef to track whether the component is mounted
   const isMounted = useRef(true);
 
-  const fetchData = async () => {
-    setCheckOutResponse("");
+  const getCartElements = async () => {
     try {
       const response = await axios.get(
         "http://localhost:9080/cart/getCartElements",
@@ -33,27 +32,35 @@ const Cart = () => {
           },
         }
       );
-      setCartElements([]);
-      setCartElements(response.data);
-      // Load images
-      const updatedCartElements = (await Promise.all(
-        cartElements.map(async (cartElement) => {
-          try {
-            const dynamicImportedImage = await import(
-              `../assets${cartElement.imageLink}`
-            );
-            return { ...cartElement, imageLink: dynamicImportedImage.default };
-          } catch (error) {
-            console.error("Error loading image:", error);
-            return cartElement; // Return original product if image loading fails
-          }
-        })
-      )) as CartElement[];
-      setCartElements(updatedCartElements);
-      processResponse(response.data);
+      const cartElements: CartElement[] = response.data;
+      return cartElements;
     } catch (error) {
-      console.error(error);
+      console.log("Error:", error);
+      const cartElements: CartElement[] = [];
+      return cartElements;
     }
+  };
+
+  const fetchData = async () => {
+    setCheckOutResponse("");
+    const cartElements = await getCartElements();
+    setCartElements(cartElements);
+    // Load images
+    const updatedCartElements = (await Promise.all(
+      cartElements.map(async (cartElement) => {
+        try {
+          const dynamicImportedImage = await import(
+            `../assets${cartElement.imageLink}`
+          );
+          return { ...cartElement, imageLink: dynamicImportedImage.default };
+        } catch (error) {
+          console.error("Error loading image:", error);
+          return cartElement; // Return original product if image loading fails
+        }
+      })
+    ));
+    setCartElements(updatedCartElements);
+    processResponse(updatedCartElements);
   };
 
   const processResponse = (arr: CartElement[]) => {
