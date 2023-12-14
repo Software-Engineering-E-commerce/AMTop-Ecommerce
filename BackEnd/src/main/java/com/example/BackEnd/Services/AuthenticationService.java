@@ -8,22 +8,12 @@ import com.example.BackEnd.Model.Admin;
 import com.example.BackEnd.Model.Customer;
 import com.example.BackEnd.Repositories.AdminRepository;
 import com.example.BackEnd.Repositories.CustomerRepository;
-import com.example.BackEnd.DTO.AuthenticationResponse;
-import com.example.BackEnd.DTO.LoginRequest;
-
-
-import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.mail.MailSendException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.net.http.HttpHeaders;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -38,41 +28,62 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
 
-    public AuthenticationResponse customerRegister(RegisterRequest request) {
-        Customer customer = new Customer(request.getEmail(), passwordEncoder.encode(request.getPassword()), false
-                , false, request.getFirstName(), request.getLastName());
+    /**
+     * This method is used to send verification email to the customer
+     */
+    private void setupVerification(Customer customer) throws Exception {
+        var jwtToken = jwtService.generateToken(customer);
+        try {
+            emailService.sendEmail(customer.getEmail(), "Email Verification",
+                    "<body style=\"font-family: Arial, sans-serif; background-color: #f4f4f4; text-align: center; padding: 20px;\">\n" +
+                            "\n" +
+                            "    <div style=\"max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);\">\n" +
+                            "\n" +
+                            "        <h2 style=\"color: #333333;\">Email Verification</h2>\n" +
+                            "\n" +
+                            "        <p style=\"color: #666666;\">Please click on the button below to verify your account:</p>\n" +
+                            "\n" +
+                            "        <a href=\"http://localhost:3000/verification?token=" + jwtToken + "\"style=\"display: inline-block; background-color: #4caf50; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-top: 20px;\">Verify</a>\n" +
+                            "\n" +
+                            "    </div>\n" +
+                            "</body>");
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+    }
 
+    public AuthenticationResponse customerRegister(RegisterRequest request) {
         try {
             Optional<Customer> customerCheck = customerRepository.findByEmail(request.getEmail());
             Optional<Admin> adminCheck = adminRepository.findByEmail(request.getEmail());
-            if (adminCheck.isPresent() || (customerCheck.isPresent() && customerCheck.get().getIsVerified())) {
-                return AuthenticationResponse.builder().token("Already Exist").build();
-            } else {
-                customerRepository.save(customer);
-                var jwtToken = jwtService.generateToken(customer);
-                emailService.sendEmail(customer.getEmail(),"Email Verification",
-                        "<body style=\"font-family: Arial, sans-serif; background-color: #f4f4f4; text-align: center; padding: 20px;\">\n" +
-                                "\n" +
-                                "    <div style=\"max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);\">\n" +
-                                "\n" +
-                                "        <h2 style=\"color: #333333;\">Email Verification</h2>\n" +
-                                "\n" +
-                                "        <p style=\"color: #666666;\">Please click on the button below to verify your account:</p>\n" +
-                                "\n" +
-                                "        <a href=\"http://localhost:3000/verification?token=" + jwtToken + "\"style=\"display: inline-block; background-color: #4caf50; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-top: 20px;\">Verify</a>\n" +
-                                "\n" +
-                                "    </div>\n" +
-                                "</body>");
 
-                return AuthenticationResponse.builder()
-                        .token("SUCCESS")
-                        .build();
+            if (adminCheck.isPresent()) {
+                return AuthenticationResponse.builder().token("Already Exist").build();
             }
+            if (customerCheck.isPresent()) {
+                Customer customer1 = customerCheck.get();
+                if (customer1.getIsVerified() || customer1.getIsGmail()) {
+                    return AuthenticationResponse.builder().token("Already Exist").build();
+                }
+                customer1.setFirstName(request.getFirstName());
+                customer1.setLastName(request.getLastName());
+                customer1.setPassword(passwordEncoder.encode(request.getPassword()));
+                customerRepository.save(customer1);
+                setupVerification(customer1);
+            } else {
+                Customer customer = new Customer(request.getEmail(), passwordEncoder.encode(request.getPassword()), false
+                        , false, request.getFirstName(), request.getLastName());
+                customerRepository.save(customer);
+                setupVerification(customer);
+            }
+            return AuthenticationResponse.builder()
+                    .token("SUCCESS")
+                    .build();
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return AuthenticationResponse.builder().token(e.getMessage()).build();
         }
-
     }
 
 
@@ -106,5 +117,4 @@ public class AuthenticationService {
                     .build();
         }
     }
-
 }
