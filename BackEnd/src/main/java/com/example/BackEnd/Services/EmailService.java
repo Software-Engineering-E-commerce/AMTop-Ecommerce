@@ -1,5 +1,6 @@
 package com.example.BackEnd.Services;
 
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
@@ -14,6 +15,7 @@ import jakarta.mail.internet.MimeMessage;
 @Service
 public class EmailService {
 
+    @Setter
     @Value("${spring.mail.username}")
     private String fromEmail;
 
@@ -36,9 +38,5 @@ public class EmailService {
         } catch (MailException e) {
             throw new MailSendException("Mail Send Exception");
         }
-    }
-
-    public void setFromEmail(String fromEmail) {
-        this.fromEmail = fromEmail;
     }
 }

@@ -1,8 +1,6 @@
-import axios, { Axios, AxiosResponse } from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { PulseLoader } from "react-spinners";
-import { Component } from "react";
+import Loading from "../Components/Loading";
 
 const Verification = () => {
   var navigate = useNavigate();
@@ -73,26 +71,12 @@ const Verification = () => {
     };
   }, []); // The empty dependency array ensures that the effect runs only once
 
-  return verificationStatus === "loading" ? (
-    <div
-      className="loadingDiv"
-      style={{
-        position: "fixed",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-      }}
-    >
-      <PulseLoader
-        color={"black"}
-        loading={verificationStatus === "loading"}
-        size={30}
-        aria-label="Loading Spinner"
-        data-testid="loader"
-      />
-    </div>
-  ) : (
-    <h2>Verified</h2>
+  return (
+    <>
+      {verificationStatus === "loading" && (
+        <Loading isLoading={verificationStatus === "loading"} />
+      )}
+    </>
   );
 };
 
