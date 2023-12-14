@@ -5,6 +5,8 @@ import CartElement from "../Components/CartElement";
 import GenericAlertModal from "../Components/GenericAlertModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
+import { useLocation } from "react-router-dom";
+import Navbar from "../Components/HomeNavbar";
 
 const Cart = () => {
   console.log("Cart component rendered");
@@ -13,31 +15,52 @@ const Cart = () => {
   const [totalPrice, setTotalPrice] = useState(""); //and here for the total price
   const [checkOutResponse, setCheckOutResponse] = useState("");
 
-  //TODO change it when the home page is done such that it's a useLocation string that's set when clicked on the cart icon
-  const userTok =
-    "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0Y3VzdG9tZXJAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDI0MDc2MjMsImV4cCI6MTcwMjQ5NDAyM30.gkgWGTEs_jsgqfMKttq4FytpjPJiPyyQHTQjpYmk23o";
+  const location = useLocation();
+  var { userToken, isAdmin, firstName, lastName } = location.state || {};
 
   // useRef to track whether the component is mounted
   const isMounted = useRef(true);
 
-  const fetchData = async () => {
-    setCheckOutResponse("");
+  const getCartElements = async () => {
     try {
       const response = await axios.get(
         "http://localhost:9080/cart/getCartElements",
         {
           headers: {
-            Authorization: `Bearer ${userTok}`,
+            Authorization: `Bearer ${userToken}`,
             "Content-Type": "application/json",
           },
         }
       );
-      setCartElements([]);
-      setCartElements(response.data);
-      processResponse(response.data);
+      const cartElements: CartElement[] = response.data;
+      return cartElements;
     } catch (error) {
-      console.error(error);
+      console.log("Error:", error);
+      const cartElements: CartElement[] = [];
+      return cartElements;
     }
+  };
+
+  const fetchData = async () => {
+    setCheckOutResponse("");
+    const cartElements = await getCartElements();
+    setCartElements(cartElements);
+    // Load images
+    const updatedCartElements = await Promise.all(
+      cartElements.map(async (cartElement) => {
+        try {
+          const dynamicImportedImage = await import(
+            `../assets${cartElement.imageLink}`
+          );
+          return { ...cartElement, imageLink: dynamicImportedImage.default };
+        } catch (error) {
+          console.error("Error loading image:", error);
+          return cartElement; // Return original product if image loading fails
+        }
+      })
+    );
+    setCartElements(updatedCartElements);
+    processResponse(updatedCartElements);
   };
 
   const processResponse = (arr: CartElement[]) => {
@@ -79,7 +102,7 @@ const Cart = () => {
         {},
         {
           headers: {
-            Authorization: `Bearer ${userTok}`,
+            Authorization: `Bearer ${userToken}`,
             "Content-Type": "application/json",
           },
         }
@@ -108,6 +131,12 @@ const Cart = () => {
 
   return (
     <>
+      <Navbar
+        firstName={firstName}
+        lastName={lastName}
+        isAdmin={isAdmin}
+        token={userToken}
+      />
       {checkOutResponse === "Order has been placed successfully !" && (
         <GenericAlertModal
           onClose={causeRemountCart}
@@ -155,6 +184,8 @@ const Cart = () => {
           <div className="cart-elements">
             {cartElements.map((cartElement) => (
               <CartElement
+                fname={firstName as string}
+                lname={lastName as string}
                 key={cartElement.id}
                 cartElement={cartElement}
                 causeRemountCart={causeRemountCart}

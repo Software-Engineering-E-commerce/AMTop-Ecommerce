@@ -6,8 +6,9 @@ import GenericAlertModal from "./GenericAlertModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import TwoButtonsModal from "./TwoButtonsModal";
+import { useNavigate } from "react-router";
 
-export interface Product {
+export interface EditedProduct {
   id: string;
   name: string;
   price: string;
@@ -19,13 +20,19 @@ export interface Product {
 }
 
 interface editAddProps {
+  resetButton: () => void;
   adminToken: string;
   isEdit: Boolean;
-  product?: Product;
+  product?: EditedProduct;
 }
 
-const EditAddProduct = ({ adminToken, isEdit, product }: editAddProps) => {
-  const [formData, setFormData] = useState<Product>({
+const EditAddProduct = ({
+  adminToken,
+  isEdit,
+  product,
+  resetButton,
+}: editAddProps) => {
+  const [formData, setFormData] = useState<EditedProduct>({
     id: "",
     name: "",
     price: "",
@@ -35,6 +42,7 @@ const EditAddProduct = ({ adminToken, isEdit, product }: editAddProps) => {
     discountPercentage: "",
     category: "",
   });
+  const navigate = useNavigate();
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [responseData, setResponseData] = useState("");
@@ -64,7 +72,7 @@ const EditAddProduct = ({ adminToken, isEdit, product }: editAddProps) => {
         countAvailable: "0",
         brand: "",
         discountPercentage: "0.00",
-        category: "Electronics",
+        category: "Laptops",
       });
     }
   }, [product]);
@@ -265,10 +273,22 @@ const EditAddProduct = ({ adminToken, isEdit, product }: editAddProps) => {
   };
 
   const resetResponseData = () => {
+    console.log("In reset response data ");
     setResponseData("");
+    resetButton();
+
+    navigate("/catalog", {
+      state: {
+        userToken: adminToken,
+        isAdmin: true,
+        firstName: "AMTOP",
+        lastName: "E-Commerce",
+      },
+    });
   };
   const resetShow = () => {
     setShow(false);
+    resetButton();
   };
 
   const onCancel = () => {
@@ -277,6 +297,7 @@ const EditAddProduct = ({ adminToken, isEdit, product }: editAddProps) => {
 
   const resetOnClose = () => {
     setCloseClicked(false);
+    resetButton();
   };
 
   return (
@@ -468,14 +489,19 @@ const EditAddProduct = ({ adminToken, isEdit, product }: editAddProps) => {
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
                   <Dropdown.Item
-                    onClick={() => handleCategorySelect("Electronics")}
-                  >
-                    Electronics
-                  </Dropdown.Item>
-                  <Dropdown.Item
                     onClick={() => handleCategorySelect("Laptops")}
                   >
                     Laptops
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    onClick={() => handleCategorySelect("Mobile phones")}
+                  >
+                    Mobile phones
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    onClick={() => handleCategorySelect("Smart Watches")}
+                  >
+                    Smart Watches
                   </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>

@@ -11,6 +11,10 @@ img {
   margin-bottom: 10px;
 }
 
+.cartImage:hover {
+  cursor: pointer;
+}
+
 .middleDiv {
   position: relative;
   margin-left: 20px;

@@ -24,7 +24,7 @@ public class Product {
     private float price;
     @Column(nullable = false)
     private LocalDateTime postedDate;
-    @Column
+    @Column(length = 1000)
     private String description;
     @Column(nullable = false)
     private int productCountAvailable;

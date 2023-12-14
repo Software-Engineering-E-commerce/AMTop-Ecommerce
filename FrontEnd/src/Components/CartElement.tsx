@@ -4,13 +4,22 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck, faTrash } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import GenericAlertModal from "./GenericAlertModal";
+import { useNavigate } from "react-router";
 
 interface CartElementProps {
   cartElement: CartElement;
+  fname: string;
+  lname: string;
   causeRemountCart: () => void;
 }
 
-const CartElement = ({ cartElement, causeRemountCart }: CartElementProps) => {
+const CartElement = ({
+  cartElement,
+  causeRemountCart,
+  fname,
+  lname,
+}: CartElementProps) => {
+  const navigate = useNavigate();
   const [responseData, setResponseData] = useState("");
   const [Qnty, setQnty] = useState(cartElement.quantity);
 
@@ -43,6 +52,20 @@ const CartElement = ({ cartElement, causeRemountCart }: CartElementProps) => {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const toDetails = () => {
+    console.log(fname)
+    console.log(lname)
+    navigate("/product-details", {
+      state: {
+        firstName: fname as string,
+        lastName: lname as string,
+        isAdmin: false,
+        productID: cartElement.id,
+        token: cartElement.token,
+      },
+    });
   };
 
   const handleDeleteFromCart = async () => {
@@ -127,7 +150,12 @@ const CartElement = ({ cartElement, causeRemountCart }: CartElementProps) => {
 
       <div className="col-12 product">
         <div className="col-3 imageDiv">
-          <img src={cartElement.imageLink} alt="productImage" />
+          <img
+            src={cartElement.imageLink}
+            className="cartImage"
+            alt="productImage"
+            onClick={toDetails}
+          />
         </div>
 
         <div

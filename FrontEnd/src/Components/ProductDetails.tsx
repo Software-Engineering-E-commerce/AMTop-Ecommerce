@@ -3,6 +3,8 @@ import React from "react";
 import { Review } from "./CustomerReviews";
 import StarRating from "./StarRating";
 import { BsCartPlus, BsHeartFill, BsHeart } from "react-icons/bs";
+import AddToCart from "./AddToCart";
+import AddToWishlist from "./AddToWishlist";
 
 export interface Product {
   id: number;
@@ -18,13 +20,13 @@ export interface Product {
   categoryName: string;
   categoryUrl: string;
   reviews: Review[];
-  isAdmin: boolean;
+  admin: boolean;
   isInWishlist: boolean;
 }
 
 interface ProductDetailsProps {
   product: Product;
-  token: string;
+  token:string;
 }
 
 const ProductDetails: React.FC<ProductDetailsProps> = ({ product, token }) => {
@@ -72,9 +74,10 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product, token }) => {
     setShowAddToCartPopup(true);
   };
   const handleAddToWishlist = () => {
-    setIsInWishlist(!isInWishlist);
+    // setIsInWishlist(!isInWishlist);
     setShowAddToWishListPopup(true);
   };
+  console.log("product from pdetails", product);
   return (
     <div>
       <div className="row">
@@ -168,7 +171,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product, token }) => {
             <strong>Sold:</strong> {product.productCountSold}
           </p>
 
-          {!product.isAdmin && (
+          {!product.admin && (
             <>
               <div className="row">
                 <div className="col-md-6 mb-2">
@@ -203,21 +206,22 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product, token }) => {
                 </div>
               </div>
               {/* AddToCartPopup */}
-              {/* {showAddToCartPopup && (
-                <AddToCartPopup
+              {showAddToCartPopup && (
+                <AddToCart
+                  userTok={token}
                   productId={product.id}
-                  token={token}
-                  onClose={() => setShowAddToCartPopup(false)}
+                  onCloseBobUp={() => setShowAddToCartPopup(false)}
                 />
-              )} */}
+              )}
               {/* AddToCartPopup */}
-              {/* {showAddToWishListPopup && (
-                <AddToCartPopup
-                  productId={product.id}
-                  token={token}
-                  onClose={() => setShowAddToWishListPopup(false)}
+              {showAddToWishListPopup && (
+                <AddToWishlist
+                userTok={token}
+                productId={product.id}
+                setInWishlistBoolean={setIsInWishlist}
+                onCloseBobUp={() => setShowAddToWishListPopup(false)}
                 />
-              )} */}
+              )}
             </>
           )}
         </div>

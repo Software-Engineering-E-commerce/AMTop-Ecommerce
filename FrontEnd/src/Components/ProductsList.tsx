@@ -1,49 +1,79 @@
-import { useState, useEffect, useRef } from 'react';
-import Pagination from './Pagination';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCartShopping, faHeart, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { useState, useEffect, useRef } from "react";
+import Pagination from "./Pagination";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCartShopping,
+  faHeart,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
-import './ProductsList.css';
-import StarRating from './StarRating';
-import AddToCart from './AddToCart';
-import AddToWishlist from './AddToWishlist';
+import "./ProductsList.css";
+import StarRating from "./StarRating";
+import AddToCart from "./AddToCart";
+import AddToWishlist from "./AddToWishlist";
+import EditAddProduct, { EditedProduct } from "./EditAddProduct";
 
 interface Props {
-  isAdmin: boolean,
-  getProducts: () => Promise<Product[]>,
-  addProduct: () => void,
-  removeProduct: () => void,
-  updateProduct: () => void,
-  userToken: string
+  firstName: string;
+  lastName: string;
+  isAdmin: boolean;
+  getProducts: () => Promise<Product[]>;
+  userToken: string;
 }
 
 const ProductsList = ({
+  firstName,
+  lastName,
   isAdmin,
   getProducts,
-  addProduct,
-  removeProduct,
-  updateProduct,
-  userToken
+  userToken,
 }: Props) => {
+  const [editedProductDTO, setEditedProductDTO] = useState<EditedProduct>();
   const [products, setProducts] = useState<Product[]>([]);
   const [cartProductId, setCartProductId] = useState(0);
   const [wishlistProductId, setWishlistProductId] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [productsPerPage] = useState(15);
-  const [fadeAnimation, setFadeAnimation] = useState('');
+  const [fadeAnimation, setFadeAnimation] = useState("");
   const [wishlistStatus, setWishlistStatus] = useState(new Map());
   const [dummyBool, setDummyBool] = useState(false);
   const [showCartPopUp, setShowCartPopUp] = useState(false);
   const [showWishlistPopUp, setShowWishlistPopUp] = useState(false);
+  const [editProduct, setEditProduct] = useState(false);
+  const [addProduct, setAddProduct] = useState(false);
   const navigate = useNavigate();
 
   const handleProductClick = (product: Product) => {
     const id = product.id;
-    navigate("/product-details", { state: { productID: id, token: userToken }});
+    navigate("/product-details", {
+      state: {
+        firstName: firstName,
+        lastName: lastName,
+        isAdmin: isAdmin,
+        productID: id,
+        token: userToken,
+      },
+    });
   };
 
-  const handleRemoveProduct = (productId: number) => {
-    // Your logic for removing a product can go here
+  const handleEditProduct = (product: Product) => {
+    console.log(product);
+    // Your logic for editing a product can go here
+    setEditedProductDTO({
+      name: product.productName,
+      description: product.description,
+      price: String(product.price),
+      countAvailable: String(product.productCountAvailable),
+      category: product.category.categoryName,
+      brand: product.brand,
+      id: String(product.id),
+      discountPercentage: String(product.discountPercentage),
+    });
+    setEditProduct(true);
+  };
+
+  const handleAddProduct = () => {
+    setAddProduct(true);
   };
 
   const handleAddToWishlist = (productId: number) => {
@@ -58,18 +88,18 @@ const ProductsList = ({
 
   const handleCloseCartWindow = () => {
     setShowCartPopUp(false);
-  }
+  };
 
   const handleCloseWishlistWindow = () => {
     setShowWishlistPopUp(false);
-  }
+  };
 
   const toggleWishlist = (productId: number) => {
     setShowWishlistPopUp(true);
     setWishlistProductId(productId);
     for (let i = 0; i < currentProducts.length; i++) {
       const product = currentProducts[i];
-      if (product.id == productId){
+      if (product.id == productId) {
         product.inWishlist = !product.inWishlist;
         break;
       }
@@ -101,88 +131,157 @@ const ProductsList = ({
       return;
     }
     hasFetchedProducts.current = true;
-  
+
     const fetchData = async () => {
       const products = await getProducts();
-  
+
       // Fetch products
       setProducts(products);
-  
+
       // Set wishlist status
       for (let i = 0; i < products.length; i++) {
         const product = products[i];
         if (product.inWishlist) {
-          setWishlistStatus(prevStatus => new Map(prevStatus).set(product.id, true));
+          setWishlistStatus((prevStatus) =>
+            new Map(prevStatus).set(product.id, true)
+          );
         } else {
-          setWishlistStatus(prevStatus => new Map(prevStatus).set(product.id, false));
+          setWishlistStatus((prevStatus) =>
+            new Map(prevStatus).set(product.id, false)
+          );
         }
       }
-  
+
       // Load images
-      const updatedProducts = await Promise.all(products.map(async product => {
-        try {
-          const dynamicImportedImage = await import(`../assets${product.imageLink}`);
-          return { ...product, imageLink: dynamicImportedImage.default };
-        } catch (error) {
-          console.error("Error loading image:", error);
-          return product; // Return original product if image loading fails
-        }
-      }));
+      const updatedProducts = await Promise.all(
+        products.map(async (product) => {
+          try {
+            const dynamicImportedImage = await import(
+              `../assets${product.imageLink}`
+            );
+            return { ...product, imageLink: dynamicImportedImage.default };
+          } catch (error) {
+            console.error("Error loading image:", error);
+            return product; // Return original product if image loading fails
+          }
+        })
+      );
 
       setProducts(updatedProducts);
     };
-  
+
     fetchData();
-  
   }, []);
 
   // Get current products
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
+  const currentProducts = products.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
 
   // Change page
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
   const handlePaginationClick = (pageNumber: number) => {
-    setFadeAnimation('fade-out');
+    setFadeAnimation("fade-out");
     setTimeout(() => {
       paginate(pageNumber);
-      setFadeAnimation('fade-in');
+      setFadeAnimation("fade-in");
     }, 300);
+  };
+
+  const resetEditButton = () => {
+    setEditProduct(false);
+  };
+
+  const resetAddButton = () => {
+    setAddProduct(false);
   };
 
   return (
     <div>
+      {editProduct && (
+        <>
+          <EditAddProduct
+            isEdit={true}
+            adminToken={userToken}
+            product={editedProductDTO}
+            resetButton={resetEditButton}
+          />
+        </>
+      )}
+      {addProduct && (
+        <>
+          <EditAddProduct
+            isEdit={false}
+            adminToken={userToken}
+            resetButton={resetAddButton}
+          />
+        </>
+      )}
+      {isAdmin && (
+        <div className="addNewProduct">
+          <button
+            className="btn btn-primary"
+            onClick={() => setAddProduct(true)}
+            style={{ marginLeft: "20px", marginTop: "20px" }}
+          >
+            +Add product
+          </button>
+        </div>
+      )}
+
       <div className={`products-list ${fadeAnimation}`}>
-        {currentProducts.map(product => (
-          <div key={product.id} className='product-card' onClick={() => handleProductClick(product)}>
+        {currentProducts.map((product) => (
+          <div
+            key={product.id}
+            className="product-card"
+            onClick={() => handleProductClick(product)}
+          >
             <div
-            style={{ width: "90%", height: "50%", position: "relative", marginBottom: "8px",
-                    top: "0", left: "50%", transform: "translate(-50%, 0)"}}>
-              {product.imageLink && 
+              style={{
+                width: "90%",
+                height: "50%",
+                position: "relative",
+                marginBottom: "8px",
+                top: "0",
+                left: "50%",
+                transform: "translate(-50%, 0)",
+              }}
+            >
+              {product.imageLink && (
                 <img
                   src={product.imageLink}
                   alt={product.productName}
                   style={{ width: "100%", height: "auto" }}
                 />
-              }
+              )}
             </div>
-            <div
-            style={{ height: "50%", position: "relative" }}>
+            <div style={{ height: "50%", position: "relative" }}>
               <div style={{ marginBottom: "8px" }}>
-                <StarRating rating={Math.round(calculateProductRating(product.reviews))} /><br></br>
+                <StarRating
+                  rating={Math.round(calculateProductRating(product.reviews))}
+                />
+                <br></br>
                 <strong>({product.reviews.length})</strong>
               </div>
-              <p><strong>{product.productName}</strong></p>
+              <p>
+                <strong>{product.productName}</strong>
+              </p>
               {product.discountPercentage > 0 && (
                 <div>
                   <div>
                     <p className="fs-5">
-                      <strong>Price: ${calculateDiscountedPrice(product)}</strong>
-                        <del className="text-danger mb-0 fs-6"
-                        style={{ position: "relative", left: "8px" }}>
-                          ${product.price}
-                        </del>
+                      <strong>
+                        Price: ${calculateDiscountedPrice(product)}
+                      </strong>
+                      <del
+                        className="text-danger mb-0 fs-6"
+                        style={{ position: "relative", left: "8px" }}
+                      >
+                        ${product.price}
+                      </del>
                     </p>
                   </div>
                 </div>
@@ -194,28 +293,49 @@ const ProductsList = ({
                 </p>
               )}
               {isAdmin && (
-                <button className="product-delete-button" onClick={(e) => { e.stopPropagation(); handleRemoveProduct(product.id); }}>
-                  <FontAwesomeIcon icon={faTrash} />
+                <button
+                  className="btn btn-primary"
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleEditProduct(product);
+                  }}
+                  style={{ width: "100%" }}
+                >
+                  Edit
                 </button>
               )}
-              <div className='buttons-container'>
+              <div className="buttons-container">
                 {!isAdmin && (
-                  <button className="product-cart-button" onClick={(e) => { e.stopPropagation(); handleAddToCart(product.id); }}>
+                  <button
+                    className="product-cart-button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAddToCart(product.id);
+                    }}
+                  >
                     <FontAwesomeIcon icon={faCartShopping} />
                     <span className="button-text-go-left">Add to Cart</span>
                   </button>
                 )}
                 {!isAdmin && (
-                  <button 
-                  className={`product-wishlist-button ${wishlistStatus.get(product.id) ? 'in-wishlist' : ''}`}
-                  onClick={(e) => { e.stopPropagation(); handleAddToWishlist(product.id); toggleWishlist(product.id); }}>
+                  <button
+                    className={`product-wishlist-button ${
+                      wishlistStatus.get(product.id) ? "in-wishlist" : ""
+                    }`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAddToWishlist(product.id);
+                      toggleWishlist(product.id);
+                    }}
+                  >
                     <FontAwesomeIcon icon={faHeart} />
-                    {product.inWishlist && 
+                    {product.inWishlist && (
                       <span className="button-text-go-right">Forget</span>
-                    }
-                    {!product.inWishlist && 
+                    )}
+                    {!product.inWishlist && (
                       <span className="button-text-go-right">Wish!</span>
-                    }
+                    )}
                   </button>
                 )}
               </div>
@@ -231,22 +351,22 @@ const ProductsList = ({
           currentPage={currentPage}
         />
       </footer>
-      {showCartPopUp && 
-        <AddToCart 
-          userTok = {userToken}
-          productId = {cartProductId}
-          onCloseBobUp = {handleCloseCartWindow}
+      {showCartPopUp && (
+        <AddToCart
+          userTok={userToken}
+          productId={cartProductId}
+          onCloseBobUp={handleCloseCartWindow}
         />
-      }
-      {showWishlistPopUp &&
+      )}
+      {showWishlistPopUp && (
         <AddToWishlist
-          userTok = {userToken}
-          productId = {wishlistProductId}
-          setInWishlistBoolean = {setDummyBool}
-          setInWishlistBooleanMap = {setWishlistStatus}
-          onCloseBobUp = {handleCloseWishlistWindow}
+          userTok={userToken}
+          productId={wishlistProductId}
+          setInWishlistBoolean={setDummyBool}
+          setInWishlistBooleanMap={setWishlistStatus}
+          onCloseBobUp={handleCloseWishlistWindow}
         />
-      }
+      )}
     </div>
   );
 };
