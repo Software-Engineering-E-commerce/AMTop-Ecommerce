@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Button, Form, Modal, ModalHeader, Dropdown } from "react-bootstrap";
+import { Button, Form, Modal, Dropdown } from "react-bootstrap";
 import "./EditAddProduct.css";
-import { Action } from "history";
 import axios from "axios";
+import GenericAlertModal from "./GenericAlertModal";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
+import TwoButtonsModal from "./TwoButtonsModal";
 
 export interface Product {
   id: string;
@@ -18,11 +21,10 @@ export interface Product {
 interface editAddProps {
   adminToken: string;
   isEdit: Boolean;
-  show: boolean;
   product?: Product;
 }
 
-const EditAddProduct = ({ adminToken, show, isEdit, product }: editAddProps) => {
+const EditAddProduct = ({ adminToken, isEdit, product }: editAddProps) => {
   const [formData, setFormData] = useState<Product>({
     id: "",
     name: "",
@@ -35,6 +37,9 @@ const EditAddProduct = ({ adminToken, show, isEdit, product }: editAddProps) => 
   });
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [responseData, setResponseData] = useState("");
+  const [show, setShow] = useState<boolean>(true);
+  const [closeClicked, setCloseClicked] = useState(false);
 
   useEffect(() => {
     if (product) {
@@ -118,6 +123,11 @@ const EditAddProduct = ({ adminToken, show, isEdit, product }: editAddProps) => 
   };
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
+    let fileSize: number = file?.size as number;
+    if (fileSize >= 1024 * 1024) {
+      setSelectedFile(null);
+      return;
+    }
     setSelectedFile(file);
     console.log(selectedFile);
   };
@@ -149,43 +159,42 @@ const EditAddProduct = ({ adminToken, show, isEdit, product }: editAddProps) => 
       id: Number(product?.id),
       productName: formData.name,
       price: Number(formData.price),
-      postedDate: new Date,
+      postedDate: new Date(),
       description: formData.description,
       productCountAvailable: Number(formData.countAvailable),
       brand: formData.brand,
       discountPercentage: Number(formData.discountPercentage),
-      category: formData.category
+      category: formData.category,
     };
     return productDto;
-  }
+  };
 
   const handleEditRequest = async () => {
     try {
-      let url: string = `http://localhost:9080/api/updateProduct?productDTO=${encodeURIComponent(JSON.stringify(convertToDto()))}`;
+      let url: string = `http://localhost:9080/api/updateProduct?productDTO=${encodeURIComponent(
+        JSON.stringify(convertToDto())
+      )}`;
 
       const formData = new FormData();
       // Remove the line formData.append("image", null);
       if (selectedFile) {
-        formData.append('image', selectedFile);
-      }
-      else {
-        const dummyBlob = new Blob([''], { type: 'application/octet-stream' });
-        const dummyFile = new File([dummyBlob], '');
-        formData.append('image', dummyFile);
+        formData.append("image", selectedFile);
+      } else {
+        const dummyBlob = new Blob([""], { type: "application/octet-stream" });
+        const dummyFile = new File([dummyBlob], "");
+        formData.append("image", dummyFile);
       }
 
-      const response = await axios.post(url, formData,
-        {
-          headers: {
-            "Content-Type": 'multipart/form-data',
-            "Authorization": `Bearer ${adminToken}`,
-          },
-        }
-      );
+      const response = await axios.post(url, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${adminToken}`,
+        },
+      });
       console.log(response);
 
       // Here means that the response is Ok and the product is added successfully
-      // setResponseData(response.data);
+      setResponseData(response.data);
     } catch (error) {
       // Handle errors here
       if (axios.isAxiosError(error)) {
@@ -196,7 +205,7 @@ const EditAddProduct = ({ adminToken, show, isEdit, product }: editAddProps) => 
           // that falls out of the range of 2xx
           console.error("Response data:", axiosError.response.data);
           console.error("Response status:", axiosError.response.status);
-          // setResponseData(axiosError.response.data as string);
+          setResponseData(axiosError.response.data as string);
         } else if (axiosError.request) {
           // The request was made but no response was received
           console.error("No response received:", axiosError.request);
@@ -213,25 +222,25 @@ const EditAddProduct = ({ adminToken, show, isEdit, product }: editAddProps) => 
 
   const handleAddRequest = async () => {
     try {
-      let url: string = `http://localhost:9080/api/addProduct?productDTO=${encodeURIComponent(JSON.stringify(convertToDto()))}`;
+      let url: string = `http://localhost:9080/api/addProduct?productDTO=${encodeURIComponent(
+        JSON.stringify(convertToDto())
+      )}`;
 
       const formData = new FormData();
       if (selectedFile) {
-        formData.append('image', selectedFile);
+        formData.append("image", selectedFile);
       }
 
-      const response = await axios.post(url, formData,
-        {
-          headers: {
-            "Content-Type": 'multipart/form-data',
-            "Authorization": `Bearer ${adminToken}`,
-          },
-        }
-      );
+      const response = await axios.post(url, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${adminToken}`,
+        },
+      });
       console.log(response);
 
       // Here means that the response is Ok and the product is added successfully
-      // setResponseData(response.data);
+      setResponseData(response.data);
     } catch (error) {
       // Handle errors here
       if (axios.isAxiosError(error)) {
@@ -240,9 +249,7 @@ const EditAddProduct = ({ adminToken, show, isEdit, product }: editAddProps) => 
         if (axiosError.response) {
           // The request was made and the server responded with a status code
           // that falls out of the range of 2xx
-          console.error("Response data:", axiosError.response.data);
-          console.error("Response status:", axiosError.response.status);
-          // setResponseData(axiosError.response.data as string);
+          setResponseData(axiosError.response.data as string);
         } else if (axiosError.request) {
           // The request was made but no response was received
           console.error("No response received:", axiosError.request);
@@ -257,13 +264,88 @@ const EditAddProduct = ({ adminToken, show, isEdit, product }: editAddProps) => 
     }
   };
 
-  const onCancel = () => {};
+  const resetResponseData = () => {
+    setResponseData("");
+  };
+  const resetShow = () => {
+    setShow(false);
+  };
 
-  const onConfirm = () => {};
+  const onCancel = () => {
+    setCloseClicked(true);
+  };
+
+  const resetOnClose = () => {
+    setCloseClicked(false);
+  };
 
   return (
     <>
-      <Modal show={show} onHide={onCancel} style={{ overflowY: "auto" }}>
+      {closeClicked && (
+        <>
+          <TwoButtonsModal
+            show={true}
+            onClose={resetOnClose}
+            resetResponseData={resetShow}
+            body={
+              <>
+                <>
+                  <h5 style={{ color: "red" }}>
+                    All your chnages will be lost, are you sure you want to
+                    proceed?
+                  </h5>
+                </>
+              </>
+            }
+          />
+        </>
+      )}
+      {(responseData === "Product updated successfully" ||
+        responseData == "Product added successfully") && (
+        <GenericAlertModal
+          onClose={resetResponseData}
+          resetResponseData={resetShow}
+          show={true}
+          body={
+            <>
+              <h5 style={{ color: "green" }}>
+                <FontAwesomeIcon
+                  icon={faCircleCheck}
+                  style={{
+                    color: "green",
+                    fontSize: "18px",
+                    marginRight: "10px",
+                  }}
+                />
+                {responseData}
+              </h5>
+            </>
+          }
+        />
+      )}
+      {responseData !== "" &&
+        responseData !== "Product updated successfully" &&
+        responseData !== "Product added successfully" && (
+          <>
+            <GenericAlertModal
+              resetResponseData={resetResponseData}
+              show={true}
+              body={
+                <>
+                  <h5 style={{ color: "red" }}>{responseData}</h5>
+                </>
+              }
+            />
+          </>
+        )}
+      <Modal
+        show={show}
+        onHide={onCancel}
+        style={{
+          overflowY: "auto",
+          boxShadow: "0px 0px 10px 0px rgba(0, 0, 0, 0.5)",
+        }}
+      >
         <Modal.Header
           style={{
             display: "flex",
@@ -385,18 +467,15 @@ const EditAddProduct = ({ adminToken, show, isEdit, product }: editAddProps) => 
                   {formData.category}
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
-                  <Dropdown.Item onClick={() => handleCategorySelect("Action")}>
+                  <Dropdown.Item
+                    onClick={() => handleCategorySelect("Electronics")}
+                  >
                     Electronics
                   </Dropdown.Item>
                   <Dropdown.Item
-                    onClick={() => handleCategorySelect("Another action")}
+                    onClick={() => handleCategorySelect("Laptops")}
                   >
                     Laptops
-                  </Dropdown.Item>
-                  <Dropdown.Item
-                    onClick={() => handleCategorySelect("Something else here")}
-                  >
-                    Something else here
                   </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
@@ -424,6 +503,7 @@ const EditAddProduct = ({ adminToken, show, isEdit, product }: editAddProps) => 
                 className="form-control"
                 type="file"
                 id="formFile"
+                accept="image/*"
                 onChange={handleFileChange}
               />
               {formSubmitted && selectedFile === null && isEdit == false && (

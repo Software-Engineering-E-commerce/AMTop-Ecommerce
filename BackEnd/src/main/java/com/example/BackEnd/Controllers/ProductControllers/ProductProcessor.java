@@ -5,12 +5,8 @@ import com.example.BackEnd.Middleware.Permissions;
 import com.example.BackEnd.Services.ProductServices.IProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 public class ProductProcessor {

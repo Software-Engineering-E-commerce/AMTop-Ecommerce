@@ -3,18 +3,29 @@ import { Modal, Button } from "react-bootstrap";
 
 interface GenericAlertModalProps {
   show: boolean;
-  onConfirm: () => void;
+  onClose?: () => void;
+  resetResponseData?: () => void;
   body: ReactNode;
 }
 
-const GenericAlertModal = ({show,onConfirm,body}:GenericAlertModalProps) => {
+const GenericAlertModal = ({
+  show,
+  onClose,
+  resetResponseData,
+  body,
+}: GenericAlertModalProps) => {
+  const handleClose = () => {
+    resetResponseData!();
+    onClose!();
+  };
+
   return (
     <>
-      <Modal show={show} onHide={onConfirm}>
+      <Modal show={show} onHide={handleClose}>
         <Modal.Body>{body}</Modal.Body>
         <Modal.Footer>
-          <Button variant="primary" onClick={onConfirm}>
-            Ok
+          <Button variant="secondary" onClick={handleClose}>
+            Close
           </Button>
         </Modal.Footer>
       </Modal>
