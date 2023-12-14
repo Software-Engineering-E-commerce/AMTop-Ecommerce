@@ -52,7 +52,7 @@ const LogIn = () => {
       />
       {responseStatus === "Not exist" && (
           <>
-          <BobUpWindow>
+          <BobUpWindow setResponseStatus={setResponseStatus}>
             <p style={{ color: "red" }}>
               User does NOT exist so you might wanna Sign up first !
             </p>

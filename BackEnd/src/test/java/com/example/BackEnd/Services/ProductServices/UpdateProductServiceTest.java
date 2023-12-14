@@ -160,4 +160,35 @@ class UpdateProductServiceTest {
         verify(productRepository, times(0)).save(any());
         verify(imageService, times(1)).saveImage(any(), any());
     }
+
+    @Test
+    @Transactional
+    void addProductIllegalStateException() throws IOException {
+        // Arrange
+        ProductDTO productDTO = ProductDTO.builder()
+                .productName("test product")
+                .price(100)
+                .postedDate(LocalDateTime.now())
+                .description("test description")
+                .productCountAvailable(10)
+                .brand("test brand")
+                .category("test category")
+                .build();
+
+        MultipartFile image = mock(MultipartFile.class);
+        Category category = new Category(); // initialize a category
+        category.setCategoryName("test category");
+        category.setImageLink("/path/to/category/image");
+
+        when(categoryRepository.findById(any())).thenReturn(Optional.of(category));
+        when(productRepository.findById(any())).thenReturn(Optional.of(new Product()));
+        when(imageService.saveImage(any(), any())).thenThrow(new IllegalStateException());
+
+        // Act, Assert
+        assertThrows(IllegalStateException.class, () -> updateProductService.processProduct(productDTO, image));
+        verify(productRepository, times(1)).findById(any());
+        verify(categoryRepository, times(1)).findById(any());
+        verify(productRepository, times(0)).save(any());
+        verify(imageService, times(1)).saveImage(any(), any());
+    }
 }

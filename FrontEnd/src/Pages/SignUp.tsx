@@ -61,7 +61,7 @@ const SignUp = () => {
       <Form isLogin={false} getSignUpCredentials={getSignUpCredentials} />
       {responseStatus === "SUCCESS" && (
         <>
-          <BobUpWindow>
+          <BobUpWindow setResponseStatus={setResponseStatus}>
             <p>
               <FontAwesomeIcon
                 icon={faCircleCheck}
@@ -81,7 +81,7 @@ const SignUp = () => {
 
       {responseStatus === "Already Exist" && (
         <>
-          <BobUpWindow>
+          <BobUpWindow setResponseStatus={setResponseStatus}>
             <p style={{ color: "black" }}>
               The email address you provided already exists so you might wanna
               log in
@@ -100,7 +100,7 @@ const SignUp = () => {
 
       {responseStatus === "Problem" && (
         <>
-          <BobUpWindow>
+          <BobUpWindow setResponseStatus={setResponseStatus}>
             <p style={{ color: "red" }}>
               There's a problem with the email address provided, please enter a
               valid email address!

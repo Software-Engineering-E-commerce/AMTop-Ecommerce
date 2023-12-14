@@ -44,7 +44,9 @@ public class UpdateProductService extends AbstractProductService {
             }
             productRepository.save(product);
         } catch (IOException e) {
-            throw new IOException("Could not save image");
+            throw new IOException(e.getMessage());
+        } catch (IllegalStateException e) {
+            throw new IllegalStateException(e.getMessage());
         }
     }
 

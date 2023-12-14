@@ -37,8 +37,10 @@ public class AddProductService extends AbstractProductService {
             String imageLink = imageService.saveImage(image, product.getId());
             product.setImageLink(imageLink);
             productRepository.save(product);
-        } catch (Exception e) {
-            throw new IOException("Could not save image");
+        } catch (IOException e) {
+            throw new IOException(e.getMessage());
+        } catch (IllegalStateException e) {
+            throw new IllegalStateException(e.getMessage());
         }
     }
 
