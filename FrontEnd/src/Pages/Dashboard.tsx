@@ -5,8 +5,8 @@ import { useLocation } from "react-router";
 const Dashboard = () => {
 
   const location = useLocation();
-  // var {userToken, from} = location.state || {};  // This will be used instead of the hard coded token after integration.
-  const userToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbXRvcGVjb21tZXJjZTEyM0BnbWFpbC5jb20iLCJpYXQiOjE3MDIyMjk2NDYsImV4cCI6MTcwMjMxNjA0Nn0.r73mTy8aZg0nbu0MBs5y0xTTezNodogmhskLazKLwOA"
+  var {userToken, from} = location.state || {}; 
+  console.log(from);
 
   const getOrders = async () => {
     console.log("In get orders");
