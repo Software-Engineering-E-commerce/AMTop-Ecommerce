@@ -23,9 +23,10 @@ const LogIn = () => {
         data: customer,
       });
       console.log("Response: ", response);
+      alert("You've successfully logged in")
       handelLoginBasicCredentialsResponse(response);
     } catch (error) {
-      alert("User is not found");
+      alert("Wrong email or password or unverified user");
     }
   };
 
@@ -33,6 +34,7 @@ const LogIn = () => {
     if (response.status == 200) {
       //then the user exists in out system then we want to navigate to the home page
       let userToken = response.data.token;
+
       navigate("/home", { state: { userToken: userToken, from:"logged-in"}});
 
     } else if (response.status == 403) {

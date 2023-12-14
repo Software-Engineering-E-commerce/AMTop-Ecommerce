@@ -1,0 +1,32 @@
+.nav-bar-icons {
+  color: #000000;
+  font-size: 15px;
+  padding: 8px 20px;
+  transition: color 0.3s ease-in-out, background-color 0.3s ease-in-out;
+}
+
+.nav-bar-icons:hover,
+.nav-bar-icons:focus {
+  color: rgb(0, 0, 0); /* Replace with your desired hover color */
+  background-color: rgb(
+    172,
+    172,
+    172
+  ); /* Replace with your desired background hover color */
+  text-decoration: none;
+}
+
+/* For the navigation tabs */
+.nav-link {
+  transition: color 0.3s ease-in-out;
+}
+
+.nav-link:hover,
+.nav-link:focus {
+  color: rgb(
+    34,
+    4,
+    199
+  ); /* Replace with your desired hover color for navigation tabs */
+  text-decoration: none;
+}
