@@ -1,0 +1,10 @@
+.productFormField{
+    margin-bottom: 15px;
+}
+
+.form-label{
+    font-weight: 500;
+    background-color: white;
+    height: fit-content;
+    z-index: 400;
+}

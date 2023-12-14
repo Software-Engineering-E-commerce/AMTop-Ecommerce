@@ -1,6 +1,8 @@
 package com.example.BackEnd.Services;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,6 +27,10 @@ class ImageServiceTest {
     @InjectMocks
     private ImageService imageService;
 
+    @AfterEach
+    void tearDown() {
+        imageService.deleteImage("/products/3-test.png");
+    }
     @Test
     void saveImage_WhenImageIsNotAnImage_ThrowsIllegalStateException() {
         // Arrange
@@ -65,7 +71,7 @@ class ImageServiceTest {
         String result = imageService.saveImage(mockMultipartFile, id);
 
         // Assert
-        assertEquals("/BackEnd/src/main/resources/static/images/Products/" +
+        assertEquals("/products/" +
                 id + "-" + mockMultipartFile.getOriginalFilename(), result);
     }
 
@@ -84,7 +90,7 @@ class ImageServiceTest {
     @Test
     void deleteImage_success() throws IOException {
         // Arrange
-        String imageLink = "/BackEnd/src/main/resources/static/images/Products/3-test.png";
+        String imageLink = "/products/3-test.png";
         // Act and Assert
         imageService.deleteImage(imageLink);
     }
