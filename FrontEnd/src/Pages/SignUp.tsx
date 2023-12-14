@@ -5,10 +5,11 @@ import BobUpWindow from "../Components/BobUpWindow";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
+import Loading from "../Components/Loading";
 
 const SignUp = () => {
   const navigate = useNavigate();
-
+  const [loading, setLoading] = useState(false);
   const [responseStatus, setResponseStatus] = useState("");
 
   // const []
@@ -22,12 +23,14 @@ const SignUp = () => {
     customer: RegisterRequest
   ) => {
     //if success then the user will be added to the DB and then routed to his home page
+    setLoading(true);
     try {
       const response = await axios({
         method: "post",
         url: "http://localhost:9080/api/auth/registerCustomer",
         data: customer,
       });
+      setLoading(false);
       console.log(response);
       let res: AuthenticationResponse = response.data;
       handelSignUpBasicCredentialsResponse(res);
@@ -97,6 +100,7 @@ const SignUp = () => {
           </BobUpWindow>
         </>
       )}
+      {loading && <Loading isLoading={loading} />}
 
       {responseStatus === "Problem" && (
         <>
