@@ -25,6 +25,18 @@ public class HomePageController {
             throw new IllegalArgumentException("Authorization header doesn't exist or is in the wrong format");
         }
     }
+    //setup the home page information
+    @GetMapping("/startup")
+    public ResponseEntity<HomeInfo> startup(@RequestHeader("Authorization") String authorizationHeader){
+        try{
+            String token = extractToken(authorizationHeader);
+            HomeInfo homeInfo = homeService.getHomeInfo(token);
+            return ResponseEntity.status(HttpStatus.OK).body(homeInfo);
+        } catch (IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
+
+    }
 //    @GetMapping("/getOffers")
 //    public ResponseEntity<List<Offer>> getOffers(@RequestHeader("Authorization") String authorizationHeader){
 //        try{
@@ -67,16 +79,4 @@ public class HomePageController {
 //            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
 //        }
 //    }
-    //setup the home page information
-    @GetMapping("/startup")
-    public ResponseEntity<HomeInfo> startup(@RequestHeader("Authorization") String authorizationHeader){
-        try{
-            String token = extractToken(authorizationHeader);
-            HomeInfo homeInfo = homeService.getHomeInfo(token);
-            return ResponseEntity.status(HttpStatus.OK).body(homeInfo);
-        } catch (IllegalArgumentException e){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
-        }
-
-    }
 }
