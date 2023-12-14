@@ -11,7 +11,7 @@ const Wishlist = () => {
   );
   // Use state to manage cartElements
   const location = useLocation();
-  var {userTok, isAdmin, firstName, lastName} = location.state || {};
+  var { userTok, isAdmin, firstName, lastName } = location.state || {};
 
   // useRef to track whether the component is mounted
   const isMounted = useRef(true);
@@ -29,6 +29,25 @@ const Wishlist = () => {
       );
       setWishlistElements([]);
       setWishlistElements(response.data);
+      // Load images
+      const updatedWishlistElements = (await Promise.all(
+        WishlistElements.map(async (wishlistElement) => {
+          try {
+            const dynamicImportedImage = await import(
+              `../assets${wishlistElement.imageLink}`
+            );
+            return {
+              ...wishlistElement,
+              imageLink: dynamicImportedImage.default,
+            };
+          } catch (error) {
+            console.error("Error loading image:", error);
+            return wishlistElement; // Return original wishistElement if image loading fails
+          }
+        })
+      )) as WishlistElement[];
+      setWishlistElements(updatedWishlistElements);
+      
     } catch (error) {
       console.error(error);
     }
@@ -49,11 +68,11 @@ const Wishlist = () => {
 
   return (
     <>
-      <Navbar 
+      <Navbar
         firstName={firstName}
         lastName={lastName}
         isAdmin={isAdmin}
-        token={userTok} 
+        token={userTok}
       />
       <div
         className="col-12 container wishlist-container"

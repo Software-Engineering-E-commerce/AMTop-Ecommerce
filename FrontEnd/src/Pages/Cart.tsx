@@ -16,7 +16,7 @@ const Cart = () => {
   const [checkOutResponse, setCheckOutResponse] = useState("");
 
   const location = useLocation();
-  var {userTok, isAdmin, firstName, lastName} = location.state || {};
+  var { userTok, isAdmin, firstName, lastName } = location.state || {};
 
   // useRef to track whether the component is mounted
   const isMounted = useRef(true);
@@ -35,6 +35,21 @@ const Cart = () => {
       );
       setCartElements([]);
       setCartElements(response.data);
+      // Load images
+      const updatedCartElements = (await Promise.all(
+        cartElements.map(async (cartElement) => {
+          try {
+            const dynamicImportedImage = await import(
+              `../assets${cartElement.imageLink}`
+            );
+            return { ...cartElement, imageLink: dynamicImportedImage.default };
+          } catch (error) {
+            console.error("Error loading image:", error);
+            return cartElement; // Return original product if image loading fails
+          }
+        })
+      )) as CartElement[];
+      setCartElements(updatedCartElements);
       processResponse(response.data);
     } catch (error) {
       console.error(error);
@@ -109,11 +124,11 @@ const Cart = () => {
 
   return (
     <>
-      <Navbar 
-          firstName = {firstName}
-          lastName = {lastName}
-          isAdmin = {isAdmin}
-          token = {userTok}
+      <Navbar
+        firstName={firstName}
+        lastName={lastName}
+        isAdmin={isAdmin}
+        token={userTok}
       />
       {checkOutResponse === "Order has been placed successfully !" && (
         <GenericAlertModal
