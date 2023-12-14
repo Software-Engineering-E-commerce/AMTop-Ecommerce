@@ -9,16 +9,23 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import GenericAlertModal from "./GenericAlertModal";
+import { useNavigate } from "react-router";
 
 interface WishlistElementProps {
   wishlistElement: WishlistElement;
+  fname: string;
+  lname: string;
   causeRemountWishlist: () => void;
 }
 
 const WishlistElement = ({
   wishlistElement,
+  fname,
+  lname,
   causeRemountWishlist,
 }: WishlistElementProps) => {
+  const navigate = useNavigate();
+
   const [responseData, setResponseData] = useState("");
 
   const handleDeleteFromWhishlist = async () => {
@@ -84,6 +91,19 @@ const WishlistElement = ({
       }
     }
   };
+  const toDetails = () => {
+    console.log(fname);
+    console.log(lname);
+    navigate("/product-details", {
+      state: {
+        firstName: fname as string,
+        lastName: lname as string,
+        isAdmin: false,
+        productID: wishlistElement.id,
+        token: wishlistElement.token,
+      },
+    });
+  };
 
   const resetResponseData = () => {
     setResponseData("");
@@ -133,7 +153,12 @@ const WishlistElement = ({
         )}
       <div className="col-12 product">
         <div className="col-3 imageDiv">
-          <img src={wishlistElement.imageLink} alt="productImage" />
+          <img
+            src={wishlistElement.imageLink}
+            className="cartImage"
+            alt="productImage"
+            onClick={toDetails}
+          />
         </div>
 
         <div

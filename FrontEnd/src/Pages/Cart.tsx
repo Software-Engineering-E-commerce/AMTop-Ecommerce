@@ -16,7 +16,7 @@ const Cart = () => {
   const [checkOutResponse, setCheckOutResponse] = useState("");
 
   const location = useLocation();
-  var {userToken, isAdmin, firstName, lastName} = location.state || {};
+  var { userToken, isAdmin, firstName, lastName } = location.state || {};
 
   // useRef to track whether the component is mounted
   const isMounted = useRef(true);
@@ -46,7 +46,7 @@ const Cart = () => {
     const cartElements = await getCartElements();
     setCartElements(cartElements);
     // Load images
-    const updatedCartElements = (await Promise.all(
+    const updatedCartElements = await Promise.all(
       cartElements.map(async (cartElement) => {
         try {
           const dynamicImportedImage = await import(
@@ -58,7 +58,7 @@ const Cart = () => {
           return cartElement; // Return original product if image loading fails
         }
       })
-    ));
+    );
     setCartElements(updatedCartElements);
     processResponse(updatedCartElements);
   };
@@ -131,11 +131,11 @@ const Cart = () => {
 
   return (
     <>
-      <Navbar 
-          firstName = {firstName}
-          lastName = {lastName}
-          isAdmin = {isAdmin}
-          token = {userToken}
+      <Navbar
+        firstName={firstName}
+        lastName={lastName}
+        isAdmin={isAdmin}
+        token={userToken}
       />
       {checkOutResponse === "Order has been placed successfully !" && (
         <GenericAlertModal
@@ -184,6 +184,8 @@ const Cart = () => {
           <div className="cart-elements">
             {cartElements.map((cartElement) => (
               <CartElement
+                fname={firstName as string}
+                lname={lastName as string}
                 key={cartElement.id}
                 cartElement={cartElement}
                 causeRemountCart={causeRemountCart}

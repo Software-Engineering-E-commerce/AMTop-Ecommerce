@@ -11,7 +11,7 @@ const Wishlist = () => {
   );
   // Use state to manage cartElements
   const location = useLocation();
-  var {userToken, isAdmin, firstName, lastName} = location.state || {};
+  var { userToken, isAdmin, firstName, lastName } = location.state || {};
 
   // useRef to track whether the component is mounted
   const isMounted = useRef(true);
@@ -41,21 +41,23 @@ const Wishlist = () => {
     setWishlistElements(wishlistElements);
     console.log(wishlistElements);
     // Load images
-    const updatedWishlistElements = (await Promise.all(
+    const updatedWishlistElements = await Promise.all(
       wishlistElements.map(async (wishlistElement) => {
         try {
           const dynamicImportedImage = await import(
             `../assets${wishlistElement.imageLink}`
           );
-          return { ...wishlistElement, imageLink: dynamicImportedImage.default };
+          return {
+            ...wishlistElement,
+            imageLink: dynamicImportedImage.default,
+          };
         } catch (error) {
           console.error("Error loading image:", error);
           return wishlistElement; // Return original product if image loading fails
         }
       })
-    ));
+    );
     setWishlistElements(updatedWishlistElements);
-    
   };
 
   // useEffect runs on component mount
@@ -77,7 +79,7 @@ const Wishlist = () => {
         firstName={firstName}
         lastName={lastName}
         isAdmin={isAdmin}
-        token={userToken} 
+        token={userToken}
       />
       <div
         className="col-12 container wishlist-container"
@@ -91,6 +93,8 @@ const Wishlist = () => {
           <div className="wishlist-elements">
             {WishlistElements.map((element) => (
               <WishlistElement
+                fname={firstName as string}
+                lname={lastName as string}
                 key={element.id}
                 wishlistElement={element}
                 causeRemountWishlist={causeRemountWishlist}
