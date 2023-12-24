@@ -1,8 +1,6 @@
-import axios, { Axios, AxiosResponse } from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { PulseLoader } from "react-spinners";
-import { Component } from "react";
+import Loading from "../Components/Loading";
 
 const Verification = () => {
   var navigate = useNavigate();
@@ -14,7 +12,6 @@ const Verification = () => {
 
   console.log("User token = ", userTok);
 
- 
   // useRef to track whether the component is mounted
   const isMounted = useRef<boolean>(true);
 
@@ -32,7 +29,7 @@ const Verification = () => {
             {
               method: "GET",
               headers: {
-                'Authorization': `Bearer ${userTok}`,
+                Authorization: `Bearer ${userTok}`,
               },
             }
           );
@@ -42,14 +39,17 @@ const Verification = () => {
           if (response.status == 200) {
             //means that the user is successfully verified
             setVerificationStatus("success");
-            navigate("/home", { state: { userToken: userTok, from:"Signed-up"}  });
-
+            alert("You've successfully signed up");
+            navigate("/home", {
+              state: { userToken: userTok, from: "Signed-up" },
+            });
           } else if (response.status == 400) {
             //means that the user already exists and this is a bad request
             //so we notify him and we'll let him in anyway
             alert("You already exist, so you'll be logged in");
-            navigate("/home", { state: { userToken: userTok, from:"Signed-up"} });
-
+            navigate("/home", {
+              state: { userToken: userTok, from: "Signed-up" },
+            });
           } else if (response.status == 404) {
             alert("User not found!");
             navigate("/signup");
@@ -58,12 +58,9 @@ const Verification = () => {
           console.error("Error:", error);
           alert(error);
         }
-
       };
 
       sendVerificationRequest();
-
-
       // Set isMounted to false to prevent running the code on subsequent renders
     }
 
@@ -74,28 +71,12 @@ const Verification = () => {
     };
   }, []); // The empty dependency array ensures that the effect runs only once
 
-
-
-  return verificationStatus === "loading" ? (
-    <div
-      className="loadingDiv"
-      style={{
-        position: "fixed",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-      }}
-    >
-      <PulseLoader
-        color={"black"}
-        loading={verificationStatus === "loading"}
-        size={30}
-        aria-label="Loading Spinner"
-        data-testid="loader"
-      />
-    </div>
-  ) : (
-    <h2>Verified</h2>
+  return (
+    <>
+      {verificationStatus === "loading" && (
+        <Loading isLoading={verificationStatus === "loading"} />
+      )}
+    </>
   );
 };
 

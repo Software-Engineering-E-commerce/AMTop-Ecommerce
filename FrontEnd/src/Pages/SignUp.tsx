@@ -1,14 +1,15 @@
 import axios from "axios";
 import Form from "../Components/Form";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import BobUpWindow from "../Components/BobUpWindow";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
+import Loading from "../Components/Loading";
 
 const SignUp = () => {
   const navigate = useNavigate();
-
+  const [loading, setLoading] = useState(false);
   const [responseStatus, setResponseStatus] = useState("");
 
   // const []
@@ -22,12 +23,14 @@ const SignUp = () => {
     customer: RegisterRequest
   ) => {
     //if success then the user will be added to the DB and then routed to his home page
+    setLoading(true);
     try {
       const response = await axios({
         method: "post",
         url: "http://localhost:9080/api/auth/registerCustomer",
         data: customer,
       });
+      setLoading(false);
       console.log(response);
       let res: AuthenticationResponse = response.data;
       handelSignUpBasicCredentialsResponse(res);
@@ -61,7 +64,7 @@ const SignUp = () => {
       <Form isLogin={false} getSignUpCredentials={getSignUpCredentials} />
       {responseStatus === "SUCCESS" && (
         <>
-          <BobUpWindow>
+          <BobUpWindow setResponseStatus={setResponseStatus}>
             <p>
               <FontAwesomeIcon
                 icon={faCircleCheck}
@@ -81,10 +84,9 @@ const SignUp = () => {
 
       {responseStatus === "Already Exist" && (
         <>
-          <BobUpWindow>
+          <BobUpWindow setResponseStatus={setResponseStatus}>
             <p style={{ color: "black" }}>
-              The email address you provided already exists so you might wanna
-              log in
+              The email address you provided already exists. Log in instead
             </p>
             <button
               type="button"
@@ -97,10 +99,11 @@ const SignUp = () => {
           </BobUpWindow>
         </>
       )}
+      {loading && <Loading isLoading={loading} />}
 
       {responseStatus === "Problem" && (
         <>
-          <BobUpWindow>
+          <BobUpWindow setResponseStatus={setResponseStatus}>
             <p style={{ color: "red" }}>
               There's a problem with the email address provided, please enter a
               valid email address!

@@ -1,0 +1,109 @@
+img {
+  width: 100%;
+  height: 100%;
+}
+
+.product {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.cartImage:hover {
+  cursor: pointer;
+}
+
+.middleDiv {
+  position: relative;
+  margin-left: 20px;
+}
+
+.seperator {
+  width: 8px;
+  height: calc(100% - 2em);
+  background-color: darkcyan;
+  border-radius: 10px;
+  position: absolute;
+  top: 0;
+  left: -11px;
+}
+
+.qty {
+  display: flex;
+  flex-direction: row;
+}
+
+#numericQty {
+  border: 1px solid #ccc; /* Add a default border */
+  border-radius: 5px; /* Add border radius */
+  padding: 2px; /* Add padding for better appearance */
+  outline: none; /* Remove default focus outline */
+  text-align: center; /* Center text */
+  width: 50px; /* Full-width */
+  background-color: #f1f1f1; /* Grey background */
+  margin-left: 5px;
+}
+
+#numericQty:focus {
+  border-color: #007bff; /* Change border color on focus */
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a subtle box-shadow on focus */
+  background-color: white;
+}
+
+.update-qty {
+  padding: 3px;
+  border: none;
+  background-color: rgb(255, 217, 0);
+  border-radius: 5px;
+  margin-left: 5px;
+  transition: 0.3s ease;
+}
+
+.horizontal-line {
+  height: 3px;
+  background-color: lightgray;
+  margin-bottom: 15px;
+}
+
+.priceDiv {
+  height: 100%;
+}
+
+.update-qty:hover {
+  background-color: rgba(255, 217, 0, 0.5);
+}
+
+.vertical-line {
+  border-left: 2px solid gray;
+  height: 25px;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.qty_and_delete {
+  margin-bottom: 20px;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.delete {
+  border: none;
+  background-color: transparent;
+  border-radius: 50%;
+  transition: 0.3s ease;
+}
+
+.delete:hover {
+  background-color: rgba(212, 212, 212, 0.3);
+}
+
+.the-whole-price {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}

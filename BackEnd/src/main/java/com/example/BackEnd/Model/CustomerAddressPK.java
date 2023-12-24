@@ -18,7 +18,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class CustomerAddressPK implements Serializable {
     @ManyToOne
-    @JoinColumn(name = "customer_id")
+    @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
     private String address;
 }
