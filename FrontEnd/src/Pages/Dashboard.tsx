@@ -115,6 +115,7 @@ const Dashboard = () => {
         deleteOrder = {deleteOrder}
         deleteOrderItem= {deleteOrderItem}
         updateOrderStatus = {updateOrderStatus}
+        isAdmin = {isAdmin}
       />
     </div>
   );
