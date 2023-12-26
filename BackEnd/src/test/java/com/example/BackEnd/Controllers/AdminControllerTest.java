@@ -21,6 +21,7 @@ class AdminControllerTest {
     private RootAdminService rootAdminService;
     @InjectMocks
     private AdminController adminController;
+
     @Test
     void testExtractTokenSuccess() {
         // Arrange
@@ -87,8 +88,7 @@ class AdminControllerTest {
         String newAdminEmail = "newadmin@example.com";
 
         // Mock the behavior of the rootAdminService to throw a Forbidden exception
-        doThrow(new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden")).when(rootAdminService)
-                .addEmployee(anyString(), anyString());
+        doThrow(new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden")).when(rootAdminService).addEmployee(anyString(), anyString());
 
         // Act
         ResponseEntity<String> response = adminController.addAdmin(authorizationHeader, newAdminEmail);
@@ -105,8 +105,7 @@ class AdminControllerTest {
         String newAdminEmail = "newadmin@example.com";
 
         // Mock the behavior of the rootAdminService to throw a Conflict exception
-        doThrow(new ResponseStatusException(HttpStatus.CONFLICT, "Conflict")).when(rootAdminService)
-                .addEmployee(anyString(), anyString());
+        doThrow(new ResponseStatusException(HttpStatus.CONFLICT, "Conflict")).when(rootAdminService).addEmployee(anyString(), anyString());
 
         // Act
         ResponseEntity<String> response = adminController.addAdmin(authorizationHeader, newAdminEmail);
@@ -123,8 +122,7 @@ class AdminControllerTest {
         String newAdminEmail = "newadmin@example.com";
 
         // Mock the behavior of the rootAdminService to throw an unexpected exception
-        doThrow(new RuntimeException("Internal Server Error")).when(rootAdminService)
-                .addEmployee(anyString(), anyString());
+        doThrow(new RuntimeException("Internal Server Error")).when(rootAdminService).addEmployee(anyString(), anyString());
 
         // Act
         ResponseEntity<String> response = adminController.addAdmin(authorizationHeader, newAdminEmail);

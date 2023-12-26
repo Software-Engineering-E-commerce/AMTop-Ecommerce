@@ -39,11 +39,6 @@ class UserVerificationTest {
     @InjectMocks
     private UserVerification userVerification;
 
-//    @BeforeEach
-//    void setUp() {
-//        MockitoAnnotations.openMocks(this);
-//    }
-
     @Test
     void verifyUser_WhenUserNotVerified_ShouldSetIsVerifiedTrue() {
         // Arrange

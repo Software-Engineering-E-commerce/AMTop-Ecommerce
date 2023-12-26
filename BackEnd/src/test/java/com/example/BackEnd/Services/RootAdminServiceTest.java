@@ -249,6 +249,4 @@ class RootAdminServiceTest {
         verify(jwtService, times(1)).generateToken(eq(admin));
         verify(emailService, times(1)).sendEmail(eq("admin@example.com"), anyString(), anyString());
     }
-
-
 }
