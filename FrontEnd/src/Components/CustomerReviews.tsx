@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState , useEffect } from "react";
 import StarRating from "./StarRating";
 import axios from 'axios';
 
@@ -27,13 +27,35 @@ const CustomerReviews: React.FC<CustomerReviewsProps> = ({
   firstName,
   lastName,
 }) => {
-
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [newReviewText, setNewReviewText] = useState("");
   const [newReviewRating, setNewReviewRating] = useState(0);
   const [errorMessage, setErrorMessage] = useState("");
   const [reviews, setReviews] = useState<Review[]>(initialReviews);
-  
+  const [hasReviewed, setHasReviewed] = useState(false);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await axios.get(`http://localhost:9080/reviews/${productID}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+
+        if (response.status === 200) {
+          setReviews(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching reviews:', error);
+      }
+    };
+
+    fetchReviews();
+  }, [productID, token]);
+
+
+
   const handleAddReviewClick = () => {
     setShowReviewForm(true);
   };
@@ -80,18 +102,13 @@ const CustomerReviews: React.FC<CustomerReviewsProps> = ({
         setNewReviewText("");
         setNewReviewRating(0);
         setErrorMessage("");
+        setHasReviewed(true);
       } else {
         setErrorMessage("Failed to post the review. Please try again.");
       }
     } catch (error) {
       setErrorMessage("An error occurred while posting the review. Please try again.");
     }
-    setReviews((prevReviews) => [newReview, ...prevReviews]);
-        // Clear the form fields and error message
-        setShowReviewForm(false);
-        setNewReviewText("");
-        setNewReviewRating(0);
-        setErrorMessage("");
   };
 
 
@@ -99,7 +116,7 @@ const CustomerReviews: React.FC<CustomerReviewsProps> = ({
     <div>
       {reviews.length > 0 && <h3 className="mt-4 mb-3">Customer Reviews</h3>}
       
-      {!isAdmin && (
+      {!isAdmin && !hasReviewed &&(
         <div>
           <button className="btn btn-primary" onClick={handleAddReviewClick}>Add Review</button>
           {showReviewForm && (
