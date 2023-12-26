@@ -16,6 +16,9 @@
   text-decoration: none;
 }
 
+#amTopIcon:hover {
+  cursor: pointer;
+}
 /* For the navigation tabs */
 .nav-link {
   transition: color 0.3s ease-in-out;
