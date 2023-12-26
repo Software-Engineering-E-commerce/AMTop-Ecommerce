@@ -1,35 +1,47 @@
-import React from "react";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStar, faStarHalf } from "@fortawesome/free-solid-svg-icons";
+import { faStar as filledStar } from "@fortawesome/free-solid-svg-icons";
+import { faStar as emptyStar } from "@fortawesome/free-regular-svg-icons";
 
 interface StarRatingProps {
   rating: number;
+  setRating?: (rating: number) => void;
 }
+const StarRating: React.FC<StarRatingProps> = ({ rating, setRating }) => {
+  const [hoverRating, setHoverRating] = useState(0);
 
-const StarRating: React.FC<StarRatingProps> = ({ rating }) => {
-  const fullStars = Math.floor(rating);
-  const hasHalfStar = rating - fullStars >= 0.5;
+  const handleMouseOver = (newHoverRating: number) => {
+    if (setRating) {
+      setHoverRating(newHoverRating);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (setRating) {
+      setHoverRating(0);
+    }
+  };
+
+  const handleClick = (newRating: number) => {
+    if (setRating) {
+      setRating(newRating);
+    }
+  };
 
   return (
     <div className="d-inline-flex align-items-center">
-      {Array.from({ length: fullStars }, (_, index) => (
+      {[1, 2, 3, 4, 5].map((star) => (
         <FontAwesomeIcon
-          key={index}
-          icon={faStar}
-          style={{ color: "#FFD700", fontSize: "1.5rem" }}
-        />
-      ))}
-      {hasHalfStar && (
-        <FontAwesomeIcon
-          icon={faStarHalf}
-          style={{ color: "#FFD700", fontSize: "1.5rem" }}
-        />
-      )}
-      {Array.from({ length: 5 - Math.ceil(rating) }, (_, index) => (
-        <FontAwesomeIcon
-          key={index + fullStars}
-          icon={faStar}
-          style={{ color: "#CED4DA", fontSize: "1.5rem" }}
+          key={star}
+          icon={star <= (hoverRating || rating) ? filledStar : emptyStar}
+          onMouseOver={() => handleMouseOver(star)}
+          onMouseLeave={handleMouseLeave}
+          onClick={() => handleClick(star)}
+          style={{
+            color: star <= (hoverRating || rating) ? "#FFD700" : "#CED4DA",
+            fontSize: "1.5rem",
+            cursor: setRating ? "pointer" : "default",
+          }}
         />
       ))}
     </div>
@@ -37,4 +49,3 @@ const StarRating: React.FC<StarRatingProps> = ({ rating }) => {
 };
 
 export default StarRating;
-
