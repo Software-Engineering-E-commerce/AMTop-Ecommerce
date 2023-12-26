@@ -15,7 +15,8 @@ public class AdminController {
     private final RootAdminService rootAdminService;
 
     @PostMapping("/addAdmin")
-    public ResponseEntity<String> addAdmin(@RequestHeader("Authorization") String authorizationHeader, @RequestParam("newAdminEmail") String newAdminEmail) {
+    public ResponseEntity<String> addAdmin(@RequestHeader("Authorization") String authorizationHeader,
+                                           @RequestParam("newAdminEmail") String newAdminEmail) {
         try {
             String token = extractToken(authorizationHeader);
             rootAdminService.addEmployee(token, newAdminEmail);

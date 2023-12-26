@@ -1,21 +1,19 @@
 package com.example.BackEnd.Services;
 
 import com.example.BackEnd.Config.JwtService;
+import com.example.BackEnd.DTO.RegisterRequest;
 import com.example.BackEnd.Model.Admin;
 import com.example.BackEnd.Model.Customer;
 import com.example.BackEnd.Repositories.AdminRepository;
 import com.example.BackEnd.Repositories.CustomerRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import com.example.BackEnd.DTO.RegisterRequest;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
@@ -143,8 +141,7 @@ class UserVerificationTest {
         when(adminRepository.findByEmail(email)).thenReturn(Optional.of(admin));
 
         // Act and Assert
-        IllegalStateException exception = assertThrows(IllegalStateException.class,
-                () -> userVerification.verifyAdmin(token, registerRequest));
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> userVerification.verifyAdmin(token, registerRequest));
         assertEquals("Admin already verified", exception.getMessage());
     }
 
@@ -158,8 +155,7 @@ class UserVerificationTest {
         when(jwtService.extractUsername(token)).thenReturn(email2);
 
         // Act and Assert
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-                () -> userVerification.verifyAdmin(token, registerRequest));
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> userVerification.verifyAdmin(token, registerRequest));
         assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
         assertEquals("The provided form mail doesn't match the verification mail sent", exception.getReason());
     }
@@ -175,8 +171,7 @@ class UserVerificationTest {
         when(adminRepository.findByEmail(email)).thenReturn(Optional.empty());
 
         // Act and Assert
-        UsernameNotFoundException exception = assertThrows(UsernameNotFoundException.class,
-                () -> userVerification.verifyAdmin(token, registerRequest));
+        UsernameNotFoundException exception = assertThrows(UsernameNotFoundException.class, () -> userVerification.verifyAdmin(token, registerRequest));
         assertEquals("Admin not found", exception.getMessage());
     }
 }

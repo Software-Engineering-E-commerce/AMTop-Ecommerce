@@ -36,15 +36,14 @@ public class UserVerification {
         if (!user.getIsVerified()) {
             user.setIsVerified(true);
             CustomerRepository.save(user);
-        }
-        else {
+        } else {
             throw new IllegalStateException("User already verified");
         }
     }
 
     public void verifyAdmin(String token, RegisterRequest request) {
         String email = jwtService.extractUsername(token);
-        if(!email.equals(request.getEmail())){
+        if (!email.equals(request.getEmail())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "The provided form mail doesn't match the verification mail sent");
         }
         Optional<Admin> optionalAdmin = adminRepository.findByEmail(email);
@@ -52,13 +51,13 @@ public class UserVerification {
             throw new UsernameNotFoundException("Admin not found");
         }
         Admin admin = optionalAdmin.get();
-        if(!admin.getIsVerified()){
+        if (!admin.getIsVerified()) {
             admin.setIsVerified(true);
             admin.setPassword(passwordEncoder.encode(request.getPassword()));
             admin.setFirstName(request.getFirstName());
             admin.setLastName(request.getLastName());
             adminRepository.save(admin);
-        }else{
+        } else {
             throw new IllegalStateException("Admin already verified");
         }
     }

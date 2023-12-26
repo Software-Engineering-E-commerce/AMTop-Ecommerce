@@ -25,15 +25,14 @@ public class AdminVerificationController {
             try {
                 userVerification.verifyAdmin(token, registerRequest);
                 return ResponseEntity.status(HttpStatus.OK).body("Admin verified successfully");
-            }catch (ResponseStatusException e) { //request email doesn't match the token
+            } catch (ResponseStatusException e) { //request email doesn't match the token
                 return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
             } catch (UsernameNotFoundException e) { // user not found
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
             } catch (IllegalStateException e) { // user already verified
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
             }
-        }
-        else {
+        } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
         }
     }

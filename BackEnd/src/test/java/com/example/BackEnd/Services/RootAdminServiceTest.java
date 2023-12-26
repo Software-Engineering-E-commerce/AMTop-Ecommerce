@@ -84,7 +84,7 @@ class RootAdminServiceTest {
         newAdmin.setIsVerified(false);
 
         when(jwtService.extractUsername(anyString())).thenReturn(rootEmail);
-        when(jwtService.generateToken(newAdmin) ).thenReturn(anyString());
+        when(jwtService.generateToken(newAdmin)).thenReturn(anyString());
         when(adminRepository.findByEmail(rootEmail)).thenReturn(Optional.of(rootAdmin));
         when(adminRepository.findByEmail(newAdminEmail)).thenReturn(Optional.of(newAdmin));
         when(customerRepository.findByEmail(anyString())).thenReturn(Optional.empty());
