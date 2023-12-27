@@ -9,6 +9,7 @@ import ConfirmationModal from './ConfirmationModal';
 
 interface Props {
   getOrders: () => Promise<Order[]>;
+  getSortedOrders: (sortBy: any, sortOrder: any) => Promise<Order[]>;
   deleteOrder: (orderId: number) => Promise<string>;
   deleteOrderItem: (order: Order, product: Product) => Promise<string>;
   updateOrderStatus: (orderId: number, newStatus: string) => Promise<string>;
@@ -16,6 +17,7 @@ interface Props {
 
 const OrderList = ({
   getOrders,
+  getSortedOrders,
   deleteOrder,
   deleteOrderItem,
   updateOrderStatus
@@ -47,10 +49,21 @@ const OrderList = ({
   const [confirmModalContent, setConfirmModalContent] = useState({ message: '', onConfirm: () => {} });
   const [showAlertModal, setShowAlertModal] = useState(false);
   const [alertModalContent, setAlertModalContent] = useState({ message: '', onConfirm: () => {} });
+  const [sortParams, setSortParams] = useState({ sortBy: '', sortOrder: true });
+  const [showSortModal, setShowSortModal] = useState(false);
 
   const handleOrderClick = (order: Order) => {
     setSelectedOrder(order);
     setShowModal(true);
+  };
+
+  const handleSortButtonClick = async() => {
+    const orders = await getSortedOrders(sortParams.sortBy, sortParams.sortOrder);
+    setOrders(orders);
+  };
+
+  const toggleSortModal = () => {
+    setShowSortModal(prev => !prev);
   };
 
   const handleClose = () => {
@@ -180,6 +193,9 @@ const OrderList = ({
   return (
     <div>
       <h1 className='order-header'>Orders</h1>
+      <button className="orders-sort-button" onClick={toggleSortModal}>
+        Sort Options
+      </button>
       <div className={`orders-list ${fadeAnimation}`}>
         {currentOrders.map(order => (
           <div key={order.id} className='order-card' onClick={() => handleOrderClick(order)}>
@@ -249,6 +265,41 @@ const OrderList = ({
           </Button>
         </Modal.Footer>
       </Modal>
+      {showSortModal && (
+        <div className="sort-modal">
+          <div className="sort-modal-content">
+            <div className="sort-option">
+              <label className="sort-label">
+                Sort by:
+                <select className="sort-select" onChange={(e) => setSortParams(prev => ({ ...prev, sortBy: e.target.value }))} value={sortParams.sortBy}>
+                  <option value="">Select Criteria</option>
+                  <option value="id">Order ID</option>
+                  <option value="customer">Customer ID</option>
+                  <option value="startDate">Order Date</option>
+                  <option value="deliveryDate">Delivery Date</option>
+                  <option value="totalAmount">Number Of Ordered Items</option>
+                  <option value="totalCost">Total Cost</option>
+                  <option value="status">Status</option>
+                </select>
+              </label>
+            </div>
+            <div className="sort-order">
+              <label className="sort-label">
+                <input type="radio" name="sortOrder" checked={sortParams.sortOrder} onChange={() => setSortParams(prev => ({ ...prev, sortOrder: true }))} />
+                Ascending
+              </label>
+              <label className="sort-label">
+                <input type="radio" name="sortOrder" checked={!sortParams.sortOrder} onChange={() => setSortParams(prev => ({ ...prev, sortOrder: false }))} />
+                Descending
+              </label>
+            </div>
+            <div className="sort-modal-buttons">
+              <button className="apply-button" onClick={() => { handleSortButtonClick(); toggleSortModal(); }}>Apply</button>
+              <button className="cancel-button" onClick={toggleSortModal}>Cancel</button>
+            </div>
+          </div>
+        </div>      
+      )}
       <ConfirmationModal
         show={showConfirmModal}
         message={confirmModalContent.message}

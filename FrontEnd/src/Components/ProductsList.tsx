@@ -103,14 +103,6 @@ const ProductsList = ({
     setProducts(products);
   };
 
-  const handleSortChange = (sortBy: any) => {
-    setSortParams(prev => ({ ...prev, sortBy }));
-  };
-  
-  const handleSortOrderChange = () => {
-    setSortParams(prev => ({ ...prev, sortOrder: !prev.sortOrder }));
-  };
-
   const toggleSortModal = () => {
     setShowSortModal(prev => !prev);
   };
@@ -252,23 +244,9 @@ const ProductsList = ({
           </button>
         </div>
       )}
-
-      {/* <div className="sort-controls"> */}
-        {/* <select onChange={(e) => handleSortChange(e.target.value)} value={sortParams.sortBy}> */}
-          {/* <option value="">Select Sort Criteria</option> */}
-          {/* <option value="price">Price</option> */}
-          {/* <option value="productName">Name</option> */}
-          {/* Add other sorting criteria as needed */}
-        {/* </select> */}
-        {/* <button onClick={handleSortOrderChange}> */}
-          {/* {sortParams.sortOrder ? 'Ascending' : 'Descending'} */}
-        {/* </button> */}
-        {/* <button onClick={handleSortButtonClick}>Sort</button> */}
-      {/* </div> */}
       <button className="sort-button" onClick={toggleSortModal}>
         Sort Options
       </button>
-
       <div className={`products-list ${fadeAnimation}`}>
         {currentProducts.map((product) => (
           <div
