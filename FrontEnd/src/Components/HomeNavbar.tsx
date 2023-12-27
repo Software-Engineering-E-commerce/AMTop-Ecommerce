@@ -127,6 +127,17 @@ const Navbar: React.FC<NavbarProps> = ({
     });
   };
 
+  function handleCategoriesClicked(): void {
+    navigate("/categories", {
+      state: {
+        userToken: token,
+        isAdmin: isAdmin,
+        firstName: firstName,
+        lastName: lastName,
+      },
+    });
+  }
+
   return (
     <div
       style={{ borderBottom: "1px solid #ccc" }}
@@ -336,7 +347,7 @@ const Navbar: React.FC<NavbarProps> = ({
               <li className="nav-item">
                 <button
                   className="nav-link nav-bar-icons"
-                  
+                  onClick={handleCategoriesClicked}
                   style={{ color: "black" }}
                 >
                   Categories
