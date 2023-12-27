@@ -13,11 +13,16 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "./HomeNavbar.css"; // Make sure to create this CSS file
 
+
 interface NavbarProps {
   firstName: string;
   lastName: string;
   isAdmin: boolean;
   token: string;
+  isHome?:boolean;
+  isCategories?:boolean;
+  isProducts?:boolean;
+  isOrders?:boolean;
 }
 
 const Navbar: React.FC<NavbarProps> = ({
@@ -25,6 +30,10 @@ const Navbar: React.FC<NavbarProps> = ({
   lastName,
   isAdmin,
   token,
+  isHome=false,
+  isCategories = false,
+  isProducts = false,
+  isOrders = false
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLLIElement>(null);
@@ -127,18 +136,55 @@ const Navbar: React.FC<NavbarProps> = ({
     });
   };
 
+
+  function handleCategoriesClicked(): void {
+    navigate("/categories", {
+      state: {
+        userToken: token,
+        isAdmin: isAdmin,
+        firstName: firstName,
+        lastName: lastName,
+      },
+    });
+  }
+
+
   function toHomePage(): void {
     navigate("/home");
   }
 
+  const [isHomeUse, setIsHomeUse] = useState(true);
+  const [isNavbarVisible, setIsNavbarVisible] = useState(true);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // Check if the scroll position is greater than or equal to 100vh
+      setIsNavbarVisible(window.scrollY < window.innerHeight);
+
+      // Optionally, update the isHome state based on your criteria
+      // For example, check if the user is on the home page
+      // Replace the condition with your logic
+      setIsHomeUse(isHome);
+    };
+
+    // Add event listener for scroll
+    window.addEventListener('scroll', handleScroll);
+
+    // Remove the event listener when the component unmounts
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+
   return (
     <div
       style={{ borderBottom: "1px solid #ccc" }}
-      className="shadow-sm sticky-top"
+      className={`shadow-sm ${isHome && isNavbarVisible ? "fixed" :"sticky"}-top`}
     >
       <div
         style={{
-          backgroundColor: "rgb(21, 15, 1)",
+          backgroundColor: isHome! ? "transparent":"rgb(21, 15, 1)",
         }}
         className="container-fluid"
       >
@@ -304,7 +350,7 @@ const Navbar: React.FC<NavbarProps> = ({
       </div>
       <nav
         className="downnav navbar navbar-expand-lg"
-        style={{ padding: "0px", backgroundColor: "#ddd" }}
+        style={{ padding: "0px", backgroundColor: isHome? "transparent":"#ddd"}}
       >
         <div className="container-fluid">
           <button className="navbar-brand d-block d-sm-block d-md-none d-lg-none">
@@ -321,41 +367,43 @@ const Navbar: React.FC<NavbarProps> = ({
           >
             <span className="navbar-toggler-icon"></span>
           </button>
+
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <ul className="navbar-nav ms-auto me-auto mb-2 mb-lg-0">
               <li className="nav-item">
                 <button
                   className="nav-link nav-bar-icons"
                   onClick={handleHomeClick}
-                  style={{ color: "black" }}
+                  style={{ color: isHome? "orange":"black" , backgroundColor:`${isHome! ? "rgb(133, 133, 133)" : "none"}`}}
                 >
-                  Home
+                  <h5>Home</h5>
                 </button>
               </li>
               <li className="nav-item">
                 <button
                   className="nav-link nav-bar-icons"
-                  style={{ color: "black" }}
+                  onClick={handleCategoriesClicked}
+                  style={{ color: isHome? "orange":"black",backgroundColor:`${isCategories! ? "rgb(133, 133, 133)" : "none"}`}}
                 >
-                  Categories
+                  <h5>Categories</h5>
                 </button>
               </li>
               <li className="nav-item">
                 <button
                   className="nav-link nav-bar-icons"
                   onClick={handleProductsClick}
-                  style={{ color: "black" }}
+                  style={{color: isHome? "orange":"black" ,backgroundColor:`${isProducts! ? "rgb(133, 133, 133)" : "none"}` }}
                 >
-                  Products
+                  <h5>Products</h5>
                 </button>
               </li>
               <li className="nav-item">
                 <button
                   className="nav-link nav-bar-icons"
                   onClick={handleOrdersClick}
-                  style={{ color: "black" }}
+                  style={{ color: isHome? "orange":"black",backgroundColor:`${isOrders! ? "rgb(133, 133, 133)" : "none"}` }}
                 >
-                  Orders
+                  <h5>Orders</h5>
                 </button>
               </li>
             </ul>
