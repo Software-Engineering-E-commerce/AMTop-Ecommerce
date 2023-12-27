@@ -26,9 +26,7 @@ public class CategoryProcessorTest {
     private CategoryProcessor categoryProcessor;
 
     @BeforeEach
-    void setup() {
-        MockitoAnnotations.openMocks(this);
-    }
+    void setup() {MockitoAnnotations.openMocks(this);}
 
     //Test for successfully adding category
     @Test

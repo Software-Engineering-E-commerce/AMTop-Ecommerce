@@ -35,7 +35,7 @@ class AddCategoryControllerTest {
     }
 
     @Test
-    public void testAddCategory_Success() throws Exception {
+    public void testAddCategory_Success() {
         // Mock data
         String jsonString = "{\"name\": \"TestCategory\"}";
         MultipartFile mockImage = Mockito.mock(MultipartFile.class);
@@ -55,7 +55,7 @@ class AddCategoryControllerTest {
     }
 
     @Test
-    public void testAddCategory_Unauthorized() throws Exception {
+    public void testAddCategory_Unauthorized() {
         // Mock data
         String jsonString = "{\"name\": \"TestCategory\"}";
         MultipartFile mockImage = Mockito.mock(MultipartFile.class);
@@ -73,7 +73,7 @@ class AddCategoryControllerTest {
     }
 
     @Test
-    public void testAddCategory_UnauthorizedAdmin() throws Exception {
+    public void testAddCategory_UnauthorizedAdmin() {
         // Mock data
         String jsonString = "{\"name\": \"TestCategory\"}";
         MultipartFile mockImage = Mockito.mock(MultipartFile.class);
@@ -92,7 +92,7 @@ class AddCategoryControllerTest {
     }
 
     @Test
-    public void testAddCategory_InternalServerError() throws Exception {
+    public void testAddCategory_InternalServerError() {
         // Mock data
         String jsonString = "{\"name\": \"TestCategory\"}";
         MultipartFile mockImage = Mockito.mock(MultipartFile.class);

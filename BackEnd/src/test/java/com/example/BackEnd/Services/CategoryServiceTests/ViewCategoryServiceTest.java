@@ -1,6 +1,6 @@
 package com.example.BackEnd.Services.CategoryServiceTests;
 
-import com.example.BackEnd.DTO.CategoryResponse;
+import com.example.BackEnd.DTO.CategoryDTO;
 import com.example.BackEnd.Middleware.Permissions;
 import com.example.BackEnd.Model.Category;
 import com.example.BackEnd.Repositories.CategoryRepository;
@@ -28,10 +28,9 @@ public class ViewCategoryServiceTest {
     @Test
     void exceptionHandlingTest() {
         String name = "test";
-        String token = "AdminToken";
         when(categoryRepository.findByCategoryName(name)).thenThrow(RuntimeException.class);
         //Act
-        CategoryResponse result = categoryService.getCategory(name, token);
+        CategoryDTO result = categoryService.getCategory(name);
 
         //Assert
         assertNull(result);
@@ -41,40 +40,33 @@ public class ViewCategoryServiceTest {
     @Test
     void categoryNotFoundTest() {
         String catName = "test";
-        String token = "validToken";
         when(categoryRepository.findByCategoryName(catName)).thenReturn(Optional.empty());
-        assertNull(categoryService.getCategory(catName, token));
+        assertNull(categoryService.getCategory(catName));
         verify(categoryRepository, times(1)).findByCategoryName(catName);
     }
 
     @Test
-    void categoryForCustomerTest() {
+    void categorySuccessTest1() {
         String catName = "test category";
-        String token = "CustomerToken";
         Category category = new Category();
         category.setCategoryName(catName);
         category.setImageLink("/path/to/category/image");
         when(categoryRepository.findByCategoryName(catName)).thenReturn(Optional.of(category));
-        when(permissions.checkAdmin(token)).thenReturn(false);
-        CategoryResponse categoryResponse = categoryService.getCategory(catName, token);
-        assertNotNull(categoryResponse);
-        assertFalse(categoryResponse.isAdmin());
-        assertEquals(categoryResponse.getName(), "test category");
+        CategoryDTO categoryDTO = categoryService.getCategory(catName);
+        assertNotNull(categoryDTO);
+        assertEquals(categoryDTO.getName(), "test category");
     }
 
     @Test
-    void categoryForAdminTest() {
+    void categorySuccessTest2() {
         String catName = "test category";
-        String token = "AdminToken";
         Category category = new Category();
         category.setCategoryName(catName);
         category.setImageLink("/path/to/category/image");
-        when(categoryRepository.findByCategoryName(catName)).thenReturn(Optional.of(category));
-        when(permissions.checkAdmin(token)).thenReturn(true);
-        CategoryResponse categoryResponse = categoryService.getCategory(catName, token);
-        assertNotNull(categoryResponse);
-        assertTrue(categoryResponse.isAdmin());
-        assertEquals(categoryResponse.getName(), "test category");
+        lenient().when(categoryRepository.findByCategoryName(catName)).thenReturn(Optional.of(category));
+        CategoryDTO categoryDTO = categoryService.getCategory(catName);
+        assertNotNull(categoryDTO);
+        assertEquals(categoryDTO.getName(), "test category");
     }
 
 }

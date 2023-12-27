@@ -1,6 +1,6 @@
 package com.example.BackEnd.Controllers.CategoryControllers;
 
-import com.example.BackEnd.DTO.CategoryResponse;
+import com.example.BackEnd.DTO.CategoryDTO;
 import com.example.BackEnd.Services.CategoryService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
@@ -25,10 +25,9 @@ public class ViewCategoryControllerTest {
 
     @InjectMocks
     private ViewCategoryController viewCategoryController;
-    private CategoryResponse createMockProductResponse() {
-        return CategoryResponse.builder()
+    private CategoryDTO createMockProductResponse() {
+        return CategoryDTO.builder()
                 .name("Mock Category")
-                .isAdmin(true)
                 .build();
     }
 
@@ -39,15 +38,15 @@ public class ViewCategoryControllerTest {
         String token = "validToken";
         String authorizationHeader = "Bearer " + token;
         when(request.getHeader("Authorization")).thenReturn(authorizationHeader);
-        CategoryResponse exResponse = createMockProductResponse();
-        when(categoryService.getCategory(catName,token)).thenReturn(exResponse);
+        CategoryDTO exResponse = createMockProductResponse();
+        when(categoryService.getCategory(catName)).thenReturn(exResponse);
         // Act
-        ResponseEntity<CategoryResponse> responseEntity = viewCategoryController.viewCategory(request, catName);
+        ResponseEntity<CategoryDTO> responseEntity = viewCategoryController.viewCategory(request, catName);
         // Assert
         assertEquals(ResponseEntity.ok(exResponse), responseEntity);
         verify(request, times(1)).getHeader("Authorization");
-        verify(categoryService, times(1)).getCategory(catName, token);
-        assertTrue(Objects.requireNonNull(responseEntity.getBody()).isAdmin());
+        verify(categoryService, times(1)).getCategory(catName);
+        Objects.requireNonNull(responseEntity.getBody());
     }
     @Test
     void testViewCategoryWithInvalidToken() {
@@ -57,15 +56,15 @@ public class ViewCategoryControllerTest {
         String authorizationHeader = "Bearer " + invalidToken;
 
         when(request.getHeader("Authorization")).thenReturn(authorizationHeader);
-        when(categoryService.getCategory(categoryName, invalidToken)).thenReturn(null);
+        when(categoryService.getCategory(categoryName)).thenReturn(null);
 
         // Act
-        ResponseEntity<CategoryResponse> responseEntity = viewCategoryController.viewCategory(request, categoryName);
+        ResponseEntity<CategoryDTO> responseEntity = viewCategoryController.viewCategory(request, categoryName);
 
         // Assert
         assertEquals(200, responseEntity.getStatusCodeValue());
         verify(request, times(1)).getHeader("Authorization");
-        verify(categoryService, times(1)).getCategory(categoryName, invalidToken);
+        verify(categoryService, times(1)).getCategory(categoryName);
         assertNull(responseEntity.getBody());
     }
 
@@ -77,12 +76,12 @@ public class ViewCategoryControllerTest {
         when(request.getHeader("Authorization")).thenReturn(null);
 
         // Act
-        ResponseEntity<CategoryResponse> responseEntity = viewCategoryController.viewCategory(request, categoryName);
+        ResponseEntity<CategoryDTO> responseEntity = viewCategoryController.viewCategory(request, categoryName);
 
         // Assert
         assertEquals(400, responseEntity.getStatusCodeValue());
         verify(request, times(1)).getHeader("Authorization");
-        verify(categoryService, never()).getCategory(anyString(), anyString());
+        verify(categoryService, never()).getCategory(anyString());
         assertNull(responseEntity.getBody());
     }
 }
