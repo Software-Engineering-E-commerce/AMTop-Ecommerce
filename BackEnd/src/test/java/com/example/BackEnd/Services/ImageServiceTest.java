@@ -40,7 +40,7 @@ class ImageServiceTest {
 
         // Act and Assert
         assertThrows(IllegalStateException.class, () ->
-                imageService.saveImage(mockMultipartFile, id));
+                imageService.saveImage(mockMultipartFile, id,false));
     }
 
     @Test
@@ -56,7 +56,7 @@ class ImageServiceTest {
 
         // Act and Assert
         assertThrows(IOException.class, () ->
-                imageService.saveImage(mockMultipartFile, id));
+                imageService.saveImage(mockMultipartFile, id,false));
     }
 
     @Test
@@ -68,7 +68,7 @@ class ImageServiceTest {
 
 
         // Act
-        String result = imageService.saveImage(mockMultipartFile, id);
+        String result = imageService.saveImage(mockMultipartFile, id,false);
 
         // Assert
         assertEquals("/products/" +
@@ -81,10 +81,9 @@ class ImageServiceTest {
         MockMultipartFile mockMultipartFile = new MockMultipartFile(
                 "file", "test.png", "image/png", "".getBytes());
         Long id = 4L;
-
         // Act and Assert
         assertThrows(IllegalStateException.class, () ->
-                imageService.saveImage(mockMultipartFile, id));
+                imageService.saveImage(mockMultipartFile, id,false));
     }
 
     @Test

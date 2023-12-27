@@ -34,7 +34,7 @@ public class AddProductService extends AbstractProductService {
         try {
             setProduct(productDTO, product, category.get());
             productRepository.save(product);
-            String imageLink = imageService.saveImage(image, product.getId());
+            String imageLink = imageService.saveImage(image, product.getId(),false);
             product.setImageLink(imageLink);
             productRepository.save(product);
         } catch (IOException e) {
