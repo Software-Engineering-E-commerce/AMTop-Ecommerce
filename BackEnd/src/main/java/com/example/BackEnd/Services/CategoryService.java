@@ -1,7 +1,6 @@
 package com.example.BackEnd.Services;
 
 import com.example.BackEnd.DTO.CategoryDTO;
-import com.example.BackEnd.DTO.CategoryResponse;
 import com.example.BackEnd.Middleware.Permissions;
 import com.example.BackEnd.Model.Category;
 import com.example.BackEnd.Repositories.CategoryRepository;
@@ -20,7 +19,6 @@ import java.util.Optional;
 public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final ImageService imageService;
-    private final Permissions permissions;
 
     /**
      * This method is for adding a new category by the admin.
@@ -80,25 +78,17 @@ public class CategoryService {
      * This method is for retrieving a category with the specified name.
      *
      * @param categoryName holds the category information collected from view layer(i.e. category name and image link).
-     * @param token        the token which help us define the type of the user (admin, customer).
      * @return the category with this specific name.
      */
-    public CategoryResponse getCategory(String categoryName, String token) {
+    public CategoryDTO getCategory(String categoryName) {
         try {
             Optional<Category> optionalCategory = categoryRepository.findByCategoryName(categoryName);
             if (optionalCategory.isPresent()) {
                 Category category = optionalCategory.get();
 
-                return permissions.checkAdmin(token) ?
-                        CategoryResponse.builder()
+                return CategoryDTO.builder()
                                 .name(category.getCategoryName())
                                 .imageUrl(category.getImageLink())
-                                .isAdmin(true)
-                                .build() :
-                        CategoryResponse.builder()
-                                .name(category.getCategoryName())
-                                .imageUrl(category.getImageLink())
-                                .isAdmin(false)
                                 .build();
             }
             return null;
