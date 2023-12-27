@@ -19,6 +19,9 @@ import Catalog from "./Pages/Catalog.tsx";
 import Wishlist from "./Pages/Wishlist.tsx";
 import AdminVerfication from "./Pages/AdminVerfication.tsx";
 
+import CustomerOrders from "./Pages/CustomerOrders.tsx";
+
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -67,6 +70,10 @@ const router = createBrowserRouter([
   {
     path: "/catalog",
     element: <Catalog />,
+  },
+  {
+    path: "/customerOrders",
+    element: <CustomerOrders />
   },
   {
     path: "*",
