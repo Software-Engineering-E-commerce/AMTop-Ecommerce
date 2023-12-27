@@ -1,5 +1,5 @@
 import React, { useState , useEffect } from "react";
-import StarRating from "./StarRating";
+import StarRating from "./ReviewStarRating";
 import axios from 'axios';
 
 export interface Review {
@@ -18,7 +18,7 @@ interface CustomerReviewsProps {
   firstName: string;
   lastName: string;
 }
- 
+
 const CustomerReviews: React.FC<CustomerReviewsProps> = ({
   reviews: initialReviews,
   token,
@@ -42,19 +42,30 @@ const CustomerReviews: React.FC<CustomerReviewsProps> = ({
             'Authorization': `Bearer ${token}`,
           },
         });
-
+  
         if (response.status === 200) {
-          setReviews(response.data);
+          if (response.data.length > 0) {
+            setHasReviewed(response.data[0].hasReviewed);
+          }
+          // Map the backend data to the frontend's Review structure
+          const mappedReviews = response.data.map((reviewDTO: any, index: number) => ({
+            id: index + 1,
+            customerName: reviewDTO.customerName,
+            rating: reviewDTO.rating,
+            reviewText: reviewDTO.comment,
+            date: new Date(reviewDTO.date).toISOString(),
+          }));
+
+          mappedReviews.sort((a : any, b : any) => b.date.localeCompare(a.date));
+          setReviews(mappedReviews);
         }
       } catch (error) {
         console.error('Error fetching reviews:', error);
       }
     };
-
+  
     fetchReviews();
   }, [productID, token]);
-
-
 
   const handleAddReviewClick = () => {
     setShowReviewForm(true);
