@@ -1,0 +1,30 @@
+{
+  "comment": "This is a comment",
+  "date": "2023-11-14T15:30:45.123456",
+  "rating": 4,
+  "customer": {
+    "id": 1,
+    "email": "emai1@gmail.com",
+    "firstName": "first_name1",
+    "lastName": "last_name1",
+    "isGmail": false,
+    "isVerified": true,
+    "password": "password1"
+  },
+  "product": {
+    "id": 2,
+    "productName": "Product2",
+    "price": 80,
+    "postedDate": "2023-11-14T15:30:45.123456",
+    "description": "Description2",
+    "productCountAvailable": 12,
+    "productSoldCount": 0,
+    "brand": "Brand2",
+    "imageLink": "ImageLink2",
+    "discountPercentage": 12.0,
+    "category": {
+      "categoryName": "Category2",
+      "imageLink": "ImageLink2"
+    }
+  }
+}
