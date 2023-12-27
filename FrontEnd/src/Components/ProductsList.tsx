@@ -18,6 +18,7 @@ interface Props {
   lastName: string;
   isAdmin: boolean;
   getProducts: () => Promise<Product[]>;
+  getSortedProducts: (sortBy: any, sortOrder: any) => Promise<Product[]>;
   userToken: string;
 }
 
@@ -26,7 +27,8 @@ const ProductsList = ({
   lastName,
   isAdmin,
   getProducts,
-  userToken,
+  getSortedProducts,
+  userToken
 }: Props) => {
   const [editedProductDTO, setEditedProductDTO] = useState<EditedProduct>();
   const [products, setProducts] = useState<Product[]>([]);
@@ -41,6 +43,8 @@ const ProductsList = ({
   const [showWishlistPopUp, setShowWishlistPopUp] = useState(false);
   const [editProduct, setEditProduct] = useState(false);
   const [addProduct, setAddProduct] = useState(false);
+  const [sortParams, setSortParams] = useState({ sortBy: '', sortOrder: true });
+  const [showSortModal, setShowSortModal] = useState(false);
   const navigate = useNavigate();
 
   const handleProductClick = (product: Product) => {
@@ -92,6 +96,23 @@ const ProductsList = ({
 
   const handleCloseWishlistWindow = () => {
     setShowWishlistPopUp(false);
+  };
+
+  const handleSortButtonClick = async() => {
+    const products = await getSortedProducts(sortParams.sortBy, sortParams.sortOrder);
+    setProducts(products);
+  };
+
+  const handleSortChange = (sortBy: any) => {
+    setSortParams(prev => ({ ...prev, sortBy }));
+  };
+  
+  const handleSortOrderChange = () => {
+    setSortParams(prev => ({ ...prev, sortOrder: !prev.sortOrder }));
+  };
+
+  const toggleSortModal = () => {
+    setShowSortModal(prev => !prev);
   };
 
   const toggleWishlist = (productId: number) => {
@@ -232,6 +253,22 @@ const ProductsList = ({
         </div>
       )}
 
+      {/* <div className="sort-controls"> */}
+        {/* <select onChange={(e) => handleSortChange(e.target.value)} value={sortParams.sortBy}> */}
+          {/* <option value="">Select Sort Criteria</option> */}
+          {/* <option value="price">Price</option> */}
+          {/* <option value="productName">Name</option> */}
+          {/* Add other sorting criteria as needed */}
+        {/* </select> */}
+        {/* <button onClick={handleSortOrderChange}> */}
+          {/* {sortParams.sortOrder ? 'Ascending' : 'Descending'} */}
+        {/* </button> */}
+        {/* <button onClick={handleSortButtonClick}>Sort</button> */}
+      {/* </div> */}
+      <button className="sort-button" onClick={toggleSortModal}>
+        Sort Options
+      </button>
+
       <div className={`products-list ${fadeAnimation}`}>
         {currentProducts.map((product) => (
           <div
@@ -366,6 +403,42 @@ const ProductsList = ({
           setInWishlistBooleanMap={setWishlistStatus}
           onCloseBobUp={handleCloseWishlistWindow}
         />
+      )}
+      {showSortModal && (
+        <div className="sort-modal">
+          <div className="sort-modal-content">
+            <div className="sort-option">
+              <label className="sort-label">
+                Sort by:
+                <select className="sort-select" onChange={(e) => setSortParams(prev => ({ ...prev, sortBy: e.target.value }))} value={sortParams.sortBy}>
+                  <option value="">Select Criteria</option>
+                  <option value="productName">Name</option>
+                  <option value="price">Price</option>
+                  <option value="averageRating">Rating</option>
+                  <option value="numberOfReviews">Reviews</option>
+                  <option value="postedDate">Date Added</option>
+                  <option value="productCountAvailable">Remaining in Stock</option>
+                  <option value="productSoldCount">Sold Count</option>
+                  <option value="brand">Brand</option>
+                </select>
+              </label>
+            </div>
+            <div className="sort-order">
+              <label className="sort-label">
+                <input type="radio" name="sortOrder" checked={sortParams.sortOrder} onChange={() => setSortParams(prev => ({ ...prev, sortOrder: true }))} />
+                Ascending
+              </label>
+              <label className="sort-label">
+                <input type="radio" name="sortOrder" checked={!sortParams.sortOrder} onChange={() => setSortParams(prev => ({ ...prev, sortOrder: false }))} />
+                Descending
+              </label>
+            </div>
+            <div className="modal-buttons">
+              <button className="apply-button" onClick={() => { handleSortButtonClick(); toggleSortModal(); }}>Apply</button>
+              <button className="cancel-button" onClick={toggleSortModal}>Cancel</button>
+            </div>
+          </div>
+        </div>      
       )}
     </div>
   );
