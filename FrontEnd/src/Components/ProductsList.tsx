@@ -115,7 +115,7 @@ const ProductsList = ({
     return null;
   };
 
-  function calculateProductRating(reviews: Review[]): number {
+   function calculateProductRating(reviews: Review[]): number {
     if (reviews.length === 0) {
       return 0;
     }
