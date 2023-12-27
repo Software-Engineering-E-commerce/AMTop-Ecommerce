@@ -86,7 +86,7 @@ const CustomerReviews: React.FC<CustomerReviewsProps> = ({
       comment: newReviewText,
       date: new Date().toISOString(),
       rating: newReviewRating,
-      product_id: productID,
+      productId: productID,
     };
     try {
       const response = await axios.post('http://localhost:9080/reviews', reviewData, {
