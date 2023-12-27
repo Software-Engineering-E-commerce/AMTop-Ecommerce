@@ -10,6 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -66,12 +69,14 @@ class AdminControllerTest {
         // Arrange
         String authorizationHeader = "Bearer mockToken";
         String newAdminEmail = "newadmin@example.com";
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("newAdminEmail", newAdminEmail);
 
         // Mock the behavior of the rootAdminService in case of valid data
         doNothing().when(rootAdminService).addEmployee(anyString(), anyString());
 
         // Act
-        ResponseEntity<String> response = adminController.addAdmin(authorizationHeader, newAdminEmail);
+        ResponseEntity<String> response = adminController.addAdmin(authorizationHeader, requestBody);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -86,12 +91,14 @@ class AdminControllerTest {
         // Arrange
         String authorizationHeader = "Bearer mockToken";
         String newAdminEmail = "newadmin@example.com";
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("newAdminEmail", newAdminEmail);
 
         // Mock the behavior of the rootAdminService to throw a Forbidden exception
         doThrow(new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden")).when(rootAdminService).addEmployee(anyString(), anyString());
 
         // Act
-        ResponseEntity<String> response = adminController.addAdmin(authorizationHeader, newAdminEmail);
+        ResponseEntity<String> response = adminController.addAdmin(authorizationHeader, requestBody);
 
         // Assert
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
@@ -103,12 +110,15 @@ class AdminControllerTest {
         // Arrange
         String authorizationHeader = "Bearer mockToken";
         String newAdminEmail = "newadmin@example.com";
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("newAdminEmail", newAdminEmail);
+
 
         // Mock the behavior of the rootAdminService to throw a Conflict exception
         doThrow(new ResponseStatusException(HttpStatus.CONFLICT, "Conflict")).when(rootAdminService).addEmployee(anyString(), anyString());
 
         // Act
-        ResponseEntity<String> response = adminController.addAdmin(authorizationHeader, newAdminEmail);
+        ResponseEntity<String> response = adminController.addAdmin(authorizationHeader, requestBody);
 
         // Assert
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
@@ -120,12 +130,14 @@ class AdminControllerTest {
         // Arrange
         String authorizationHeader = "Bearer mockToken";
         String newAdminEmail = "newadmin@example.com";
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("newAdminEmail", newAdminEmail);
 
         // Mock the behavior of the rootAdminService to throw an unexpected exception
         doThrow(new RuntimeException("Internal Server Error")).when(rootAdminService).addEmployee(anyString(), anyString());
 
         // Act
-        ResponseEntity<String> response = adminController.addAdmin(authorizationHeader, newAdminEmail);
+        ResponseEntity<String> response = adminController.addAdmin(authorizationHeader, requestBody);
 
         // Assert
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
@@ -137,9 +149,11 @@ class AdminControllerTest {
         // Arrange
         String authorizationHeader = "InvalidToken";
         String newAdminEmail = "newadmin@example.com";
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("newAdminEmail", newAdminEmail);
 
         // Act
-        ResponseEntity<String> response = adminController.addAdmin(authorizationHeader, newAdminEmail);
+        ResponseEntity<String> response = adminController.addAdmin(authorizationHeader, requestBody);
 
         // Assert
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());

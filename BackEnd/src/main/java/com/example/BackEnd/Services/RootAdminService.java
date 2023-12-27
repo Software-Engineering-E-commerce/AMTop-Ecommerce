@@ -63,8 +63,17 @@ public class RootAdminService {
     void newAdminVerification(Admin admin) throws Exception {
         var jwtToken = jwtService.generateToken(admin);
         try {
-            String verificationLink = "http://localhost:3000/verificationSignup?token=" + jwtToken + "&email=" + admin.getEmail();
-            emailService.sendEmail(admin.getEmail(), "Email Verification", "<body style=\"font-family: Arial, sans-serif; background-color: #f4f4f4; text-align: center; padding: 20px;\">\n" + "\n" + "    <div style=\"max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);\">\n" + "\n" + "        <h2 style=\"color: #333333;\">Email Verification</h2>\n" + "\n" + "        <p style=\"color: #666666;\">Please click on the button below to complete register and verify your account:</p>\n" + "\n" + "        <a href=\"" + verificationLink + "\"style=\"display: inline-block; background-color: #4caf50; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-top: 20px;\">Verify</a>\n" + "\n" + "    </div>\n" + "</body>");
+            String verificationLink = "http://localhost:3000/adminVerfication?token=" + jwtToken + "&email=" + admin.getEmail();
+            emailService.sendEmail(admin.getEmail(),
+                    "Email Verification", "<body style=\"font-family: Arial, sans-serif; background-color: #f4f4f4; text-align: center; padding: 20px;\">\n" +
+                            "\n" + "    <div style=\"max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);\">\n" +
+                            "\n" +
+                            "        <h2 style=\"color: #333333;\">Email Verification</h2>\n" +
+                            "\n" +
+                            "        <p style=\"color: #666666;\">Please click on the button below to complete register and verify your account:</p>\n" +
+                            "\n" +
+                            "        <a href=\"" + verificationLink + "\"style=\"display: inline-block; background-color: #4caf50; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-top: 20px;\">Verify</a>\n" +
+                            "\n" + "    </div>\n" + "</body>");
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }

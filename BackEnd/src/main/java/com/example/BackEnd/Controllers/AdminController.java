@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/admin")
 @CrossOrigin(origins = "http://localhost:3000/")
@@ -15,10 +17,10 @@ public class AdminController {
     private final RootAdminService rootAdminService;
 
     @PostMapping("/addAdmin")
-    public ResponseEntity<String> addAdmin(@RequestHeader("Authorization") String authorizationHeader,
-                                           @RequestParam("newAdminEmail") String newAdminEmail) {
+    public ResponseEntity<String> addAdmin(@RequestHeader("Authorization") String authorizationHeader, @RequestBody Map<String, String> requestBody) {
         try {
             String token = extractToken(authorizationHeader);
+            String newAdminEmail = requestBody.get("newAdminEmail");
             rootAdminService.addEmployee(token, newAdminEmail);
             return ResponseEntity.ok("Admin has been added and a Verification Email sent to him");
         } catch (IllegalArgumentException e) {
