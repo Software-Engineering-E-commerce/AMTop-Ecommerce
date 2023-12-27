@@ -47,10 +47,10 @@ public class FilterProducts<T extends Comparable<T>> implements IFilter {
             predicates.add(criteriaBuilder
                     .equal(root.get("brand"), filterProductDto.getBrand()));
         }
-        if (filterProductDto.getCategory() != null) {
-            predicates.add(criteriaBuilder
-                    .equal(root.get("category"), filterProductDto.getCategory()));
-        }
+//        if (filterProductDto.getCategory() != null) {
+//            predicates.add(criteriaBuilder
+//                    .equal(root.get("category"), filterProductDto.getCategory()));
+//        }
         if (filterProductDto.isAvailable()) {
             predicates.add(criteriaBuilder
                     .greaterThan(root.get("productCountAvailable"), 0));
