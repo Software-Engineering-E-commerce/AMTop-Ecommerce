@@ -57,7 +57,7 @@ class ReviewServiceTest {
     }
 
     @Test
-    void whenCustomerNotFound_thenReturnsErrorMessage() {
+    void whenCustomerAddsReview_andCustomerNotFound_thenReturnsErrorMessage() {
         when(customerRepository.findByEmail(anyString())).thenReturn(Optional.empty());
 
         String response = reviewService.addReview(reviewDTO, "customer@example.com");
@@ -67,7 +67,7 @@ class ReviewServiceTest {
     }
 
     @Test
-    void whenProductNotFound_thenReturnsErrorMessage() {
+    void whenCustomerAddsReview_andProductNotFound_thenReturnsErrorMessage() {
         when(customerRepository.findByEmail(anyString())).thenReturn(Optional.of(customer));
         when(productRepository.findById(anyLong())).thenReturn(Optional.empty());
 
@@ -78,7 +78,7 @@ class ReviewServiceTest {
     }
 
     @Test
-    void whenExceptionOccurs_thenReturnsErrorMessage() {
+    void whenCustomerAddsReview_andExceptionOccurs_thenReturnsErrorMessage() {
         when(customerRepository.findByEmail(anyString())).thenReturn(Optional.of(customer));
         when(productRepository.findById(anyLong())).thenReturn(Optional.of(product));
         doThrow(new RuntimeException("Database error")).when(reviewRepository).save(any(Review.class));

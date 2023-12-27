@@ -22,7 +22,7 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final ProductRepository productRepository;
 
-    public String addReview(ReviewDTO reviewDTO, String email){
+    public String addReview(ReviewDTO reviewDTO, String email) {
         try {
             Optional<Customer> optionalCustomer = customerRepository.findByEmail(email);
             if (optionalCustomer.isEmpty()) {
@@ -34,14 +34,9 @@ public class ReviewService {
                 return "Product not found with ID: " + reviewDTO.getProductId();
             }
 
-            Review review = new Review();
-            review.setCustomer(optionalCustomer.get());
-            review.setProduct(optionalProduct.get());
-            review.setRating(reviewDTO.getRating());
-            review.setComment(reviewDTO.getComment());
-            review.setDate(reviewDTO.getDate());
-
-            reviewRepository.save(review);
+            Customer customer = optionalCustomer.get();
+            Product product = optionalProduct.get();
+            buildReview(customer, product, reviewDTO);
 
             return "Review Added Successfully";
         } catch (Exception e) {
@@ -49,6 +44,17 @@ public class ReviewService {
             return "An error occurred: " + e.getMessage();
         }
     }
+
+    public void buildReview(Customer customer, Product product, ReviewDTO reviewDTO) {
+        Review review = new Review();
+        review.setCustomer(customer);
+        review.setProduct(product);
+        review.setRating(reviewDTO.getRating());
+        review.setComment(reviewDTO.getComment());
+        review.setDate(reviewDTO.getDate());
+        reviewRepository.save(review);
+    }
+
     public List<ReviewDTO> getReviews(String email, long productId) {
         boolean hasReviewed = false; // Declare hasReviewed outside the try block
 
@@ -68,18 +74,21 @@ public class ReviewService {
             }
 
             // Transform each Review entity into a ReviewDTO
-            boolean finalHasReviewed = hasReviewed;
-            return reviews.stream().map(review -> new ReviewDTO(
-                    review.getCustomer().getFirstName() + " " + review.getCustomer().getLastName(),
-                    review.getRating(),
-                    review.getComment(),
-                    review.getDate(),
-                    finalHasReviewed
-            )).collect(Collectors.toList());
+            return transformReviewToReviewDTO(reviews, hasReviewed);
 
         } catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<>(); // Return an empty list in case of an error
         }
+    }
+
+    public List<ReviewDTO> transformReviewToReviewDTO(List<Review> reviews, boolean hasReviewed) {
+        return reviews.stream().map(review -> new ReviewDTO(
+                review.getCustomer().getFirstName() + " " + review.getCustomer().getLastName(),
+                review.getRating(),
+                review.getComment(),
+                review.getDate(),
+                hasReviewed
+        )).collect(Collectors.toList());
     }
 }
