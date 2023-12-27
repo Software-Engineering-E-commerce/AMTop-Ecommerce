@@ -11,6 +11,12 @@ import LogIn from "../Pages/LogIn";
 interface Props {
   isLogin: boolean;
 
+  adminEmail?: string;
+
+  isAdminSignup: boolean;
+
+  getAdminSignUpCredentials?: (admin: RegisterRequest) => void;
+
   getSignUpCredentials?: (Customer: RegisterRequest) => void;
 
   getLogInCredentials?: (customer: LoginRequest) => void;
@@ -19,6 +25,9 @@ interface Props {
 //this is the main component of the form
 const Form = ({
   isLogin,
+  adminEmail,
+  isAdminSignup,
+  getAdminSignUpCredentials,
   getSignUpCredentials,
   getLogInCredentials,
 }: Props) => {
@@ -29,7 +38,7 @@ const Form = ({
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
-    email: "",
+    email: !isLogin && adminEmail! !== "" ? adminEmail! : "",
     password: "",
     confirmPassword: "",
   });
@@ -42,6 +51,10 @@ const Form = ({
     password: "",
     confirmPassword: "",
   });
+
+  const [isEmailDisabled, setIsEmailDisabled] = useState(
+    !isLogin && adminEmail! !== ""
+  );
 
   // Function to handle input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -111,14 +124,14 @@ const Form = ({
         validFields.password &&
         validFields.confirmPassword
       ) {
-        console.log("All our credentials are set for the Signup");
         const customer: RegisterRequest = {
           firstName: formData.firstName,
           lastName: formData.lastName,
           email: formData.email,
           password: formData.password,
         };
-        getSignUpCredentials!(customer);
+        if (adminEmail! !== "") getAdminSignUpCredentials!(customer);
+        else getSignUpCredentials!(customer);
       }
     }
   };
@@ -267,8 +280,8 @@ const Form = ({
       /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\-])[A-Za-z\d!@#$%^&*()_+{}\[\]:;<>,.?~\\-]{8,}$/;
 
     let comment = "";
-    console.log("log in = ", isLogin)
-    if(!isLogin){
+    console.log("log in = ", isLogin);
+    if (!isLogin) {
       if (!passwordRegex.test(formData.password)) {
         comment = "Please use a stronger password and don't use white spaces!";
       }
@@ -361,6 +374,8 @@ const Form = ({
               id="inputEmail4"
               placeholder="Username@domain"
               name="email"
+              disabled={isEmailDisabled}
+              readOnly={isEmailDisabled}
               value={formData.email}
               onChange={handleInputChange}
               required
@@ -391,7 +406,9 @@ const Form = ({
           {!isLogin && (
             <>
               <div className="col-12 input-cont">
-                <label className="form-label formLabel ">Confirm password</label>
+                <label className="form-label formLabel ">
+                  Confirm password
+                </label>
                 <input
                   type="password"
                   style={{ padding: "0.8rem 0.75rem" }}
@@ -416,18 +433,29 @@ const Form = ({
           <button type="submit" className="btn btn-primary col">
             Continue
           </button>
-          <div className="line-container">
-            <div className="line"></div>
-            <div className="or">OR</div>
-            <div className="line"></div>
-          </div>
-          <GoogleAuth getUserData={getGoogleAuthData} />
+          {isAdminSignup === false && (
+            <>
+              <div className="line-container">
+                <div className="line"></div>
+                <div className="or">OR</div>
+                <div className="line"></div>
+              </div>
+              <GoogleAuth getUserData={getGoogleAuthData} />
+
+              {!isLogin ? (
+                <Link to="/login">Already have an account? Log-in</Link>
+              ) : (
+                <Link to="/">Don't have an account? Sign-Up</Link>
+              )}
+            </>
+          )}
+          {/* <GoogleAuth getUserData={getGoogleAuthData} />
 
           {!isLogin ? (
             <Link to="/login">Already have an account? Log-in</Link>
           ) : (
             <Link to="/">Don't have an account? Sign-Up</Link>
-          )}
+          )} */}
         </form>
       </div>
       {userALreadyExist === "Exist" && (

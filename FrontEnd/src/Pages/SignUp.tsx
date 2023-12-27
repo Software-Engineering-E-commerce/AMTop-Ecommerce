@@ -61,7 +61,11 @@ const SignUp = () => {
 
   return (
     <>
-      <Form isLogin={false} getSignUpCredentials={getSignUpCredentials} />
+      <Form
+        isLogin={false}
+        isAdminSignup={false}
+        getSignUpCredentials={getSignUpCredentials}
+      />
       {responseStatus === "SUCCESS" && (
         <>
           <BobUpWindow setResponseStatus={setResponseStatus}>

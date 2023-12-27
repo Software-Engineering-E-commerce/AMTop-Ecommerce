@@ -7,11 +7,13 @@ import {
   faShoppingCart,
   faSignOutAlt,
   faSearch,
+  faUserPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "./HomeNavbar.css"; // Make sure to create this CSS file
+import AddAdminPopup from "./AddAdminPopup";
 
 interface NavbarProps {
   firstName: string;
@@ -34,7 +36,17 @@ const Navbar: React.FC<NavbarProps> = ({
   const [isHeartHovered, setIsHeartHovered] = useState(false);
   const [isMyOrderHovered, setIsMyOrderHovered] = useState(false);
   const [isProfileHovered, setIsProfileHovered] = useState(false);
+  const [isAddAdminHovered, setIsAddAdminHovered] = useState(false);
   const [isLogoutHovered, setIsLogoutHovered] = useState(false);
+  const [showAddAdminPopup, setShowAddAdminPopup] = useState(false);
+
+  const handleAddAdminClick = () => {
+    setShowAddAdminPopup(true);
+  };
+
+  const handleCloseAddAdminPopup = () => {
+    setShowAddAdminPopup(false);
+  };
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
@@ -178,9 +190,8 @@ const Navbar: React.FC<NavbarProps> = ({
                   <li className="nav-item">
                     <button
                       className="nav-link nav-bar-icons"
-                      
                       onClick={handleCartClick}
-                      style={{color:"white"}}
+                      style={{ color: "white" }}
                     >
                       <FontAwesomeIcon icon={faShoppingCart} />
                     </button>
@@ -188,9 +199,8 @@ const Navbar: React.FC<NavbarProps> = ({
                   <li className="nav-item">
                     <button
                       className="nav-link nav-bar-icons"
-                      
                       onClick={handleWishlistClick}
-                      style={{color:"white"}}
+                      style={{ color: "white" }}
                     >
                       <FontAwesomeIcon icon={faHeart} />
                     </button>
@@ -201,12 +211,11 @@ const Navbar: React.FC<NavbarProps> = ({
               <li className="nav-item dropdown" ref={dropdownRef}>
                 <button
                   className="nav-link dropdown-toggle nav-bar-icons"
-                  
                   id="navbarDropdown"
                   role="button"
                   onClick={toggleDropdown}
                   aria-expanded={dropdownOpen}
-                  style={{color:"white"}}
+                  style={{ color: "white" }}
                 >
                   <FontAwesomeIcon icon={faUser} /> {firstName + " " + lastName}
                 </button>
@@ -217,7 +226,6 @@ const Navbar: React.FC<NavbarProps> = ({
                   <li>
                     <button
                       className="dropdown-item nav-bar-icons"
-                      
                       onClick={handleProfileClick}
                       onMouseEnter={() => setIsProfileHovered(true)}
                       onMouseLeave={() => setIsProfileHovered(false)}
@@ -229,12 +237,27 @@ const Navbar: React.FC<NavbarProps> = ({
                       <FontAwesomeIcon icon={faUser} /> Profile
                     </button>
                   </li>
+                  {isAdmin && (
+                    <li>
+                      <button
+                        className="dropdown-item nav-bar-icons"
+                        onClick={handleAddAdminClick}
+                        onMouseEnter={() => setIsAddAdminHovered(true)}
+                        onMouseLeave={() => setIsAddAdminHovered(false)}
+                        style={{
+                          color: isAddAdminHovered ? "#064fc4" : "#000",
+                          transition: "color 0.3s ease",
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faUserPlus} /> Add admin
+                      </button>
+                    </li>
+                  )}
                   {!isAdmin && (
                     <>
                       <li>
                         <button
                           className="dropdown-item nav-bar-icons"
-                          
                           onMouseEnter={() => setIsMyOrderHovered(true)}
                           onMouseLeave={() => setIsMyOrderHovered(false)}
                           style={{
@@ -248,7 +271,6 @@ const Navbar: React.FC<NavbarProps> = ({
                       <li>
                         <button
                           className="dropdown-item nav-bar-icons"
-                          
                           onClick={handleWishlistClick}
                           onMouseEnter={() => setIsHeartHovered(true)}
                           onMouseLeave={() => setIsHeartHovered(false)}
@@ -263,7 +285,6 @@ const Navbar: React.FC<NavbarProps> = ({
                       <li>
                         <button
                           className="dropdown-item nav-bar-icons"
-                          
                           onClick={handleCartClick}
                           onMouseEnter={() => setIsCartHovered(true)}
                           onMouseLeave={() => setIsCartHovered(false)}
@@ -281,7 +302,6 @@ const Navbar: React.FC<NavbarProps> = ({
                   <li>
                     <button
                       className="dropdown-item nav-bar-icons"
-                      
                       onClick={handleLogoutClick}
                       onMouseEnter={() => setIsLogoutHovered(true)}
                       onMouseLeave={() => setIsLogoutHovered(false)}
@@ -304,10 +324,7 @@ const Navbar: React.FC<NavbarProps> = ({
         style={{ padding: "0px", backgroundColor: "#ddd" }}
       >
         <div className="container-fluid">
-          <button
-            className="navbar-brand d-block d-sm-block d-md-none d-lg-none"
-            
-          >
+          <button className="navbar-brand d-block d-sm-block d-md-none d-lg-none">
             AMTop
           </button>
           <button
@@ -326,7 +343,6 @@ const Navbar: React.FC<NavbarProps> = ({
               <li className="nav-item">
                 <button
                   className="nav-link nav-bar-icons"
-                  
                   onClick={handleHomeClick}
                   style={{ color: "black" }}
                 >
@@ -336,7 +352,6 @@ const Navbar: React.FC<NavbarProps> = ({
               <li className="nav-item">
                 <button
                   className="nav-link nav-bar-icons"
-                  
                   style={{ color: "black" }}
                 >
                   Categories
@@ -345,7 +360,6 @@ const Navbar: React.FC<NavbarProps> = ({
               <li className="nav-item">
                 <button
                   className="nav-link nav-bar-icons"
-                  
                   onClick={handleProductsClick}
                   style={{ color: "black" }}
                 >
@@ -355,7 +369,6 @@ const Navbar: React.FC<NavbarProps> = ({
               <li className="nav-item">
                 <button
                   className="nav-link nav-bar-icons"
-                  
                   onClick={handleOrdersClick}
                   style={{ color: "black" }}
                 >
@@ -366,6 +379,11 @@ const Navbar: React.FC<NavbarProps> = ({
           </div>
         </div>
       </nav>
+      <AddAdminPopup
+        show={showAddAdminPopup}
+        handleClose={handleCloseAddAdminPopup}
+        token={token}
+      />
     </div>
   );
 };
