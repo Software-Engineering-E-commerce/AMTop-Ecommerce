@@ -1,15 +1,14 @@
 package com.example.BackEnd.Services.FilterService;
 
+import com.example.BackEnd.DTO.FilterOrderDto;
+import com.example.BackEnd.Model.Customer;
 import com.example.BackEnd.Model.Order;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,30 +18,63 @@ public class FilterOrders<T extends Comparable<T>> implements IFilter {
 
     private final EntityManager entityManager;
 
+    private static List<Predicate> getPredicates(Object criteria, CriteriaBuilder criteriaBuilder, Root<Order> root) {
+        List<Predicate> predicates = new ArrayList<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+        FilterOrderDto filterOrderDto = objectMapper.convertValue(criteria, FilterOrderDto.class);
+        setIdPredicates(criteriaBuilder, root, predicates, filterOrderDto);
+        setRangesPredicates(criteriaBuilder, root, predicates, filterOrderDto);
+        setStringsPredicates(criteriaBuilder, root, filterOrderDto, predicates);
+        return predicates;
+    }
+
+    private static void setIdPredicates(
+            CriteriaBuilder criteriaBuilder,
+            Root<Order> root,
+            List<Predicate> predicates,
+            FilterOrderDto filterOrderDto
+    ) {
+        if (filterOrderDto.getId() != 0) {
+            predicates.add(criteriaBuilder
+                    .equal(root.get("id"), filterOrderDto.getId()));
+        }
+        if (filterOrderDto.getCustomerId() != 0) {
+            Join<Order, Customer> customerJoin = root.join("customer");
+            predicates.add(criteriaBuilder.
+                    equal(customerJoin.get("id"), filterOrderDto.getCustomerId()));
+        }
+    }
+
+    private static void setRangesPredicates(
+            CriteriaBuilder criteriaBuilder,
+            Root<Order> root,
+            List<Predicate> predicates,
+            FilterOrderDto filterOrderDto
+    ) {
+        predicates.add(criteriaBuilder
+                .greaterThanOrEqualTo(root.get("totalCost"), filterOrderDto.getFromPrice()));
+        predicates.add(criteriaBuilder
+                .lessThanOrEqualTo(root.get("totalCost"), filterOrderDto.getToPrice()));
+    }
+
+    private static void setStringsPredicates(
+            CriteriaBuilder criteriaBuilder,
+            Root<Order> root,
+            FilterOrderDto filterOrderDto,
+            List<Predicate> predicates
+    ) {
+        if (filterOrderDto.getStatus() != null) {
+            predicates.add(criteriaBuilder
+                    .equal(root.get("status"), filterOrderDto.getStatus()));
+        }
+    }
+
     @Override
     public List<Order> filter(Object criteria) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Order> criteriaQuery = criteriaBuilder.createQuery(Order.class);
         Root<Order> root = criteriaQuery.from(Order.class);
-
-        Class<?> clazz = criteria.getClass();
-        Field[] fields = clazz.getDeclaredFields();
-
-        List<Predicate> predicates = new ArrayList<>();
-
-        for (Field field : fields) {
-            try {
-                field.setAccessible(true);
-                Object value = field.get(criteria);
-
-                if (value != null) {
-                    predicates.add(criteriaBuilder.equal(root.get(field.getName()), value));
-                }
-            } catch (IllegalAccessException e) {
-                return null;
-            }
-        }
-
+        List<Predicate> predicates = getPredicates(criteria, criteriaBuilder, root);
         criteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
         return entityManager.createQuery(criteriaQuery).getResultList();
     }

@@ -1,8 +1,5 @@
 package com.example.BackEnd.Services.FilterService;
 
-import com.example.BackEnd.DTO.FilterProductDto;
-import com.example.BackEnd.Model.Order;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
