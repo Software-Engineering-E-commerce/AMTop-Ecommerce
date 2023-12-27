@@ -21,6 +21,7 @@ const Categories = () => {
         lastName={lastName}
         isAdmin={isAdmin}
         token={userToken}
+        isCategories={true}
       />
     </>
   );

@@ -37,6 +37,7 @@ const Catalog = () => {
         lastName={lastName}
         isAdmin={isAdmin}
         token={userToken}
+        isProducts={true}
       />
       <ProductsList
         firstName={firstName}
