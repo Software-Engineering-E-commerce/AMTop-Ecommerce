@@ -80,3 +80,23 @@ interface ProductDTO {
   discountPercentage: number;
   category: string;
 }
+
+
+interface CategoryDTO {
+  imageLink:string;
+  categoryName:string;
+}
+
+interface HomeProductDTO{
+  id: number;
+  productName: string;
+  price: number;
+  imageLink: string;
+  discountPercentage: number;
+  reviews: Review[];
+  inWishlist: boolean;
+  description:string;
+  productCountAvailable:number;
+  categoryName:string;
+  brand:string;
+}

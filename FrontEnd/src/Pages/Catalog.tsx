@@ -2,6 +2,7 @@ import { useLocation } from "react-router-dom";
 import ProductsList from "../Components/ProductsList";
 import axios from "axios";
 import Navbar from "../Components/HomeNavbar";
+import HomeFooter from "../Components/HomeFooter";
 
 const Catalog = () => {
   const location = useLocation();
@@ -44,6 +45,7 @@ const Catalog = () => {
         isAdmin={isAdmin}
         getProducts={getProducts}
       />
+      <HomeFooter/>
     </>
   );
 };
