@@ -207,7 +207,10 @@ const Home = () => {
     infinite: false,
     speed: 500,
     slidesToShow: 4,
-    slidesToScroll: 4,
+    slidesToScroll: 2,
+    infinite: true, // Enable infinite loop
+    autoplay: true, // Enable autoplay
+    autoplaySpeed: 3000, // Set the autoplay speed in milliseconds
     initialSlide: 0,
     responsive: [
       {
