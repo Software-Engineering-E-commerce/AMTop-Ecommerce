@@ -5,20 +5,34 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import './OrdersList.css';
 import AlertModal from './AlertModal';
-import ConfirmationModal from './ConfirmationModal';
+import ConfirmationModal from './confirmationModal';
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
   getOrders: () => Promise<Order[]>;
   deleteOrder: (orderId: number) => Promise<string>;
   deleteOrderItem: (order: Order, product: Product) => Promise<string>;
   updateOrderStatus: (orderId: number, newStatus: string) => Promise<string>;
+  isAdmin: boolean;
+  firstName: string;
+  lastName: string;
+  userToken: string;
 }
+
+const formatDate = (dateString: string): string => {
+  const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+  return new Date(dateString).toLocaleDateString(undefined, options);
+};
 
 const OrderList = ({
   getOrders,
   deleteOrder,
   deleteOrderItem,
-  updateOrderStatus
+  updateOrderStatus,
+  isAdmin,
+  firstName,
+  lastName,
+  userToken
 }: Props) => {
   const nullCustomer: Customer = {
     id: 0,
@@ -47,6 +61,7 @@ const OrderList = ({
   const [confirmModalContent, setConfirmModalContent] = useState({ message: '', onConfirm: () => {} });
   const [showAlertModal, setShowAlertModal] = useState(false);
   const [alertModalContent, setAlertModalContent] = useState({ message: '', onConfirm: () => {} });
+  const navigate = useNavigate();
 
   const handleOrderClick = (order: Order) => {
     setSelectedOrder(order);
@@ -149,6 +164,19 @@ const OrderList = ({
     setShowConfirmModal(true);
   };
 
+  const handleItemClick = (product: Product) => {
+    const id = product.id;
+    navigate("/product-details", {
+      state: {
+        firstName: firstName,
+        lastName: lastName,
+        isAdmin: isAdmin,
+        productID: id,
+        token: userToken,
+      },
+    });
+  };
+
   // To not fetch orders twice on mounting the component
   const hasFetchedOrders = useRef(false);
   useEffect(() => {
@@ -179,17 +207,40 @@ const OrderList = ({
 
   return (
     <div>
-      <h1 className='order-header'>Orders</h1>
+      {isAdmin && 
+        <h1 className='mt-3 mb-0'>Orders</h1>
+      }
+      {!isAdmin && 
+        <h1 className='mt-3 mb-0'>My Orders</h1>
+      }
+      {orders.length === 0 && !isAdmin &&
+        <h1 className="semi-faded-text mb-0 d-flex justify-content-center align-items-center">
+          Explore our products and place your first order today!
+        </h1>
+      }
+      {orders.length === 0 && isAdmin &&
+        <h1 className="semi-faded-text mb-0 d-flex justify-content-center align-items-center">
+          No orders are currently present in the system
+        </h1>
+      }
       <div className={`orders-list ${fadeAnimation}`}>
         {currentOrders.map(order => (
           <div key={order.id} className='order-card' onClick={() => handleOrderClick(order)}>
-            <p><strong>ID:</strong> {order.id}</p>
-            <p><strong>Customer:</strong> {order.customer.firstName} {order.customer.lastName}</p>
+            {isAdmin && 
+              <>
+                <p><strong>ID:</strong> {order.id}</p>
+                <p><strong>Customer:</strong> {order.customer.firstName} {order.customer.lastName}</p>
+              </>
+            }
             <p><strong>Price:</strong> ${order.totalCost}</p>
             <p><strong>Status:</strong> {order.status}</p>
-            <button className="order-delete-button" onClick={(e) => { e.stopPropagation(); handleDeleteOrder(order.id); }}>
-              <FontAwesomeIcon icon={faTrash} />
-            </button>
+            <p><strong>Ordered at:</strong> {formatDate(order.startDate)}</p>
+            <p><strong>Expected delivery at:</strong> {formatDate(order.deliveryDate)}</p>
+            {isAdmin && 
+              <button className="order-delete-button" onClick={(e) => { e.stopPropagation(); handleDeleteOrder(order.id); }}>
+                <FontAwesomeIcon icon={faTrash} />
+              </button>
+            }
           </div>
         ))}
       </div>
@@ -206,14 +257,20 @@ const OrderList = ({
           <Modal.Title>Order Details</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p><strong>Customer's Name:</strong> {selectedOrder.customer.firstName} {selectedOrder.customer.lastName}</p>
-          <p><strong>Customer's ID:</strong> {selectedOrder.customer.id}</p>
-          <p>Modify the status or remove products from this order.</p>
+          {isAdmin &&
+            <>
+              <p><strong>Customer's Name:</strong> {selectedOrder.customer.firstName} {selectedOrder.customer.lastName}</p>
+              <p><strong>Customer's ID:</strong> {selectedOrder.customer.id}</p>
+              <p>Modify the status or remove products from this order.</p>
+            </>
+          }
           <div className={`products-container ${fadeAnimationSingle}`}>
             <table className="order-items-table">
               <thead>
                 <tr>
-                  <th>ID</th>
+                  {isAdmin &&
+                    <th>ID</th>
+                  }
                   <th>Name</th>
                   <th>Cost</th>
                   <th>Quantity</th>
@@ -221,16 +278,20 @@ const OrderList = ({
               </thead>
               <tbody>
                 {selectedOrder?.orderItems.map(orderItem => (
-                  <tr key={orderItem.product.id}>
-                    <td>{orderItem.product.id}</td>
+                  <tr key={orderItem.product.id} onClick={() => handleItemClick(orderItem.product)}>
+                    {isAdmin && 
+                      <td>{orderItem.product.id}</td>
+                    }
                     <td>{orderItem.product.productName}</td>
                     <td>{orderItem.originalCost} $</td>
                     <td>{orderItem.quantity}</td>
-                    <td>
-                      <Button className='remove-btn' variant="danger" onClick={() => handleRemoveProduct(selectedOrder, orderItem.product)}>
-                        Remove Product
-                      </Button>
-                    </td>
+                    {isAdmin && 
+                      <td>
+                        <Button className='remove-btn' variant="danger" onClick={(e) => { e.stopPropagation(); handleRemoveProduct(selectedOrder, orderItem.product)}}>
+                          Remove Product
+                        </Button>
+                      </td>
+                    }
                   </tr>
                 ))}
               </tbody>
@@ -238,9 +299,13 @@ const OrderList = ({
           </div>
           <div className='status-btn-container'>
             <p>Status: <span className={`status ${selectedOrder?.status?.toLowerCase()}`}>{selectedOrder?.status}</span></p>
-            <Button className='status-btn' onClick={() => handleStatusChange(selectedOrder, 'Pending')}>Mark as Pending</Button>
-            <Button className='status-btn' onClick={() => handleStatusChange(selectedOrder, 'Shipped')}>Mark as Shipped</Button>
-            <Button className='status-btn' onClick={() => handleStatusChange(selectedOrder, 'Delivered')}>Mark as Delivered</Button>
+            {isAdmin && 
+              <>
+                <Button className='status-btn' onClick={() => handleStatusChange(selectedOrder, 'Pending')}>Mark as Pending</Button>
+                <Button className='status-btn' onClick={() => handleStatusChange(selectedOrder, 'Shipped')}>Mark as Shipped</Button>
+                <Button className='status-btn' onClick={() => handleStatusChange(selectedOrder, 'Delivered')}>Mark as Delivered</Button>
+              </>
+            }
           </div>
         </Modal.Body>
         <Modal.Footer>

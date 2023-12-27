@@ -117,7 +117,16 @@ const Navbar: React.FC<NavbarProps> = ({
   };
 
   const handleOrdersClick = () => {
+    isAdmin == true ? 
     navigate("/dashboard", {
+      state: {
+        userToken: token,
+        isAdmin: isAdmin,
+        firstName: firstName,
+        lastName: lastName,
+      },
+    })  :
+    navigate("/customerOrders", {
       state: {
         userToken: token,
         isAdmin: isAdmin,
