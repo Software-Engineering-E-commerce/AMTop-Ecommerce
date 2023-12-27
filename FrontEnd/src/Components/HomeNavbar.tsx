@@ -18,6 +18,7 @@ interface NavbarProps {
   lastName: string;
   isAdmin: boolean;
   token: string;
+  isHome?:boolean;
 }
 
 const Navbar: React.FC<NavbarProps> = ({
@@ -25,6 +26,7 @@ const Navbar: React.FC<NavbarProps> = ({
   lastName,
   isAdmin,
   token,
+  isHome=false,
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLLIElement>(null);
@@ -127,34 +129,53 @@ const Navbar: React.FC<NavbarProps> = ({
     });
   };
 
-  function handleCategoriesClicked(): void {
-    navigate("/categories", {
-      state: {
-        userToken: token,
-        isAdmin: isAdmin,
-        firstName: firstName,
-        lastName: lastName,
-      },
-    });
+  function toHomePage(): void {
+    navigate("/home");
   }
+
+  const [isHomeUse, setIsHomeUse] = useState(true);
+  const [isNavbarVisible, setIsNavbarVisible] = useState(true);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // Check if the scroll position is greater than or equal to 100vh
+      setIsNavbarVisible(window.scrollY < window.innerHeight);
+
+      // Optionally, update the isHome state based on your criteria
+      // For example, check if the user is on the home page
+      // Replace the condition with your logic
+      setIsHomeUse(isHome);
+    };
+
+    // Add event listener for scroll
+    window.addEventListener('scroll', handleScroll);
+
+    // Remove the event listener when the component unmounts
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   return (
     <div
       style={{ borderBottom: "1px solid #ccc" }}
-      className="shadow-sm sticky-top"
+      className={`shadow-sm ${isHome && isNavbarVisible ? "fixed" :"sticky"}-top`}
     >
       <div
         style={{
-          backgroundColor: "rgb(21, 15, 1)",
-          paddingTop: "10px",
-          paddingBottom: "10px",
+          backgroundColor: isHome! ? "transparent":"rgb(21, 15, 1)",
         }}
         className="container-fluid"
       >
         <div className="row">
           <div className="col-md-2 my-auto d-none d-sm-none d-md-block d-lg-block">
             <h5 style={{ color: "#fff" }} className="brand-name">
-              AMTop
+              <img
+                id="amTopIcon"
+                src="src\assets\OurLogo.png"
+                alt="productImage"
+                onClick={toHomePage}
+              />
             </h5>
           </div>
           <div className="col-md-5 my-auto">
@@ -189,9 +210,12 @@ const Navbar: React.FC<NavbarProps> = ({
                   <li className="nav-item">
                     <button
                       className="nav-link nav-bar-icons"
-                      
                       onClick={handleCartClick}
-                      style={{color:"white"}}
+                      style={{
+                        color: "white",
+                        position: "relative",
+                        marginRight: "10px",
+                      }}
                     >
                       <FontAwesomeIcon icon={faShoppingCart} />
                     </button>
@@ -199,9 +223,8 @@ const Navbar: React.FC<NavbarProps> = ({
                   <li className="nav-item">
                     <button
                       className="nav-link nav-bar-icons"
-                      
                       onClick={handleWishlistClick}
-                      style={{color:"white"}}
+                      style={{ color: "white" }}
                     >
                       <FontAwesomeIcon icon={faHeart} />
                     </button>
@@ -212,12 +235,11 @@ const Navbar: React.FC<NavbarProps> = ({
               <li className="nav-item dropdown" ref={dropdownRef}>
                 <button
                   className="nav-link dropdown-toggle nav-bar-icons"
-                  
                   id="navbarDropdown"
                   role="button"
                   onClick={toggleDropdown}
                   aria-expanded={dropdownOpen}
-                  style={{color:"white"}}
+                  style={{ color: "white" }}
                 >
                   <FontAwesomeIcon icon={faUser} /> {firstName + " " + lastName}
                 </button>
@@ -228,7 +250,6 @@ const Navbar: React.FC<NavbarProps> = ({
                   <li>
                     <button
                       className="dropdown-item nav-bar-icons"
-                      
                       onClick={handleProfileClick}
                       onMouseEnter={() => setIsProfileHovered(true)}
                       onMouseLeave={() => setIsProfileHovered(false)}
@@ -245,7 +266,6 @@ const Navbar: React.FC<NavbarProps> = ({
                       <li>
                         <button
                           className="dropdown-item nav-bar-icons"
-                          
                           onMouseEnter={() => setIsMyOrderHovered(true)}
                           onMouseLeave={() => setIsMyOrderHovered(false)}
                           style={{
@@ -259,7 +279,6 @@ const Navbar: React.FC<NavbarProps> = ({
                       <li>
                         <button
                           className="dropdown-item nav-bar-icons"
-                          
                           onClick={handleWishlistClick}
                           onMouseEnter={() => setIsHeartHovered(true)}
                           onMouseLeave={() => setIsHeartHovered(false)}
@@ -274,7 +293,6 @@ const Navbar: React.FC<NavbarProps> = ({
                       <li>
                         <button
                           className="dropdown-item nav-bar-icons"
-                          
                           onClick={handleCartClick}
                           onMouseEnter={() => setIsCartHovered(true)}
                           onMouseLeave={() => setIsCartHovered(false)}
@@ -292,7 +310,6 @@ const Navbar: React.FC<NavbarProps> = ({
                   <li>
                     <button
                       className="dropdown-item nav-bar-icons"
-                      
                       onClick={handleLogoutClick}
                       onMouseEnter={() => setIsLogoutHovered(true)}
                       onMouseLeave={() => setIsLogoutHovered(false)}
@@ -312,13 +329,10 @@ const Navbar: React.FC<NavbarProps> = ({
       </div>
       <nav
         className="downnav navbar navbar-expand-lg"
-        style={{ padding: "0px", backgroundColor: "#ddd" }}
+        style={{ padding: "0px", backgroundColor: isHome? "transparent":"#ddd"}}
       >
         <div className="container-fluid">
-          <button
-            className="navbar-brand d-block d-sm-block d-md-none d-lg-none"
-            
-          >
+          <button className="navbar-brand d-block d-sm-block d-md-none d-lg-none">
             AMTop
           </button>
           <button
@@ -332,45 +346,42 @@ const Navbar: React.FC<NavbarProps> = ({
           >
             <span className="navbar-toggler-icon"></span>
           </button>
+
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <ul className="navbar-nav ms-auto me-auto mb-2 mb-lg-0">
               <li className="nav-item">
                 <button
                   className="nav-link nav-bar-icons"
-                  
                   onClick={handleHomeClick}
-                  style={{ color: "black" }}
+                  style={{ color: isHome? "orange":"black" , backgroundColor:`${isHome! ? "rgb(133, 133, 133)" : "none"}`}}
                 >
-                  Home
+                  <h5>Home</h5>
                 </button>
               </li>
               <li className="nav-item">
                 <button
                   className="nav-link nav-bar-icons"
-                  onClick={handleCategoriesClicked}
-                  style={{ color: "black" }}
+                  style={{ color: isHome? "orange":"black"}}
                 >
-                  Categories
+                  <h5>Categories</h5>
                 </button>
               </li>
               <li className="nav-item">
                 <button
                   className="nav-link nav-bar-icons"
-                  
                   onClick={handleProductsClick}
-                  style={{ color: "black" }}
+                  style={{color: isHome? "orange":"black" }}
                 >
-                  Products
+                  <h5>Products</h5>
                 </button>
               </li>
               <li className="nav-item">
                 <button
                   className="nav-link nav-bar-icons"
-                  
                   onClick={handleOrdersClick}
-                  style={{ color: "black" }}
+                  style={{ color: isHome? "orange":"black" }}
                 >
-                  Orders
+                  <h5>Orders</h5>
                 </button>
               </li>
             </ul>
