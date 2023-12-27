@@ -23,7 +23,7 @@ public class Review {
     private Product product;
     @Column(nullable = false)
     private float rating;
-    @Column
+    @Column(nullable = false)
     private String comment;
     @Column(nullable = false)
     private LocalDateTime date;
