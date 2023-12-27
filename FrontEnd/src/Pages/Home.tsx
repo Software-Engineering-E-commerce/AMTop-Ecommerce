@@ -17,6 +17,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import HomeProductListing from "../Components/HomeProductListing";
 import HomeFooter from "../Components/HomeFooter";
+import CategoryCardComponent from "../Components/CategoryCardComponent";
 
 interface Categorie {
   categoryName: string;
@@ -93,6 +94,13 @@ const Home = () => {
   useEffect(() => {
     // Check if the request has not been made
     if (isMounted.current) {
+      setHomeInfo((prev) => ({
+        ...prev,
+        categoryList: [],
+        firstName: prev?.firstName || "",
+        lastName: prev?.lastName || "",
+        admin: prev?.admin || false,
+      }));
       fetchData();
       isMounted.current = false;
     }
@@ -108,11 +116,10 @@ const Home = () => {
 
   var SliderSettings = {
     dots: true,
-    infinite: false,
+    infinite: true, // Enable infinite loop
     speed: 500,
     slidesToShow: 4,
     slidesToScroll: 2,
-    infinite: true, // Enable infinite loop
     autoplay: true, // Enable autoplay
     autoplaySpeed: 3000, // Set the autoplay speed in milliseconds
     initialSlide: 0,
@@ -122,6 +129,7 @@ const Home = () => {
         settings: {
           slidesToShow: 3,
           slidesToScroll: 3,
+          infinite: true,
           dots: true,
         },
       },
@@ -142,6 +150,7 @@ const Home = () => {
       },
     ],
   };
+
   return (
     <div style={{ overflowX: "hidden" }}>
       <div className="home-navbar-container" style={{ height: "100vh" }}>
@@ -165,22 +174,11 @@ const Home = () => {
               <Slider {...SliderSettings}>
                 {homeInfo?.categoryList.map((category, index) => (
                   <div key={index} className="category-slide">
-                    <div className="subSlider">
-                      <div className="subSliderWrap">
-                        <div className="categoryImage">
-                          <img
-                            style={{ maxHeight: "10rem" }}
-                            src={category.imageLink}
-                            alt={category.categoryName}
-                          />
-                        </div>
-                        <div className="categoryName">
-                          <h5 style={{ marginTop: "30px" }}>
-                            {category.categoryName}
-                          </h5>
-                        </div>
-                      </div>
-                    </div>
+                    <CategoryCardComponent
+                      categoryName={category.categoryName}
+                      imageLink={category.imageLink}
+                      isAdmin={homeInfo.admin}
+                    />
                   </div>
                 ))}
               </Slider>
@@ -317,4 +315,5 @@ const Home = () => {
     </div>
   );
 };
+
 export default Home;

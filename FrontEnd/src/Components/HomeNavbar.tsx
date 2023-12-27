@@ -13,12 +13,16 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "./HomeNavbar.css"; // Make sure to create this CSS file
 
+
 interface NavbarProps {
   firstName: string;
   lastName: string;
   isAdmin: boolean;
   token: string;
   isHome?:boolean;
+  isCategories?:boolean;
+  isProducts?:boolean;
+  isOrders?:boolean;
 }
 
 const Navbar: React.FC<NavbarProps> = ({
@@ -27,6 +31,9 @@ const Navbar: React.FC<NavbarProps> = ({
   isAdmin,
   token,
   isHome=false,
+  isCategories = false,
+  isProducts = false,
+  isOrders = false
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLLIElement>(null);
@@ -129,6 +136,19 @@ const Navbar: React.FC<NavbarProps> = ({
     });
   };
 
+
+  function handleCategoriesClicked(): void {
+    navigate("/categories", {
+      state: {
+        userToken: token,
+        isAdmin: isAdmin,
+        firstName: firstName,
+        lastName: lastName,
+      },
+    });
+  }
+
+
   function toHomePage(): void {
     navigate("/home");
   }
@@ -155,6 +175,7 @@ const Navbar: React.FC<NavbarProps> = ({
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
 
   return (
     <div
@@ -361,7 +382,8 @@ const Navbar: React.FC<NavbarProps> = ({
               <li className="nav-item">
                 <button
                   className="nav-link nav-bar-icons"
-                  style={{ color: isHome? "orange":"black"}}
+                  onClick={handleCategoriesClicked}
+                  style={{ color: isHome? "orange":"black",backgroundColor:`${isCategories! ? "rgb(133, 133, 133)" : "none"}`}}
                 >
                   <h5>Categories</h5>
                 </button>
@@ -370,7 +392,7 @@ const Navbar: React.FC<NavbarProps> = ({
                 <button
                   className="nav-link nav-bar-icons"
                   onClick={handleProductsClick}
-                  style={{color: isHome? "orange":"black" }}
+                  style={{color: isHome? "orange":"black" ,backgroundColor:`${isProducts! ? "rgb(133, 133, 133)" : "none"}` }}
                 >
                   <h5>Products</h5>
                 </button>
@@ -379,7 +401,7 @@ const Navbar: React.FC<NavbarProps> = ({
                 <button
                   className="nav-link nav-bar-icons"
                   onClick={handleOrdersClick}
-                  style={{ color: isHome? "orange":"black" }}
+                  style={{ color: isHome? "orange":"black",backgroundColor:`${isOrders! ? "rgb(133, 133, 133)" : "none"}` }}
                 >
                   <h5>Orders</h5>
                 </button>
