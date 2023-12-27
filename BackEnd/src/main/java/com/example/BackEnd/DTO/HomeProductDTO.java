@@ -20,6 +20,6 @@ public class HomeProductDTO {
     private boolean inWishlist;
     private String description;
     private int productCountAvailable;
-    private Category categoryName;
+    private String categoryName;
     private String brand;
 }

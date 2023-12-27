@@ -4,12 +4,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class HomeProductsDTO {
-    private HomeProductDTO latestProducts;
-    private HomeProductDTO mostPopularProducts;
-    private HomeProductDTO mostSoldProducts;
+    private List<HomeProductDTO> latestProducts;
+    private List<HomeProductDTO> mostPopularProducts;
+    private List<HomeProductDTO> mostSoldProducts;
 }
