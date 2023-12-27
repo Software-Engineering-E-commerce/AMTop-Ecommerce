@@ -116,6 +116,9 @@ const Dashboard = () => {
         deleteOrderItem= {deleteOrderItem}
         updateOrderStatus = {updateOrderStatus}
         isAdmin = {isAdmin}
+        firstName = {firstName}
+        lastName = {lastName}
+        userToken = {userToken}
       />
     </div>
   );

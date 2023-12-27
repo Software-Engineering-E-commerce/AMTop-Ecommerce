@@ -287,7 +287,7 @@ const OrderList = ({
                     <td>{orderItem.quantity}</td>
                     {isAdmin && 
                       <td>
-                        <Button className='remove-btn' variant="danger" onClick={() => handleRemoveProduct(selectedOrder, orderItem.product)}>
+                        <Button className='remove-btn' variant="danger" onClick={(e) => { e.stopPropagation(); handleRemoveProduct(selectedOrder, orderItem.product)}}>
                           Remove Product
                         </Button>
                       </td>
