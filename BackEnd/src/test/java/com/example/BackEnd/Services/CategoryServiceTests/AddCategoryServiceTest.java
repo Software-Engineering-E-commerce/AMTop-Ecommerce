@@ -53,7 +53,7 @@ public class AddCategoryServiceTest {
         categoryService.addCategory(categoryDTO, image);
 
         // Assert
-        verify(categoryRepository, times(1)).findByName(any());
+        verify(categoryRepository, times(1)).findByCategoryName(any());
         verify(imageService, times(1)).saveImage(any(), any(), eq(true));
     }
 
@@ -68,11 +68,11 @@ public class AddCategoryServiceTest {
         Category category = new Category(); // initialize a category
         category.setCategoryName("test category");
         category.setImageLink("/path/to/category/image");
-        when(categoryRepository.findByName(any())).thenReturn(Optional.of(category));
+        when(categoryRepository.findByCategoryName(any())).thenReturn(Optional.of(category));
 
         // Act, Assert
         assertThrows(Exception.class, () -> categoryService.addCategory(categoryDTO, image));
-        verify(categoryRepository, times(1)).findByName(any());
+        verify(categoryRepository, times(1)).findByCategoryName(any());
         verify(imageService, times(0)).saveImage(any(), any(), eq(true));
     }
 
@@ -91,7 +91,7 @@ public class AddCategoryServiceTest {
 
         // Act, Assert
         assertThrows(IOException.class, () -> categoryService.addCategory(categoryDTO, image));
-        verify(categoryRepository, times(1)).findByName(any());
+        verify(categoryRepository, times(1)).findByCategoryName(any());
         verify(imageService, times(1)).saveImage(any(), any(), eq(true));
     }
 
@@ -110,7 +110,7 @@ public class AddCategoryServiceTest {
 
         // Act, Assert
         assertThrows(IllegalStateException.class, () -> categoryService.addCategory(categoryDTO, image));
-        verify(categoryRepository, times(1)).findByName(any());
+        verify(categoryRepository, times(1)).findByCategoryName(any());
         verify(imageService, times(1)).saveImage(any(), any(), eq(true));
     }
 }

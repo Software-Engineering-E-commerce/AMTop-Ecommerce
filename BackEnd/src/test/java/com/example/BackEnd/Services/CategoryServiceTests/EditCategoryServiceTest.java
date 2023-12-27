@@ -48,13 +48,13 @@ public class EditCategoryServiceTest {
                 .name("test category")
                 .build();
         MultipartFile image = mock(MultipartFile.class);
-        when(categoryRepository.findByName(any())).thenReturn(Optional.of(new Category()));
+        when(categoryRepository.findByCategoryName(any())).thenReturn(Optional.of(new Category()));
         when(categoryRepository.save(any())).thenReturn(new Category());
         when(imageService.saveImage(any(), any(), eq(true))).thenReturn("/path/to/image");
         //Act
         categoryService.editCategory(categoryDTO,image);
         //Assert
-        verify(categoryRepository, times(1)).findByName(any());
+        verify(categoryRepository, times(1)).findByCategoryName(any());
         verify(categoryRepository, times(1)).save(any());
         verify(imageService, times(1)).saveImage(any(), any(),eq(true));
     }
@@ -68,11 +68,11 @@ public class EditCategoryServiceTest {
                 .name("test category")
                 .build();
         MultipartFile image = mock(MultipartFile.class);
-        when(categoryRepository.findByName(any())).thenReturn(Optional.empty());
+        when(categoryRepository.findByCategoryName(any())).thenReturn(Optional.empty());
         //Act
         assertThrows(NoSuchElementException.class, () -> categoryService.editCategory(categoryDTO, image));
         //Assert
-        verify(categoryRepository, times(1)).findByName(any());
+        verify(categoryRepository, times(1)).findByCategoryName(any());
         verify(categoryRepository, times(0)).save(any());
         verify(imageService, times(0)).saveImage(any(), any(),eq(true));
     }
@@ -89,12 +89,12 @@ public class EditCategoryServiceTest {
         Category category = new Category();
         category.setCategoryName("existed category");
         category.setImageLink("/path/to/category/image");
-        when(categoryRepository.findByName(any())).thenReturn(Optional.of(category));
+        when(categoryRepository.findByCategoryName(any())).thenReturn(Optional.of(category));
         when(imageService.saveImage(any(), any(), eq(true))).thenThrow(new IOException());
 
         // Act, Assert
         assertThrows(IOException.class, () -> categoryService.editCategory(categoryDTO, image));
-        verify(categoryRepository, times(1)).findByName(any());
+        verify(categoryRepository, times(1)).findByCategoryName(any());
         verify(imageService, times(1)).saveImage(any(), any(), eq(true));
     }
 
@@ -110,12 +110,12 @@ public class EditCategoryServiceTest {
         Category category = new Category();
         category.setCategoryName("existed category");
         category.setImageLink("/path/to/category/image");
-        when(categoryRepository.findByName(any())).thenReturn(Optional.of(category));
+        when(categoryRepository.findByCategoryName(any())).thenReturn(Optional.of(category));
         when(imageService.saveImage(any(), any(), eq(true))).thenThrow(new IllegalStateException());
 
         // Act, Assert
         assertThrows(IllegalStateException.class, () -> categoryService.editCategory(categoryDTO, image));
-        verify(categoryRepository, times(1)).findByName(any());
+        verify(categoryRepository, times(1)).findByCategoryName(any());
         verify(imageService, times(1)).saveImage(any(), any(), eq(true));
     }
 }

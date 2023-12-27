@@ -31,7 +31,7 @@ public class CategoryService {
      */
     public void addCategory(CategoryDTO categoryDTO, MultipartFile image) throws IOException, Exception {
         Category category = new Category();
-        if (categoryRepository.findByName(categoryDTO.getName()).isPresent()) {
+        if (categoryRepository.findByCategoryName(categoryDTO.getName()).isPresent()) {
             throw new Exception("Category " + categoryDTO.getName() + " is already exist");
         }
         try {
@@ -55,7 +55,7 @@ public class CategoryService {
      * @param image       the new image for the updated category.
      */
     public void editCategory(CategoryDTO categoryDTO, MultipartFile image) throws IOException, NoSuchElementException {
-        Optional<Category> categoryOptional = categoryRepository.findByName(categoryDTO.getName());
+        Optional<Category> categoryOptional = categoryRepository.findByCategoryName(categoryDTO.getName());
         if (categoryOptional.isEmpty()) {
             throw new NoSuchElementException("Category does not exist");
         }
@@ -85,7 +85,7 @@ public class CategoryService {
      */
     public CategoryResponse getCategory(String categoryName, String token) {
         try {
-            Optional<Category> optionalCategory = categoryRepository.findByName(categoryName);
+            Optional<Category> optionalCategory = categoryRepository.findByCategoryName(categoryName);
             if (optionalCategory.isPresent()) {
                 Category category = optionalCategory.get();
 

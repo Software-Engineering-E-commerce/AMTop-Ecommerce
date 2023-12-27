@@ -29,22 +29,22 @@ public class ViewCategoryServiceTest {
     void exceptionHandlingTest() {
         String name = "test";
         String token = "AdminToken";
-        when(categoryRepository.findByName(name)).thenThrow(RuntimeException.class);
+        when(categoryRepository.findByCategoryName(name)).thenThrow(RuntimeException.class);
         //Act
         CategoryResponse result = categoryService.getCategory(name, token);
 
         //Assert
         assertNull(result);
-        verify(categoryRepository, times(1)).findByName(name);
+        verify(categoryRepository, times(1)).findByCategoryName(name);
     }
 
     @Test
     void categoryNotFoundTest() {
         String catName = "test";
         String token = "validToken";
-        when(categoryRepository.findByName(catName)).thenReturn(Optional.empty());
+        when(categoryRepository.findByCategoryName(catName)).thenReturn(Optional.empty());
         assertNull(categoryService.getCategory(catName, token));
-        verify(categoryRepository, times(1)).findByName(catName);
+        verify(categoryRepository, times(1)).findByCategoryName(catName);
     }
 
     @Test
@@ -54,7 +54,7 @@ public class ViewCategoryServiceTest {
         Category category = new Category();
         category.setCategoryName(catName);
         category.setImageLink("/path/to/category/image");
-        when(categoryRepository.findByName(catName)).thenReturn(Optional.of(category));
+        when(categoryRepository.findByCategoryName(catName)).thenReturn(Optional.of(category));
         when(permissions.checkAdmin(token)).thenReturn(false);
         CategoryResponse categoryResponse = categoryService.getCategory(catName, token);
         assertNotNull(categoryResponse);
@@ -69,7 +69,7 @@ public class ViewCategoryServiceTest {
         Category category = new Category();
         category.setCategoryName(catName);
         category.setImageLink("/path/to/category/image");
-        when(categoryRepository.findByName(catName)).thenReturn(Optional.of(category));
+        when(categoryRepository.findByCategoryName(catName)).thenReturn(Optional.of(category));
         when(permissions.checkAdmin(token)).thenReturn(true);
         CategoryResponse categoryResponse = categoryService.getCategory(catName, token);
         assertNotNull(categoryResponse);
