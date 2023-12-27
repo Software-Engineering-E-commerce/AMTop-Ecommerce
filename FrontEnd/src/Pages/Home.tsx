@@ -7,8 +7,6 @@ import "./Home.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowUp,
-  faChevronLeft,
-  faChevronRight,
   faHeadphones,
   faKeyboard,
   faLaptop,
@@ -31,15 +29,6 @@ interface HomeInfo {
   admin: boolean;
   categoryList: Categorie[];
 }
-
-// const yourSliderSettings = {
-//   dots: true,
-//   infinite: true,
-//   speed: 500,
-//   slidesToShow: 3, // Adjust the number of slides shown
-//   slidesToScroll: 1,
-//   // ... (other slick settings)
-// };
 
 const Home = () => {
   const location = useLocation();
@@ -133,7 +122,6 @@ const Home = () => {
         settings: {
           slidesToShow: 3,
           slidesToScroll: 3,
-          infinite: true,
           dots: true,
         },
       },
@@ -326,22 +314,6 @@ const Home = () => {
         )}
       </div>
       <HomeFooter />
-    </div>
-  );
-};
-
-const PrevArrow: React.FC<{ onClick?: () => void }> = ({ onClick }) => {
-  return (
-    <div className="slider-arrow" onClick={onClick}>
-      <FontAwesomeIcon icon={faChevronLeft} />
-    </div>
-  );
-};
-
-const NextArrow: React.FC<{ onClick?: () => void }> = ({ onClick }) => {
-  return (
-    <div className="slider-arrow" onClick={onClick}>
-      <FontAwesomeIcon icon={faChevronRight} />
     </div>
   );
 };
