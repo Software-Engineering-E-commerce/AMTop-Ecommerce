@@ -12,6 +12,8 @@ import StarRating from "./StarRating";
 import AddToCart from "./AddToCart";
 import AddToWishlist from "./AddToWishlist";
 import EditAddProduct, { EditedProduct } from "./EditAddProduct";
+import { Button } from "react-bootstrap";
+import '@fortawesome/fontawesome-free/css/all.css';
 
 interface Props {
   firstName: string;
@@ -19,6 +21,7 @@ interface Props {
   isAdmin: boolean;
   getProducts: () => Promise<Product[]>;
   getSortedProducts: (sortBy: any, sortOrder: any) => Promise<Product[]>;
+  getFilteredProducts: (filter: FilterProductDto) => Promise<Product[]>;
   userToken: string;
 }
 
@@ -28,6 +31,7 @@ const ProductsList = ({
   isAdmin,
   getProducts,
   getSortedProducts,
+  getFilteredProducts,
   userToken
 }: Props) => {
   const [editedProductDTO, setEditedProductDTO] = useState<EditedProduct>();
@@ -45,6 +49,17 @@ const ProductsList = ({
   const [addProduct, setAddProduct] = useState(false);
   const [sortParams, setSortParams] = useState({ sortBy: '', sortOrder: true });
   const [showSortModal, setShowSortModal] = useState(false);
+  const [filter, setFilter] = useState<FilterProductDto>({
+    productName: '',
+    fromPrice: 0,
+    toPrice: 20000,
+    description: '',
+    available: false,
+    brand: '',
+    fromDiscountPercentage: 0,
+    toDiscountPercentage: 100,
+    category: ''
+  });
   const navigate = useNavigate();
 
   const handleProductClick = (product: Product) => {
@@ -128,6 +143,19 @@ const ProductsList = ({
     return null;
   };
 
+  const handleFilterButtonClick = async() => {
+    const products = await getFilteredProducts(filter);
+    setProducts(products);
+  };
+
+  const handleInputChange = (e: any) => {
+    const { name, value, type, checked } = e.target;
+    setFilter(prevFilter => ({
+      ...prevFilter,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
   function calculateProductRating(reviews: Review[]): number {
     if (reviews.length === 0) {
       return 0;
@@ -135,6 +163,38 @@ const ProductsList = ({
 
     const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
     return totalRating / reviews.length;
+  }
+
+  function updateMinPrice() {
+    const firstElem = document.getElementById("minPriceValue");
+    const secondElem = document.getElementById("minPrice") as HTMLInputElement;
+    if (firstElem != null && secondElem != null) {
+      firstElem.textContent = secondElem.value;
+    }
+  }
+
+  function updateMaxPrice() {
+    const firstElem = document.getElementById("maxPriceValue");
+    const secondElem = document.getElementById("maxPrice") as HTMLInputElement;
+    if (firstElem != null && secondElem != null) {
+      firstElem.textContent = secondElem.value;
+    }
+  }
+
+  function updateMinDiscountPercentage() {
+    const firstElem = document.getElementById("minDiscountPercentageValue");
+    const secondElem = document.getElementById("minDiscountPercentage") as HTMLInputElement;
+    if (firstElem != null && secondElem != null) {
+      firstElem.textContent = secondElem.value;
+    }
+  }
+
+  function updateMaxDiscountPercentage() {
+    const firstElem = document.getElementById("maxDiscountPercentageValue");
+    const secondElem = document.getElementById("maxDiscountPercentage") as HTMLInputElement;
+    if (firstElem != null && secondElem != null) {
+      firstElem.textContent = secondElem.value;
+    }
   }
 
   // To not fetch products twice on mounting the component
@@ -245,8 +305,71 @@ const ProductsList = ({
         </div>
       )}
       <button className="sort-button" onClick={toggleSortModal}>
-        Sort Options
+        Sort
       </button>
+      <button className="btn btn-primary btn-filter" type="button" data-bs-toggle="offcanvas"
+                  data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling">
+        <i className="fas fa-filter"></i>
+      </button>
+      <div className="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="false"
+       tabIndex={-1} id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel">
+        <div className="offcanvas-header">
+          <h5 className="offcanvas-title" id="offcanvasScrollingLabel">Filter Options</h5>
+            <button type="button" className="btn-close text-reset" data-bs-dismiss="offcanvas"
+                  aria-label="Close"></button>
+        </div>
+        <div className="offcanvas-body">
+          <label>Product Name:</label>
+          <input type="text" name="productName" className="form-control" value={filter.productName} onChange={handleInputChange} />
+
+          <div className="mb-3">
+            <label htmlFor="minPrice">Minimum Price: <span id="minPriceValue">0</span></label>
+            <input type="range" className="form-range" min="0" max="20000" id="minPrice" onInput={updateMinPrice}
+             name="fromPrice" value={filter.fromPrice} onChange={handleInputChange}/>
+          </div>
+
+          <div className="mb-3">
+            <label htmlFor="maxPrice">Maximum Price: <span id="maxPriceValue">20000</span></label>
+            <input type="range" className="form-range" min="0" max="20000" id="maxPrice" onInput={updateMaxPrice}
+             name="toPrice" value={filter.toPrice} onChange={handleInputChange}/>
+          </div>
+
+          <label>Product Description:</label>
+          <input type="text" name="description" className="form-control" value={filter.description} onChange={handleInputChange} />
+
+          <div className="mb-3 mt-3">
+            <label className="form-check-label" htmlFor="outOfStockCheckbox">
+              Include Out of Stock
+            </label>
+            <input name="available" className="form-check-input" type="checkbox" id="outOfStockCheckbox" 
+            checked={filter.available} style={{ marginLeft: "10px", position: "relative", bottom: "4px" }} onChange={handleInputChange} />
+          </div>
+
+          <label>Brand:</label>
+          <input type="text" name="brand" className="form-control" value={filter.brand} onChange={handleInputChange} />
+
+          <div className="mb-3">
+            <label htmlFor="minDiscountPercentage">Minimum Discount Percentage: <span id="minDiscountPercentageValue">0</span></label>
+            <input type="range" className="form-range" min="0" max="100" id="minDiscountPercentage" onInput={updateMinDiscountPercentage}
+             name="fromDiscountPercentage" value={filter.fromDiscountPercentage} onChange={handleInputChange}/>
+          </div>
+
+          <div className="mb-3">
+            <label htmlFor="maxDiscountPercentage">Maximum Discount Percentage: <span id="maxDiscountPercentageValue">100</span></label>
+            <input type="range" className="form-range" min="0" max="100" id="maxDiscountPercentage" onInput={updateMaxDiscountPercentage}
+             name="toDiscountPercentage" value={filter.toDiscountPercentage} onChange={handleInputChange}/>
+          </div>
+
+          <label>Category:</label>
+          <input type="text" name="category" className="form-control" value={filter.category} onChange={handleInputChange} />
+
+          <div className="d-flex justify-content-end mt-2">
+            <Button variant="primary" onClick={() => handleFilterButtonClick()}>
+              Filter
+            </Button>
+          </div>
+        </div>
+      </div>
       <div className={`products-list ${fadeAnimation}`}>
         {currentProducts.map((product) => (
           <div

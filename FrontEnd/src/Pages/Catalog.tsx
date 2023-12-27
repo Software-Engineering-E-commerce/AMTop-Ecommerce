@@ -29,7 +29,7 @@ const Catalog = () => {
     }
   };
 
-  const getSortedProducts = async(sortBy: any, sortOrder: any) => {
+  const getSortedProducts = async (sortBy: any, sortOrder: any) => {
     console.log("In get sorted products");
     let url = `http://localhost:9080/api/sort/Product/${sortBy}/${sortOrder}`;
     try {
@@ -38,6 +38,27 @@ const Catalog = () => {
         headers: {
           Authorization: `Bearer ${userToken}`,
         },
+      });
+      console.log(response.data);
+      const products: Product[] = response.data;
+      return products;
+    } catch (error) {
+      console.log("Error:", error);
+      const products: Product[] = [];
+      return products;
+    }
+  }
+
+  const getFilteredProducts = async (filter: FilterProductDto) => {
+    console.log("In get filtered products");
+    let url = `http://localhost:9080/api/filter/Product`;
+    try {
+      const response = await axios(url, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+        data: filter
       });
       console.log(response.data);
       const products: Product[] = response.data;
@@ -64,6 +85,7 @@ const Catalog = () => {
         isAdmin={isAdmin}
         getProducts={getProducts}
         getSortedProducts={getSortedProducts}
+        getFilteredProducts={getFilteredProducts}
       />
     </>
   );

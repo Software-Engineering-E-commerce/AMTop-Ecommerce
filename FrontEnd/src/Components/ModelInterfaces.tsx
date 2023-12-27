@@ -61,3 +61,25 @@ interface Review {
     comment: string;
     date: Date;
 }
+
+// an interface for the Product Filter DTO
+interface FilterProductDto {
+    productName: string;
+    fromPrice: number;
+    toPrice: number;
+    description: string;
+    available: boolean;
+    brand: string;
+    toDiscountPercentage: number;
+    fromDiscountPercentage: number;
+    category: string;
+}
+
+// an interface for the Order Filter DTO
+interface FilterOrderDto {
+    id: number;
+    customerId: number;
+    fromPrice: number;
+    toPrice: number;
+    status: string;
+}

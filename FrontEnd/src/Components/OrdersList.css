@@ -101,6 +101,31 @@
     background-color: #c82333; /* Darker shade on hover */
 }
 
+.btn-filter {
+    background-image: linear-gradient(to right, #0062E6, #33AEFF);
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+  }
+  
+  .btn-filter:hover {
+    background-image: linear-gradient(to right, #33AEFF, #0062E6);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+    transform: translateY(-2px);
+  }
+  
+  .btn-filter:active {
+    transform: translateY(1px);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.25);
+  }
+
 .order-header {
     margin-left: 20px;
 }
