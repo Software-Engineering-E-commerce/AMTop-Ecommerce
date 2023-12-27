@@ -17,7 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class AdminVerificationController {
     private final UserVerification userVerification;
 
-    @GetMapping
+    @PostMapping
     public ResponseEntity<String> verifyAdmin(HttpServletRequest request, @RequestBody RegisterRequest registerRequest) {
         String authorizationHeader = request.getHeader("Authorization");
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ") && authorizationHeader.length() > 7) {

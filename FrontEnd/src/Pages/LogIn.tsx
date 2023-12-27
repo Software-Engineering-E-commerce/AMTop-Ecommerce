@@ -6,7 +6,7 @@ import BobUpWindow from "../Components/BobUpWindow";
 
 const LogIn = () => {
   const navigate = useNavigate();
-  const [responseStatus, setResponseStatus] = useState("")
+  const [responseStatus, setResponseStatus] = useState("");
 
   //function to direct us to the login using credential handeling
   const getLogInCredentials = (customer: LoginRequest) => {
@@ -19,11 +19,11 @@ const LogIn = () => {
     try {
       const response = await axios({
         method: "post",
-        url: "http://localhost:9080/api/auth/authenticate", 
+        url: "http://localhost:9080/api/auth/authenticate",
         data: customer,
       });
       console.log("Response: ", response);
-      alert("You've successfully logged in")
+      alert("You've successfully logged in");
       handelLoginBasicCredentialsResponse(response);
     } catch (error) {
       alert("Wrong email or password or unverified user");
@@ -35,25 +35,24 @@ const LogIn = () => {
       //then the user exists in out system then we want to navigate to the home page
       let userToken = response.data.token;
 
-      navigate("/home", { state: { userToken: userToken, from:"logged-in"}});
-
+      navigate("/home", { state: { userToken: userToken, from: "logged-in" } });
     } else if (response.status == 403) {
       //then the user doesn't exist and forbidden to log in so we need to notify him
-      setResponseStatus("Not exists")
+      setResponseStatus("Not exists");
     }
   };
 
   //--------------------------------------End Handel log in using credentials----------------------------------
 
-
   return (
     <>
       <Form
         isLogin={true}
+        isAdminSignup={false}
         getLogInCredentials={getLogInCredentials}
       />
       {responseStatus === "Not exist" && (
-          <>
+        <>
           <BobUpWindow setResponseStatus={setResponseStatus}>
             <p style={{ color: "red" }}>
               User does NOT exist so you might wanna Sign up first !
@@ -71,7 +70,6 @@ const LogIn = () => {
       )}
     </>
   );
-
 };
 
 export default LogIn;
