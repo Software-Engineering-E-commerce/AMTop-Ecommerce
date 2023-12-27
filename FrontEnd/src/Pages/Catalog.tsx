@@ -45,7 +45,6 @@ const Catalog = () => {
         isAdmin={isAdmin}
         getProducts={getProducts}
       />
-      <HomeFooter/>
     </>
   );
 };

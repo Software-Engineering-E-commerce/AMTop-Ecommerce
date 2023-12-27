@@ -1,34 +1,33 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
-.homeFooter .container {
+.homeFooter .container-fluid {
   /* max-width: 1170px; */
   width: 100vw;  
   margin: auto;
   overflow-x: hidden;
-  border-radius: 5px;
 }
 .homeFooter  {
   padding: 0;
 }
-.homeFooter .container .row {
+.homeFooter .container-fluid .row {
   display: flex;
   flex-wrap: wrap;
 }
-.homeFooter .container ul {
+.homeFooter .container-fluid ul {
   list-style: none;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   padding: 0;
 }
-.homeFooter .container {
+.homeFooter .container-fluid {
   background-color: #24262b;
 }
-.homeFooter .container .footer-col {
+.homeFooter .container-fluid .footer-col {
   width: 25%;
   padding: 0 15px;
 }
-.homeFooter .container .footer-col h4 {
+.homeFooter .container-fluid .footer-col h4 {
   font-size: 18px;
   color: #ffffff;
   text-transform: capitalize;
@@ -37,7 +36,7 @@
   position: relative;
   text-align: left;
 }
-.homeFooter .container .footer-col h4::before {
+.homeFooter .container-fluid .footer-col h4::before {
   content: "";
   position: absolute;
   left: 0;
@@ -50,10 +49,10 @@
 .social-links{
     padding: 0;
 }
-.homeFooter .container .footer-col ul li:not(:last-child) {
+.homeFooter .container-fluid .footer-col ul li:not(:last-child) {
   margin-bottom: 10px;
 }
-.homeFooter .container .footer-col ul li a {
+.homeFooter .container-fluid .footer-col ul li a {
   font-size: 16px;
   text-transform: capitalize;
   color: #ffffff;
@@ -63,7 +62,7 @@
   display: block;
   transition: all 0.3s ease;
 }
-.homeFooter .container .footer-col ul li a:hover {
+.homeFooter .container-fluid .footer-col ul li a:hover {
   color: #ffffff;
   padding-left: 8px;
 }
@@ -71,7 +70,7 @@
 .social-links{
     width: fit-content;
 }
-.homeFooter .container .footer-col .social-links a {
+.homeFooter .container-fluid .footer-col .social-links a {
   display: inline-block;
   height: 40px;
   width: 40px;
@@ -83,21 +82,21 @@
   color: #ffffff;
   transition: all 0.5s ease;
 }
-.homeFooter .container .footer-col .social-links a:hover {
+.homeFooter .container-fluid .footer-col .social-links a:hover {
   color: #24262b;
   background-color: #ffffff;
 }
 
 /*responsive*/
 @media (max-width: 767px) {
-  .homeFooter .container .footer-col {
+  .homeFooter .container-fluid .footer-col {
     width: 50%;
     margin-bottom: 30px;
     margin-left: 20px;
   }
 }
 @media (max-width: 574px) {
-  .homeFooter .container .footer-col {
+  .homeFooter .container-fluid .footer-col {
     width: 100%;
     margin-left: 20px;
 
@@ -107,4 +106,5 @@
 .footerBottom{
   text-align: right;
   color: rgba(255, 255, 255, 0.5);
+  margin-right: 50px;
 }

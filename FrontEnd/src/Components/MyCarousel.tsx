@@ -15,12 +15,12 @@ const MyCarousel: React.FC = () => {
       description: "Upgrade your smartphone and stay connected with the latest technology.",
     },
     {
-      imageSrc: "src/assets/carouselPics/gamda.png",
+      imageSrc: "src/assets/carouselPics/carousel3.png",
       title: "Smart Watches for You",
       description: "Track fitness, receive notifications, and enhance your daily activities with smartwatches.",
     },
     {
-      imageSrc: "src/assets/carouselPics/carousel4444.png",
+      imageSrc: "src/assets/carouselPics/carousel4.png",
       title: "Wireless Aeropods",
       description: "Experience freedom with our wireless Aeropods. Immerse yourself in high-quality audio with a sleek and comfortable design for all-day use.",
     },
@@ -35,6 +35,7 @@ const MyCarousel: React.FC = () => {
       description: "Get the finest, best, costly-effective electronic devices ever made",
     }
   ];
+
 
   return (
     <Carousel id="carouselExampleCaptions">

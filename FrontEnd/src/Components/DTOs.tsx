@@ -93,7 +93,7 @@ interface HomeProductDTO{
   price: number;
   imageLink: string;
   discountPercentage: number;
-  reviews: Review[];
+  reviews: number[];
   inWishlist: boolean;
   description:string;
   productCountAvailable:number;

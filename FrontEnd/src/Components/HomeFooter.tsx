@@ -13,7 +13,7 @@ import { faEnvelope, faPhoneVolume } from "@fortawesome/free-solid-svg-icons";
 const HomeFooter: React.FC = () => {
   return (
     <footer className="footer homeFooter" style={{marginTop:"45px"}}>
-      <div className="container">
+      <div className="container-fluid">
         <div className="row" style={{padding:"40px 20px"}}>
           <div className="footer-col">
             <h4>Contact Us</h4>
@@ -83,7 +83,7 @@ const HomeFooter: React.FC = () => {
             </div>
           </div>
         </div>
-        <div className="footerBottom"><p>Copyright &copy;2023; Designed by the <span>AMTOP team</span></p></div>
+        <div className="footerBottom"><p>Copyright &copy;2023, Designed by the <span>AMTOP team</span></p></div>
 
       </div>
     </footer>

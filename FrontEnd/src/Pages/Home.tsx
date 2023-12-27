@@ -9,6 +9,10 @@ import {
   faArrowUp,
   faChevronLeft,
   faChevronRight,
+  faHeadphones,
+  faKeyboard,
+  faLaptop,
+  faMobileScreenButton,
 } from "@fortawesome/free-solid-svg-icons";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
@@ -41,6 +45,21 @@ const Home = () => {
   const location = useLocation();
   var { userToken, from } = location.state || {};
   const [homeInfo, setHomeInfo] = useState<HomeInfo | null>(null);
+
+  // TODO send the request to get these products
+
+  // The products arrays that will be displayed
+  const [latestProducts, setLatestProducts] = useState<HomeProductDTO[]>([]);
+  const [mostPopularProducts, setMostPopularProducts] = useState<
+    HomeProductDTO[]
+  >([]);
+  const [mostSoldProducts, setMostSoldProducts] = useState<HomeProductDTO[]>(
+    []
+  );
+
+  // A useState to indicate that the scroll button should appear (after one vh) or not
+  const [showScrollButton, setShowScrollButton] = useState(false);
+
   const isMounted = useRef<boolean>(true);
 
   const fetchData = async () => {
@@ -71,20 +90,15 @@ const Home = () => {
       }
     }
   };
-  useEffect(() => {
-    // Check if the request has not been made
-    if (isMounted.current) {
-      fetchData();
-      isMounted.current = false;
-    }
-  }, []);
-
-  const [showScrollButton, setShowScrollButton] = useState(false);
 
   const handleScroll = () => {
     // Set showScrollButton based on the scroll position
     const scrollTop = window.scrollY || document.documentElement.scrollTop;
     setShowScrollButton(scrollTop > window.innerHeight);
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -102,105 +116,6 @@ const Home = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  let categories: Categorie[] = [
-    {
-      categoryName: "Iphone",
-      imageLink:
-        "https://m.media-amazon.com/images/W/MEDIAX_792452-T1/images/I/51Pzh68ERNL._AC_AA180_.jpg",
-    },
-    {
-      categoryName: "Iphone 13",
-      imageLink:
-        "https://m.media-amazon.com/images/W/MEDIAX_792452-T1/images/I/81yiZag3xhL._AC_AA180_.jpg",
-    },
-    {
-      categoryName: "Iphone",
-      imageLink:
-        "https://m.media-amazon.com/images/W/MEDIAX_792452-T1/images/I/51Pzh68ERNL._AC_AA180_.jpg",
-    },
-    {
-      categoryName: "Iphone",
-      imageLink:
-        "https://m.media-amazon.com/images/W/MEDIAX_792452-T1/images/I/51Pzh68ERNL._AC_AA180_.jpg",
-    },
-    {
-      categoryName: "Iphone",
-      imageLink:
-        "https://m.media-amazon.com/images/W/MEDIAX_792452-T1/images/I/51Pzh68ERNL._AC_AA180_.jpg",
-    },
-    {
-      categoryName: "Iphone",
-      imageLink:
-        "https://f.nooncdn.com/p/v1657621583/N53329645A_1.jpg?format=avif&width=240",
-    },
-    {
-      categoryName: "Smart watch",
-      imageLink:
-        "https://m.media-amazon.com/images/W/MEDIAX_792452-T1/images/I/71Zmcw24IML._AC_AA180_.jpg",
-    },
-    {
-      categoryName: "iphone",
-      imageLink:
-        "https://m.media-amazon.com/images/W/MEDIAX_792452-T1/images/I/51Pzh68ERNL._AC_AA180_.jpg",
-    },
-  ];
-
-  let cus: Customer = {
-    firstName: "Adel",
-    lastName: "Mahmoud",
-    id: 1,
-  };
-
-  let reviews: Review[] = [
-    { rating: 3, customer: cus, comment: "abdc", date: new Date() },
-    { rating: 3, customer: cus, comment: "abdc", date: new Date() },
-    { rating: 3, customer: cus, comment: "abdc", date: new Date() },
-    { rating: 3, customer: cus, comment: "abdc", date: new Date() },
-    { rating: 3, customer: cus, comment: "abdc", date: new Date() },
-    { rating: 3, customer: cus, comment: "abdc", date: new Date() },
-    { rating: 3, customer: cus, comment: "abdc", date: new Date() },
-    { rating: 3, customer: cus, comment: "abdc", date: new Date() },
-    { rating: 3, customer: cus, comment: "abdc", date: new Date() },
-  ];
-
-  let product: HomeProductDTO = {
-    id: 5,
-    productName: "string",
-    price: 18.75,
-    imageLink:
-      "https://m.media-amazon.com/images/W/MEDIAX_792452-T1/images/I/71Zmcw24IML._AC_AA180_.jpg",
-    discountPercentage: 50,
-    reviews: reviews,
-    inWishlist: false,
-    description: "Here's awsome product",
-    productCountAvailable: 60,
-    categoryName: "Laptops",
-    brand: "Dell",
-  };
-
-  let products: HomeProductDTO[] = [
-    { ...product },
-    { ...product },
-    { ...product },
-    { ...product },
-    { ...product },
-    { ...product },
-    { ...product },
-    { ...product },
-    { ...product },
-    { ...product },
-    { ...product },
-    { ...product },
-    { ...product },
-    { ...product },
-    { ...product },
-    { ...product },
-  ];
 
   var SliderSettings = {
     dots: true,
@@ -240,7 +155,7 @@ const Home = () => {
     ],
   };
   return (
-    <>
+    <div style={{ overflowX: "hidden" }}>
       <div className="home-navbar-container" style={{ height: "100vh" }}>
         <Navbar
           firstName={homeInfo?.firstName || ""}
@@ -252,105 +167,166 @@ const Home = () => {
         <MyCarousel />
       </div>
 
-      <div className="container whatAfterNavbar" style={{ height: "100vh" }}>
-        <div className="col-12 homeCategories">
-          <h2 style={{ marginBottom: "50px", fontWeight: "500" }}>
-            Trending Categories
-          </h2>
-          <Slider {...SliderSettings}>
-            {categories.map((category, index) => (
-              <div key={index} className="category-slide">
-                <div className="subSlider">
-                  <div className="subSliderWrap">
-                    <div className="categoryImage">
-                      <img
-                        style={{ maxHeight: "10rem" }}
-                        src={category.imageLink}
-                        alt={category.categoryName}
-                      />
-                    </div>
-                    <div className="categoryName">
-                      <h5 style={{ marginTop: "30px" }}>
-                        {category.categoryName}
-                      </h5>
+      <div className="container whatAfterNavbar">
+        {homeInfo?.categoryList.length != 0 && (
+          <>
+            <div className="col-12 homeCategories">
+              <h2 style={{ marginBottom: "50px", fontWeight: "500" }}>
+                Trending Categories
+              </h2>
+              <Slider {...SliderSettings}>
+                {homeInfo?.categoryList.map((category, index) => (
+                  <div key={index} className="category-slide">
+                    <div className="subSlider">
+                      <div className="subSliderWrap">
+                        <div className="categoryImage">
+                          <img
+                            style={{ maxHeight: "10rem" }}
+                            src={category.imageLink}
+                            alt={category.categoryName}
+                          />
+                        </div>
+                        <div className="categoryName">
+                          <h5 style={{ marginTop: "30px" }}>
+                            {category.categoryName}
+                          </h5>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            ))}
-          </Slider>
-        </div>
-        <div
-          className="col-12 homeLatestProducts"
-          style={{ marginTop: "100px" }}
-        >
-          <h2 style={{ marginBottom: "50px", fontWeight: "500" }}>
-            Latest Products
-          </h2>
-          <Slider {...SliderSettings}>
-            {products.map((product, index) => (
-              <div className="product-slide">
-                <HomeProductListing
-                  firstName={"Adel"}
-                  lastName={"Mahmoud"}
-                  isAdmin={false}
-                  userToken={"ewfwef"}
-                  product={product}
-                />
-              </div>
-            ))}
-          </Slider>
-        </div>
+                ))}
+              </Slider>
+            </div>
+          </>
+        )}
 
-        <div
-          className="col-12 homeMostPopularProducts"
-          style={{ marginTop: "100px" }}
-        >
-          <h2 style={{ marginBottom: "50px", fontWeight: "500" }}>
-            Most Popular Products
-          </h2>
-          <Slider {...SliderSettings}>
-            {products.map((product, index) => (
-              <div className="product-slide">
-                <HomeProductListing
-                  firstName={"Adel"}
-                  lastName={"Mahmoud"}
-                  isAdmin={false}
-                  userToken={"ewfwef"}
-                  product={product}
-                />
-              </div>
-            ))}
-          </Slider>
-        </div>
+        {latestProducts.length != 0 && (
+          <>
+            <div
+              className="col-12 homeLatestProducts"
+              style={{ marginTop: "100px" }}
+            >
+              <h2 style={{ marginBottom: "50px", fontWeight: "500" }}>
+                Latest Products
+              </h2>
+              <Slider {...SliderSettings}>
+                {latestProducts.map((product, index) => (
+                  <div className="product-slide">
+                    <HomeProductListing
+                      firstName={homeInfo?.firstName || ""}
+                      lastName={homeInfo?.lastName || ""}
+                      isAdmin={homeInfo?.admin || false}
+                      userToken={userToken}
+                      product={product}
+                    />
+                  </div>
+                ))}
+              </Slider>
+            </div>
+          </>
+        )}
+      </div>
 
-        <div className="col-12 homeMostSold" style={{ marginTop: "100px" }}>
-          <h2 style={{ marginBottom: "50px", fontWeight: "500" }}>
-            Most Sold Products
-          </h2>
-          <Slider {...SliderSettings}>
-            {products.map((product, index) => (
-              <div className="product-slide">
-                <HomeProductListing
-                  firstName={"Adel"}
-                  lastName={"Mahmoud"}
-                  isAdmin={false}
-                  userToken={"ewfwef"}
-                  product={product}
-                />
-              </div>
-            ))}
-          </Slider>
+      <div className="design">
+        <div className="image">
+          <img
+            src="src\assets\mobile.png"
+            alt="Mobile"
+            style={{ width: "30rem" }}
+          />
         </div>
+        <div className="text">
+          <h2>Experience the Excellence of Our Electronic Devices..</h2>
+          <ul>
+            <li>
+              <FontAwesomeIcon
+                icon={faLaptop}
+                style={{ marginRight: "10px" }}
+              />
+              Futuristic Designs for Your Lifestyle
+            </li>
+            <li>
+              <FontAwesomeIcon
+                icon={faMobileScreenButton}
+                style={{ marginRight: "10px" }}
+              />
+              Seamless and Contemporary Aesthetics
+            </li>
+            <li>
+              <FontAwesomeIcon
+                icon={faKeyboard}
+                style={{ marginRight: "10px" }}
+              />
+              High Performance and Quality
+            </li>
+            <li>
+              <FontAwesomeIcon
+                icon={faHeadphones}
+                style={{ marginRight: "10px" }}
+              />
+              Seamless Experience Across All Devices
+            </li>
+          </ul>
+        </div>
+      </div>
 
+      <div className="container whatAfterNavbar">
+        {mostPopularProducts.length != 0 && (
+          <>
+            <div
+              className="col-12 homeMostPopularProducts"
+              style={{ marginTop: "100px" }}
+            >
+              <h2 style={{ marginBottom: "50px", fontWeight: "500" }}>
+                Most Popular Products
+              </h2>
+              <Slider {...SliderSettings}>
+                {mostPopularProducts.map((product, index) => (
+                  <div className="product-slide">
+                    <HomeProductListing
+                      firstName={homeInfo?.firstName || ""}
+                      lastName={homeInfo?.lastName || ""}
+                      isAdmin={homeInfo?.admin || false}
+                      userToken={userToken}
+                      product={product}
+                    />
+                  </div>
+                ))}
+              </Slider>
+            </div>
+          </>
+        )}
+
+        {mostSoldProducts.length != 0 && (
+          <>
+            <div className="col-12 homeMostSold" style={{ marginTop: "100px" }}>
+              <h2 style={{ marginBottom: "50px", fontWeight: "500" }}>
+                Most Sold Products
+              </h2>
+              <Slider {...SliderSettings}>
+                {mostSoldProducts.map((product, index) => (
+                  <div className="product-slide">
+                    <HomeProductListing
+                      firstName={homeInfo?.firstName || ""}
+                      lastName={homeInfo?.lastName || ""}
+                      isAdmin={homeInfo?.admin || false}
+                      userToken={userToken}
+                      product={product}
+                    />
+                  </div>
+                ))}
+              </Slider>
+            </div>
+          </>
+        )}
         {showScrollButton && (
           <button className="scroll-to-top-btn" onClick={scrollToTop}>
             <FontAwesomeIcon icon={faArrowUp} />
           </button>
         )}
-        <HomeFooter />
       </div>
-    </>
+      <HomeFooter />
+    </div>
   );
 };
 
