@@ -13,6 +13,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "./HomeNavbar.css"; // Make sure to create this CSS file
 
+
 interface NavbarProps {
   firstName: string;
   lastName: string;
