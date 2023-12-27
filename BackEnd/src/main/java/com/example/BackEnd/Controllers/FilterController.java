@@ -16,7 +16,6 @@ public class FilterController<T extends Comparable<T>> {
 
     @PostMapping("/{entity}")
     public List<T> filter(@PathVariable String entity, @RequestBody Object criteria) {
-        System.out.println("entity: " + entity + " criteria: " + criteria);
         return filterService.filter(entity, criteria);
     }
 }
