@@ -37,11 +37,6 @@ const AddAdminPopup: React.FC<AddAdminPopupProps> = ({
     setIsValidEmail(emailRegex.test(value));
   };
 
-  // const validateEmail = (value: string) => {
-  //   const emailRegex = /^[^\s]+[^\s]+\.[^\s]+$/;
-  //   setIsValidEmail(emailRegex.test(value));
-  // };
-
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     setLoading(true);

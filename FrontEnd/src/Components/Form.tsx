@@ -449,13 +449,6 @@ const Form = ({
               )}
             </>
           )}
-          {/* <GoogleAuth getUserData={getGoogleAuthData} />
-
-          {!isLogin ? (
-            <Link to="/login">Already have an account? Log-in</Link>
-          ) : (
-            <Link to="/">Don't have an account? Sign-Up</Link>
-          )} */}
         </form>
       </div>
       {userALreadyExist === "Exist" && (

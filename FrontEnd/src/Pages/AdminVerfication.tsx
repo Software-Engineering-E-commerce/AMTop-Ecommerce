@@ -1,13 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import Loading from "../Components/Loading";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 import Form from "../Components/Form";
 import axios from "axios";
 
 const AdminVerfication = () => {
   var navigate = useNavigate();
   const { searchParams } = new URL(window.location.href);
-  const [loading, setLoading] = useState(false);
   let userTok: string = searchParams.get("token")!;
   let email: string = searchParams.get("email")!;
 

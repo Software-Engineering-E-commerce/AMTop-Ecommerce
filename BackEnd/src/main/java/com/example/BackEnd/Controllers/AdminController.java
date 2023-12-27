@@ -17,7 +17,8 @@ public class AdminController {
     private final RootAdminService rootAdminService;
 
     @PostMapping("/addAdmin")
-    public ResponseEntity<String> addAdmin(@RequestHeader("Authorization") String authorizationHeader, @RequestBody Map<String, String> requestBody) {
+    public ResponseEntity<String> addAdmin(@RequestHeader("Authorization") String authorizationHeader,
+                                           @RequestBody Map<String, String> requestBody) {
         try {
             String token = extractToken(authorizationHeader);
             String newAdminEmail = requestBody.get("newAdminEmail");
