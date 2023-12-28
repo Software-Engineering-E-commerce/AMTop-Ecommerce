@@ -2,14 +2,8 @@ package com.example.BackEnd.Controllers;
 
 import com.example.BackEnd.Config.JwtService;
 import com.example.BackEnd.DTO.CustomerProduct;
-import com.example.BackEnd.Model.Customer;
-import com.example.BackEnd.Model.CustomerCart;
-import com.example.BackEnd.Model.Product;
-import com.example.BackEnd.Model.WishList;
-import com.example.BackEnd.Repositories.CustomerCartRepository;
-import com.example.BackEnd.Repositories.CustomerRepository;
-import com.example.BackEnd.Repositories.ProductRepository;
-import com.example.BackEnd.Repositories.WishListRepository;
+import com.example.BackEnd.Model.*;
+import com.example.BackEnd.Repositories.*;
 import com.example.BackEnd.Services.SearchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +20,7 @@ public class SearchController {
 
     private final SearchService searchService;
     private final CustomerRepository customerRepository;
-    private final ProductRepository productRepository;
+    private final AdminRepository adminRepository;
     private final WishListRepository wishListRepository;
     private final CustomerCartRepository customerCartRepository;
     private final JwtService jwtService;
@@ -45,11 +39,17 @@ public class SearchController {
         String token = extractToken(authorizationHeader);
         String email = jwtService.extractUsername(token);
         Optional<Customer> customer = customerRepository.findByEmail(email);
+        Optional<Admin> admin = adminRepository.findByEmail(email);
         if (customer.isPresent()) {
             Long customerId = customer.get().getId();
             List<Product> originalProducts = searchService.search(key);
             return getCustomerProducts(originalProducts, customerId);
-        } else
+        } else if (admin.isPresent()) {
+            Long adminId = admin.get().getId();
+            List<Product> originalProducts = searchService.search(key);
+            return getCustomerProducts(originalProducts, adminId);
+        }
+        else
             return new ArrayList<>();
     }
 

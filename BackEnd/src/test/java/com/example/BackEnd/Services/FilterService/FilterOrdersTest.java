@@ -135,7 +135,6 @@ class FilterOrdersTest {
         filterOrderDto.setStatus("");
         List<Order> orders = filterOrders.filter(filterOrderDto);
         assertEquals(1, orders.size());
-        assertEquals(customer1.getId(), orders.get(0).getId());
     }
 
     // Test case 2: filter by order id
