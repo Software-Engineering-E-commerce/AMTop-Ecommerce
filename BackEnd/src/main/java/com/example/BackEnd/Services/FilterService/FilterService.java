@@ -12,10 +12,10 @@ public class FilterService<T extends Comparable<T>> {
     private final FilterProducts filterProducts;
     private final FilterOrders filterOrders;
 
-    public List<T> filter(String entity, Object criteria) {
+    public List<T> filter(String entity, Object criteria, Long customerId) {
         try {
             return switch (entity) {
-                case "Product" -> filterProducts.filter(criteria);
+                case "Product" -> filterProducts.getFilteredDTOList(criteria, customerId);
                 case "Order" -> filterOrders.filter(criteria);
                 default -> throw new Exception();
             };

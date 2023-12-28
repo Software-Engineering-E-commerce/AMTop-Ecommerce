@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "./HomeNavbar.css"; // Make sure to create this CSS file
+import axios from "axios";
 
 interface NavbarProps {
   firstName: string;
@@ -35,6 +36,7 @@ const Navbar: React.FC<NavbarProps> = ({
   const [isMyOrderHovered, setIsMyOrderHovered] = useState(false);
   const [isProfileHovered, setIsProfileHovered] = useState(false);
   const [isLogoutHovered, setIsLogoutHovered] = useState(false);
+  const [searchKey, setSearchKey] = useState('');
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
@@ -64,6 +66,7 @@ const Navbar: React.FC<NavbarProps> = ({
         isAdmin: isAdmin,
         firstName: firstName,
         lastName: lastName,
+        products: []
       },
     });
   };
@@ -127,6 +130,46 @@ const Navbar: React.FC<NavbarProps> = ({
     });
   };
 
+  const handleSearchKeyChange = (e: any) => {
+    setSearchKey(e.target.value);
+  };
+
+  const handleSearchProduct = async (event: any) => {
+    event.preventDefault();
+
+    const returnedProducts = await getSearchedProducts();
+    
+    navigate("/catalog", {
+      state: {
+        userToken: token,
+        isAdmin: isAdmin,
+        firstName: firstName,
+        lastName: lastName,
+        passedProducts: returnedProducts
+      },
+    });
+  };
+
+  const getSearchedProducts = async () => {
+    console.log("In get searched products");
+    let url = `http://localhost:9080/api/search/${searchKey}`;
+    try {
+      const response = await axios(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(response.data);
+      const products: Product[] = response.data;
+      return products;
+    } catch (error) {
+      console.log("Error:", error);
+      const products: Product[] = [];
+      return products;
+    }
+  }
+
   return (
     <div
       style={{ borderBottom: "1px solid #ccc" }}
@@ -159,12 +202,14 @@ const Navbar: React.FC<NavbarProps> = ({
                   className="form-control bg-white"
                   onFocus={() => setIsSearchFocused(true)}
                   onBlur={() => setIsSearchFocused(false)}
+                  value={searchKey}
+                  onChange={handleSearchKeyChange}
                 />
                 <button
-                  type="submit"
                   className={`btn ${
                     isSearchFocused ? "btn-secondary" : "btn-light"
                   }`}
+                  onClick={handleSearchProduct}
                 >
                   <FontAwesomeIcon icon={faSearch} />
                 </button>
