@@ -139,7 +139,7 @@ const HomeProductListing = ({
               <img
                 src={product.imageLink}
                 alt={product.productName}
-                style={{ maxHeight: "10rem" }}
+                style={{ width: "100%", height: "auto" }}
               />
             )}
           </div>

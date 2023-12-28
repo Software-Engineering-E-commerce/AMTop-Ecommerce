@@ -1,8 +1,12 @@
 import React, { useState } from "react";
 import "../Pages/Home.css";
 import EditAddCategory, { EditedCategory } from "./EditAddCategory";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 interface CategoryCardComponentProps {
+  firstName: string;
+  lastName: string;
   categoryName: string;
   imageLink: string;
   userToken: string;
@@ -11,6 +15,8 @@ interface CategoryCardComponentProps {
 
 // Name, link
 const CategoryCardComponent = ({
+  firstName,
+  lastName,
   categoryName,
   imageLink,
   userToken,
@@ -18,6 +24,8 @@ const CategoryCardComponent = ({
 }: CategoryCardComponentProps) => {
   const [isEdit, setIsEdit] = useState(false);
   const [editedCategory, setEditedCategory] = useState<EditedCategory>();
+  const navigate = useNavigate();
+
 
   const resetIsEdit = () => {
     setIsEdit(false);
@@ -27,6 +35,39 @@ const CategoryCardComponent = ({
     setEditedCategory({ categoryName: categoryName });
     setIsEdit(true);
   };
+
+  const getSearchedProducts = async () => {
+    console.log("In get searched products");
+    let url = `http://localhost:9080/api/search/${categoryName}`;
+    try {
+      const response = await axios(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+      console.log(response.data);
+      const products: Product[] = response.data;
+      return products;
+    } catch (error) {
+      console.log("Error:", error);
+      const products: Product[] = [];
+      return products;
+    }
+  }
+
+  const handleCategoryClick = async () => {
+    const returnedProducts = await getSearchedProducts();
+    navigate("/catalog", {
+      state: {
+        userToken: userToken,
+        isAdmin: isAdmin,
+        firstName: firstName,
+        lastName: lastName,
+        passedProducts: returnedProducts
+      },
+    });
+  }
 
   return (
     <>
@@ -47,6 +88,7 @@ const CategoryCardComponent = ({
               style={{ maxHeight: "10rem" }}
               src={imageLink}
               alt={categoryName}
+              onClick={handleCategoryClick}
             />
           </div>
           <div className="categoryName">

@@ -152,6 +152,8 @@ const Categories = () => {
           {categories.map((category, index) => (
             <div key={index} className="category-slide">
               <CategoryCardComponent
+                firstName={firstName}
+                lastName={lastName}
                 categoryName={category.name}
                 imageLink={category.imageUrl}
                 userToken={userToken}

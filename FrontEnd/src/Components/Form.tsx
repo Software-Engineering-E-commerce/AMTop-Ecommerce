@@ -53,7 +53,7 @@ const Form = ({
   });
 
   const [isEmailDisabled, setIsEmailDisabled] = useState(
-    !isLogin && adminEmail! !== ""
+    isAdminSignup == true
   );
 
   // Function to handle input changes
@@ -130,7 +130,7 @@ const Form = ({
           email: formData.email,
           password: formData.password,
         };
-        if (adminEmail! !== "") getAdminSignUpCredentials!(customer);
+        if (isAdminSignup) getAdminSignUpCredentials!(customer);
         else getSignUpCredentials!(customer);
       }
     }
