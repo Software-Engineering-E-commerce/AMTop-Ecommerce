@@ -174,6 +174,8 @@ const ProductsList = ({
     return null;
   };
 
+
+   
   const handleFilterButtonClick = async() => {
     const products = await getFilteredProducts(filter);
     
@@ -217,6 +219,7 @@ const ProductsList = ({
   };
 
   function calculateProductRating(reviews: Review[]): number {
+
     if (reviews.length === 0) {
       return 0;
     }

@@ -8,14 +8,13 @@
 .nav-bar-icons:hover,
 .nav-bar-icons:focus {
   color: rgb(0, 0, 0); /* Replace with your desired hover color */
-  background-color: rgb(
-    172,
-    172,
-    172
-  ); /* Replace with your desired background hover color */
+  background-color: rgb(133, 133, 133); /* Replace with your desired background hover color */
   text-decoration: none;
 }
 
+#amTopIcon:hover {
+  cursor: pointer;
+}
 /* For the navigation tabs */
 .nav-link {
   transition: color 0.3s ease-in-out;
