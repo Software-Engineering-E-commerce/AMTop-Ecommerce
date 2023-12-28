@@ -5,11 +5,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import './OrdersList.css';
 import AlertModal from './AlertModal';
+import '@fortawesome/fontawesome-free/css/all.css';
 import ConfirmationModal from './confirmationModal';
 import { useNavigate } from 'react-router-dom';
 
 interface Props {
   getOrders: () => Promise<Order[]>;
+  getSortedOrders: (sortBy: any, sortOrder: any) => Promise<Order[]>;
+  getFilteredOrders: (filter: FilterOrderDto) => Promise<Order[]>;
   deleteOrder: (orderId: number) => Promise<string>;
   deleteOrderItem: (order: Order, product: Product) => Promise<string>;
   updateOrderStatus: (orderId: number, newStatus: string) => Promise<string>;
@@ -26,6 +29,8 @@ const formatDate = (dateString: string): string => {
 
 const OrderList = ({
   getOrders,
+  getSortedOrders,
+  getFilteredOrders,
   deleteOrder,
   deleteOrderItem,
   updateOrderStatus,
@@ -61,11 +66,58 @@ const OrderList = ({
   const [confirmModalContent, setConfirmModalContent] = useState({ message: '', onConfirm: () => {} });
   const [showAlertModal, setShowAlertModal] = useState(false);
   const [alertModalContent, setAlertModalContent] = useState({ message: '', onConfirm: () => {} });
+  const [sortParams, setSortParams] = useState({ sortBy: '', sortOrder: true });
+  const [showSortModal, setShowSortModal] = useState(false);
+  const [filter, setFilter] = useState<FilterOrderDto>({
+    id: 0,
+    customerId: 0,
+    fromPrice: 0,
+    toPrice: 200000,
+    status: 'Pending'
+  });
   const navigate = useNavigate();
 
   const handleOrderClick = (order: Order) => {
     setSelectedOrder(order);
     setShowModal(true);
+  };
+
+  const handleSortButtonClick = async() => {
+    const orders = await getSortedOrders(sortParams.sortBy, sortParams.sortOrder);
+    setOrders(orders);
+  };
+
+  const handleFilterButtonClick = async() => {
+    const orders = await getFilteredOrders(filter);
+    setOrders(orders);
+  };
+
+  const handleInputChange = (e: any) => {
+    const { name, value } = e.target;
+    setFilter(prevFilter => ({
+      ...prevFilter,
+      [name]: value
+    }));
+  };
+
+  function updateMinPrice() {
+    const firstElem = document.getElementById("minPriceValue");
+    const secondElem = document.getElementById("minPrice") as HTMLInputElement;
+    if (firstElem != null && secondElem != null) {
+      firstElem.textContent = secondElem.value;
+    }
+  }
+
+  function updateMaxPrice() {
+    const firstElem = document.getElementById("maxPriceValue");
+    const secondElem = document.getElementById("maxPrice") as HTMLInputElement;
+    if (firstElem != null && secondElem != null) {
+      firstElem.textContent = secondElem.value;
+    }
+  }
+
+  const toggleSortModal = () => {
+    setShowSortModal(prev => !prev);
   };
 
   const handleClose = () => {
@@ -223,6 +275,57 @@ const OrderList = ({
           No orders are currently present in the system
         </h1>
       }
+      <button className="orders-sort-button" onClick={toggleSortModal}>
+        Sort
+      </button>
+      <button className="btn btn-primary btn-filter" type="button" data-bs-toggle="offcanvas"
+                  data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling">
+        <i className="fas fa-filter"></i>
+      </button>
+      <div className="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="false"
+       tabIndex={-1} id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel">
+        <div className="offcanvas-header">
+          <h5 className="offcanvas-title" id="offcanvasScrollingLabel">Filter Options</h5>
+            <button type="button" className="btn-close text-reset" data-bs-dismiss="offcanvas"
+                  aria-label="Close"></button>
+        </div>
+        <div className="offcanvas-body">
+          <label>Order ID:</label>
+          <input type="number" name="id" className="form-control" value={filter.id} onChange={handleInputChange} />
+
+          <label>Customer ID:</label>
+          <input type="number" name="customerId" className="form-control" value={filter.customerId} onChange={handleInputChange} />
+
+          <div className="mb-3">
+            <label htmlFor="minPrice">Minimum Price: <span id="minPriceValue">0</span>$</label>
+            <input type="range" className="form-range" min="0" max="200000" id="minPrice" onInput={updateMinPrice}
+             name="fromPrice" value={filter.fromPrice} onChange={handleInputChange}/>
+             <input type="number" name="fromPrice" className="form-control" value={filter.fromPrice} 
+             onChange={handleInputChange} placeholder='Or, set the value manually..'/>
+          </div>
+
+          <div className="mb-3">
+            <label htmlFor="maxPrice">Maximum Price: <span id="maxPriceValue">200000</span>$</label>
+            <input type="range" className="form-range" min="0" max="200000" id="maxPrice" onInput={updateMaxPrice}
+             name="toPrice" value={filter.toPrice} onChange={handleInputChange}/>
+             <input type="number" name="toPrice" className="form-control" value={filter.toPrice} 
+             onChange={handleInputChange} placeholder='Or, set the value manually..'/>
+          </div>
+
+          <label>Status:</label>
+          <select name="status" className="form-control" value={filter.status} onChange={handleInputChange}>
+            <option value="Pending">Pending</option>
+            <option value="Shipped">Shipped</option>
+            <option value="Delivered">Delivered</option>
+          </select>
+
+          <div className="d-flex justify-content-end mt-2">
+            <Button variant="primary" onClick={() => handleFilterButtonClick()}>
+              Filter
+            </Button>
+          </div>
+        </div>
+      </div>
       <div className={`orders-list ${fadeAnimation}`}>
         {currentOrders.map(order => (
           <div key={order.id} className='order-card' onClick={() => handleOrderClick(order)}>
@@ -314,6 +417,41 @@ const OrderList = ({
           </Button>
         </Modal.Footer>
       </Modal>
+      {showSortModal && (
+        <div className="sort-modal">
+          <div className="sort-modal-content">
+            <div className="sort-option">
+              <label className="sort-label">
+                Sort by:
+                <select className="sort-select" onChange={(e) => setSortParams(prev => ({ ...prev, sortBy: e.target.value }))} value={sortParams.sortBy}>
+                  <option value="">Select Criteria</option>
+                  <option value="id">Order ID</option>
+                  <option value="customer">Customer ID</option>
+                  <option value="startDate">Order Date</option>
+                  <option value="deliveryDate">Delivery Date</option>
+                  <option value="totalAmount">Number Of Ordered Items</option>
+                  <option value="totalCost">Total Cost</option>
+                  <option value="status">Status</option>
+                </select>
+              </label>
+            </div>
+            <div className="sort-order">
+              <label className="sort-label">
+                <input type="radio" name="sortOrder" checked={sortParams.sortOrder} onChange={() => setSortParams(prev => ({ ...prev, sortOrder: true }))} />
+                Ascending
+              </label>
+              <label className="sort-label">
+                <input type="radio" name="sortOrder" checked={!sortParams.sortOrder} onChange={() => setSortParams(prev => ({ ...prev, sortOrder: false }))} />
+                Descending
+              </label>
+            </div>
+            <div className="sort-modal-buttons">
+              <button className="apply-button" onClick={() => { handleSortButtonClick(); toggleSortModal(); }}>Apply</button>
+              <button className="cancel-button" onClick={toggleSortModal}>Cancel</button>
+            </div>
+          </div>
+        </div>      
+      )}
       <ConfirmationModal
         show={showConfirmModal}
         message={confirmModalContent.message}
