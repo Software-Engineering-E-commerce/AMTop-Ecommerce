@@ -7,11 +7,14 @@ import {
   faShoppingCart,
   faSignOutAlt,
   faSearch,
+  faUserPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "./HomeNavbar.css"; // Make sure to create this CSS file
+import axios from "axios";
+import AddAdminPopup from "./AddAdminPopup";
 
 
 interface NavbarProps {
@@ -43,7 +46,18 @@ const Navbar: React.FC<NavbarProps> = ({
   const [isHeartHovered, setIsHeartHovered] = useState(false);
   const [isMyOrderHovered, setIsMyOrderHovered] = useState(false);
   const [isProfileHovered, setIsProfileHovered] = useState(false);
+  const [isAddAdminHovered, setIsAddAdminHovered] = useState(false);
   const [isLogoutHovered, setIsLogoutHovered] = useState(false);
+  const [searchKey, setSearchKey] = useState('');
+  const [showAddAdminPopup, setShowAddAdminPopup] = useState(false);
+
+  const handleAddAdminClick = () => {
+    setShowAddAdminPopup(true);
+  };
+
+  const handleCloseAddAdminPopup = () => {
+    setShowAddAdminPopup(false);
+  };
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
@@ -73,6 +87,7 @@ const Navbar: React.FC<NavbarProps> = ({
         isAdmin: isAdmin,
         firstName: firstName,
         lastName: lastName,
+        products: []
       },
     });
   };
@@ -126,7 +141,16 @@ const Navbar: React.FC<NavbarProps> = ({
   };
 
   const handleOrdersClick = () => {
+    isAdmin == true ? 
     navigate("/dashboard", {
+      state: {
+        userToken: token,
+        isAdmin: isAdmin,
+        firstName: firstName,
+        lastName: lastName,
+      },
+    })  :
+    navigate("/customerOrders", {
       state: {
         userToken: token,
         isAdmin: isAdmin,
@@ -135,6 +159,27 @@ const Navbar: React.FC<NavbarProps> = ({
       },
     });
   };
+
+  const handleSearchKeyChange = (e: any) => {
+    setSearchKey(e.target.value);
+  };
+
+  const handleSearchProduct = async (event: any) => {
+    event.preventDefault();
+
+    const returnedProducts = await getSearchedProducts();
+    
+    navigate("/catalog", {
+      state: {
+        userToken: token,
+        isAdmin: isAdmin,
+        firstName: firstName,
+        lastName: lastName,
+        passedProducts: returnedProducts
+      },
+    });
+  };
+
 
 
   function handleCategoriesClicked(): void {
@@ -177,6 +222,28 @@ const Navbar: React.FC<NavbarProps> = ({
   }, []);
 
 
+
+  const getSearchedProducts = async () => {
+    console.log("In get searched products");
+    let url = `http://localhost:9080/api/search/${searchKey}`;
+    try {
+      const response = await axios(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(response.data);
+      const products: Product[] = response.data;
+      return products;
+    } catch (error) {
+      console.log("Error:", error);
+      const products: Product[] = [];
+      return products;
+    }
+  }
+
+
   return (
     <div
       style={{ borderBottom: "1px solid #ccc" }}
@@ -212,12 +279,14 @@ const Navbar: React.FC<NavbarProps> = ({
                   className="form-control bg-white"
                   onFocus={() => setIsSearchFocused(true)}
                   onBlur={() => setIsSearchFocused(false)}
+                  value={searchKey}
+                  onChange={handleSearchKeyChange}
                 />
                 <button
-                  type="submit"
                   className={`btn ${
                     isSearchFocused ? "btn-secondary" : "btn-light"
                   }`}
+                  onClick={handleSearchProduct}
                 >
                   <FontAwesomeIcon icon={faSearch} />
                 </button>
@@ -237,6 +306,7 @@ const Navbar: React.FC<NavbarProps> = ({
                         position: "relative",
                         marginRight: "10px",
                       }}
+
                     >
                       <FontAwesomeIcon icon={faShoppingCart} />
                     </button>
@@ -282,6 +352,22 @@ const Navbar: React.FC<NavbarProps> = ({
                       <FontAwesomeIcon icon={faUser} /> Profile
                     </button>
                   </li>
+                  {isAdmin && (
+                    <li>
+                      <button
+                        className="dropdown-item nav-bar-icons"
+                        onClick={handleAddAdminClick}
+                        onMouseEnter={() => setIsAddAdminHovered(true)}
+                        onMouseLeave={() => setIsAddAdminHovered(false)}
+                        style={{
+                          color: isAddAdminHovered ? "#064fc4" : "#000",
+                          transition: "color 0.3s ease",
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faUserPlus} /> Add admin
+                      </button>
+                    </li>
+                  )}
                   {!isAdmin && (
                     <>
                       <li>
@@ -384,6 +470,7 @@ const Navbar: React.FC<NavbarProps> = ({
                   className="nav-link nav-bar-icons"
                   onClick={handleCategoriesClicked}
                   style={{ color: isHome? "orange":"black",backgroundColor:`${isCategories! ? "rgb(133, 133, 133)" : "none"}`}}
+
                 >
                   <h5>Categories</h5>
                 </button>
@@ -410,6 +497,11 @@ const Navbar: React.FC<NavbarProps> = ({
           </div>
         </div>
       </nav>
+      <AddAdminPopup
+        show={showAddAdminPopup}
+        handleClose={handleCloseAddAdminPopup}
+        token={token}
+      />
     </div>
   );
 };

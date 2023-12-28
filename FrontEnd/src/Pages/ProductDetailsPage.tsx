@@ -79,6 +79,9 @@ const ProductDetailsPage: React.FC<ProductDetailsPageProps> = () => {
           reviews={product.reviews}
           token={token}
           isAdmin={product.admin}
+          productID={product.id}
+          firstName={firstName}
+          lastName={lastName}
         />
       </div>
     </div>

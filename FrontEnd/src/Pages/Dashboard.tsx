@@ -31,6 +31,48 @@ const Dashboard = () => {
     }
   };
 
+  const getSortedOrders = async(sortBy: any, sortOrder: any) => {
+    console.log("In get sorted orders");
+    let url = `http://localhost:9080/api/sort/Order/${sortBy}/${sortOrder}`;
+    try {
+      const response = await axios(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+      console.log(response.data);
+      const orders: Order[] = response.data;
+      return orders;
+    } catch (error) {
+      console.log("Error:", error);
+      const orders: Order[] = [];
+      return orders;
+    }
+  }
+
+  const getFilteredOrders = async(filter: FilterOrderDto) => {
+    console.log("In get filtered orders");
+    console.log(filter);
+    let url = `http://localhost:9080/api/filter/Order`;
+    try {
+      const response = await axios(url, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+        data: filter
+      });
+      console.log(response.data);
+      const orders: Order[] = response.data;
+      return orders;
+    } catch (error) {
+      console.log("Error:", error);
+      const orders: Order[] = [];
+      return orders;
+    }
+  }
+
   const deleteOrder = async (orderId: number) => {
     const deleteOrderRequest: DeleteOrderRequest = {
       orderId: orderId
@@ -113,9 +155,15 @@ const Dashboard = () => {
       />
       <OrdersList 
         getOrders = {getOrders}
+        getSortedOrders = {getSortedOrders}
+        getFilteredOrders={getFilteredOrders}
         deleteOrder = {deleteOrder}
         deleteOrderItem= {deleteOrderItem}
         updateOrderStatus = {updateOrderStatus}
+        isAdmin = {isAdmin}
+        firstName = {firstName}
+        lastName = {lastName}
+        userToken = {userToken}
       />
     </div>
   );
