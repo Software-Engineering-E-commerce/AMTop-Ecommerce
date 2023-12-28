@@ -123,6 +123,7 @@ class FilterProductsTest {
                 .available(true)
                 .brand("Brand1")
                 .category("Category1")
+                .description("")
                 .build();
 
         // Act
@@ -146,11 +147,13 @@ class FilterProductsTest {
         FilterProductDto filterProductDto = FilterProductDto.builder()
                 .fromPrice(0)
                 .toPrice(1000)
-                .productName(null)
                 .fromDiscountPercentage(0)
                 .toDiscountPercentage(20)
                 .available(true)
                 .brand("Brand6")
+                .productName("")
+                .description("")
+                .category("")
                 .build();
 
         // Act
@@ -174,6 +177,8 @@ class FilterProductsTest {
                 .available(true)
                 .brand("Brand6")
                 .category("Category6")
+                .productName("")
+                .description("")
                 .build();
 
         // Act
@@ -190,14 +195,15 @@ class FilterProductsTest {
     void testFilterComp3() {
         // Arrange
         FilterProductDto filterProductDto = FilterProductDto.builder()
-                .productName(null)
                 .fromPrice(0)
                 .toPrice(1000)
                 .fromDiscountPercentage(0)
                 .toDiscountPercentage(20)
                 .available(true)
-                .brand(null)
                 .category("Category8")
+                .productName("")
+                .description("")
+                .brand("")
                 .build();
 
         // Act
@@ -218,10 +224,11 @@ class FilterProductsTest {
                 .toPrice(500)
                 .fromDiscountPercentage(0)
                 .toDiscountPercentage(100)
-                .productName(null)
                 .available(true)
-                .brand(null)
-                .category(null)
+                .productName("")
+                .description("")
+                .brand("")
+                .category("")
                 .build();
 
         // Act
@@ -242,10 +249,11 @@ class FilterProductsTest {
                 .toPrice(500)
                 .fromDiscountPercentage(10)
                 .toDiscountPercentage(10)
-                .productName(null)
                 .available(false)
                 .brand("Brand3")
-                .category(null)
+                .productName("")
+                .description("")
+                .category("")
                 .build();
 
         // Act
@@ -265,6 +273,10 @@ class FilterProductsTest {
                 .toPrice(900)
                 .fromDiscountPercentage(0)
                 .toDiscountPercentage(100)
+                .productName("")
+                .description("")
+                .brand("")
+                .category("")
                 .build();
 
         List<Product> filteredProducts = filterProducts.filter(filterProductDto);
@@ -279,6 +291,10 @@ class FilterProductsTest {
                 .toDiscountPercentage(20)
                 .fromPrice(0)
                 .toPrice(1000)
+                .productName("")
+                .description("")
+                .brand("")
+                .category("")
                 .build();
 
         List<Product> filteredProducts = filterProducts.filter(filterProductDto);
@@ -294,6 +310,9 @@ class FilterProductsTest {
                 .toDiscountPercentage(100)
                 .fromPrice(0)
                 .toPrice(1000)
+                .description("")
+                .brand("")
+                .category("")
                 .build();
 
         List<Product> filteredProducts = filterProducts.filter(filterProductDto);
@@ -309,6 +328,10 @@ class FilterProductsTest {
                 .toDiscountPercentage(100)
                 .fromPrice(0)
                 .toPrice(1000)
+                .productName("")
+                .description("")
+                .brand("")
+                .category("")
                 .build();
 
         List<Product> filteredProducts = filterProducts.filter(filterProductDto);
@@ -324,6 +347,9 @@ class FilterProductsTest {
                 .toDiscountPercentage(100)
                 .fromPrice(0)
                 .toPrice(1000)
+                .productName("")
+                .description("")
+                .category("")
                 .build();
 
         List<Product> filteredProducts = filterProducts.filter(filterProductDto);
@@ -339,6 +365,9 @@ class FilterProductsTest {
                 .toDiscountPercentage(20)
                 .fromPrice(0)
                 .toPrice(1000)
+                .productName("")
+                .description("")
+                .brand("")
                 .build();
 
         List<Product> filteredProducts = filterProducts.filter(filterProductDto);
@@ -356,6 +385,9 @@ class FilterProductsTest {
                 .toDiscountPercentage(15)
                 .available(true)
                 .brand("Brand6")
+                .productName("")
+                .description("")
+                .category("")
                 .build();
 
         // Act
@@ -375,6 +407,8 @@ class FilterProductsTest {
                 .toPrice(1000)
                 .fromDiscountPercentage(0)
                 .toDiscountPercentage(100)
+                .description("")
+                .brand("")
                 .build();
 
         // Act
@@ -393,6 +427,9 @@ class FilterProductsTest {
                 .toPrice(1000)
                 .fromDiscountPercentage(0)
                 .toDiscountPercentage(100)
+                .productName("")
+                .brand("")
+                .category("")
                 .build();
 
         // Act
@@ -412,6 +449,10 @@ class FilterProductsTest {
                 .toPrice(1000)
                 .fromDiscountPercentage(0)
                 .toDiscountPercentage(100)
+                .productName("")
+                .description("")
+                .brand("")
+                .category("")
                 .build();
 
         // Act
@@ -429,6 +470,10 @@ class FilterProductsTest {
                 .toPrice(500)  // Invalid range
                 .fromDiscountPercentage(20)
                 .toDiscountPercentage(10) // Invalid range
+                .productName("")
+                .description("")
+                .brand("")
+                .category("")
                 .build();
 
         // Act: Call the filter method with invalid criteria

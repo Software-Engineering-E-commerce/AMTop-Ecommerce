@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Repository
 @RequiredArgsConstructor
@@ -50,19 +51,19 @@ public class FilterProducts<T extends Comparable<T>> implements IFilter {
             FilterProductDto filterProductDto,
             List<Predicate> predicates
     ) {
-        if (filterProductDto.getProductName() != null) {
+        if (!Objects.equals(filterProductDto.getProductName(), "")) {
             predicates.add(criteriaBuilder
                     .like(root.get("productName"), "%" + filterProductDto.getProductName() + "%"));
         }
-        if (filterProductDto.getDescription() != null) {
+        if (!Objects.equals(filterProductDto.getDescription(), "")) {
             predicates.add(criteriaBuilder
                     .like(root.get("description"), "%" + filterProductDto.getDescription() + "%"));
         }
-        if (filterProductDto.getBrand() != null) {
+        if (!Objects.equals(filterProductDto.getBrand(), "")) {
             predicates.add(criteriaBuilder
                     .equal(root.get("brand"), filterProductDto.getBrand()));
         }
-        if (filterProductDto.getCategory() != null) {
+        if (!Objects.equals(filterProductDto.getCategory(), "")) {
             Join<Product, Category> categoryJoin = root.join("category");
             predicates.add(criteriaBuilder.
                     equal(categoryJoin.get("categoryName"), filterProductDto.getCategory()));
