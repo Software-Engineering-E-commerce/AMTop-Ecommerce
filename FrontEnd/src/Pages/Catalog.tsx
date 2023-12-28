@@ -5,7 +5,7 @@ import Navbar from "../Components/HomeNavbar";
 
 const Catalog = () => {
   const location = useLocation();
-  var { userToken, isAdmin, firstName, lastName } = location.state || {};
+  var { userToken, isAdmin, firstName, lastName, passedProducts } = location.state || {};
 
   const getProducts = async () => {
     console.log("In get products");
@@ -51,6 +51,7 @@ const Catalog = () => {
 
   const getFilteredProducts = async (filter: FilterProductDto) => {
     console.log("In get filtered products");
+    console.log(filter);
     let url = `http://localhost:9080/api/filter/Product`;
     try {
       const response = await axios(url, {
@@ -79,6 +80,7 @@ const Catalog = () => {
         token={userToken}
       />
       <ProductsList
+        passedProducts={passedProducts}
         firstName={firstName}
         lastName={lastName}
         userToken={userToken}

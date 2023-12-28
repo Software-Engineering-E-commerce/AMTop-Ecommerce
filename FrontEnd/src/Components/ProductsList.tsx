@@ -16,6 +16,7 @@ import { Button } from "react-bootstrap";
 import '@fortawesome/fontawesome-free/css/all.css';
 
 interface Props {
+  passedProducts: Product[];
   firstName: string;
   lastName: string;
   isAdmin: boolean;
@@ -26,6 +27,7 @@ interface Props {
 }
 
 const ProductsList = ({
+  passedProducts,
   firstName,
   lastName,
   isAdmin,
@@ -115,7 +117,36 @@ const ProductsList = ({
 
   const handleSortButtonClick = async() => {
     const products = await getSortedProducts(sortParams.sortBy, sortParams.sortOrder);
-    setProducts(products);
+
+    // Set wishlist status
+    for (let i = 0; i < products.length; i++) {
+      const product = products[i];
+      if (product.inWishlist) {
+        setWishlistStatus((prevStatus) =>
+          new Map(prevStatus).set(product.id, true)
+        );
+      } else {
+        setWishlistStatus((prevStatus) =>
+          new Map(prevStatus).set(product.id, false)
+        );
+      }
+    }
+
+    // Load images
+    const updatedProducts = await Promise.all(
+      products.map(async (product) => {
+        try {
+          const dynamicImportedImage = await import(
+            `../assets${product.imageLink}`
+          );
+          return { ...product, imageLink: dynamicImportedImage.default };
+        } catch (error) {
+          console.error("Error loading image:", error);
+          return product; // Return original product if image loading fails
+        }
+      })
+    );
+    setProducts(updatedProducts);
   };
 
   const toggleSortModal = () => {
@@ -145,7 +176,36 @@ const ProductsList = ({
 
   const handleFilterButtonClick = async() => {
     const products = await getFilteredProducts(filter);
-    setProducts(products);
+    
+    // Set wishlist status
+    for (let i = 0; i < products.length; i++) {
+      const product = products[i];
+      if (product.inWishlist) {
+        setWishlistStatus((prevStatus) =>
+          new Map(prevStatus).set(product.id, true)
+        );
+      } else {
+        setWishlistStatus((prevStatus) =>
+          new Map(prevStatus).set(product.id, false)
+        );
+      }
+    }
+
+    // Load images
+    const updatedProducts = await Promise.all(
+      products.map(async (product) => {
+        try {
+          const dynamicImportedImage = await import(
+            `../assets${product.imageLink}`
+          );
+          return { ...product, imageLink: dynamicImportedImage.default };
+        } catch (error) {
+          console.error("Error loading image:", error);
+          return product; // Return original product if image loading fails
+        }
+      })
+    );
+    setProducts(updatedProducts);
   };
 
   const handleInputChange = (e: any) => {
@@ -197,14 +257,8 @@ const ProductsList = ({
     }
   }
 
-  // To not fetch products twice on mounting the component
-  const hasFetchedProducts = useRef(false);
+  // Mounting the component
   useEffect(() => {
-    if (hasFetchedProducts.current) {
-      return;
-    }
-    hasFetchedProducts.current = true;
-
     const fetchData = async () => {
       const products = await getProducts();
 
@@ -243,8 +297,46 @@ const ProductsList = ({
       setProducts(updatedProducts);
     };
 
-    fetchData();
-  }, []);
+    const fetchSearchedData = async () => {
+
+      // Set wishlist status
+      for (let i = 0; i < passedProducts.length; i++) {
+        const product = passedProducts[i];
+        if (product.inWishlist) {
+          setWishlistStatus((prevStatus) =>
+            new Map(prevStatus).set(product.id, true)
+          );
+        } else {
+          setWishlistStatus((prevStatus) =>
+            new Map(prevStatus).set(product.id, false)
+          );
+        }
+      }
+
+      // Load images
+      const updatedProducts = await Promise.all(
+        passedProducts.map(async (product) => {
+          try {
+            const dynamicImportedImage = await import(
+              `../assets${product.imageLink}`
+            );
+            return { ...product, imageLink: dynamicImportedImage.default };
+          } catch (error) {
+            console.error("Error loading image:", error);
+            return product; // Return original product if image loading fails
+          }
+        })
+      );
+
+      setProducts(updatedProducts);
+    }
+
+    if (passedProducts) {
+      fetchSearchedData();
+    } else {
+      fetchData();
+    }
+  }, [passedProducts, getProducts]);
 
   // Get current products
   const indexOfLastProduct = currentPage * productsPerPage;

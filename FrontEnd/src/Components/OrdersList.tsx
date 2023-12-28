@@ -59,7 +59,7 @@ const OrderList = ({
     customerId: 0,
     fromPrice: 0,
     toPrice: 200000,
-    status: ''
+    status: 'Pending'
   });
 
   const handleOrderClick = (order: Order) => {
@@ -262,7 +262,7 @@ const OrderList = ({
           </div>
 
           <div className="mb-3">
-            <label htmlFor="maxPrice">Maximum Price: <span id="maxPriceValue">20000</span>$</label>
+            <label htmlFor="maxPrice">Maximum Price: <span id="maxPriceValue">200000</span>$</label>
             <input type="range" className="form-range" min="0" max="200000" id="maxPrice" onInput={updateMaxPrice}
              name="toPrice" value={filter.toPrice} onChange={handleInputChange}/>
              <input type="number" name="toPrice" className="form-control" value={filter.toPrice} 
