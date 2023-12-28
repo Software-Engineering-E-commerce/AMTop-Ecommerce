@@ -109,6 +109,7 @@ const Dashboard = () => {
           lastName = {lastName}
           isAdmin = {isAdmin}
           token = {userToken}
+          isOrders = {true}
       />
       <OrdersList 
         getOrders = {getOrders}

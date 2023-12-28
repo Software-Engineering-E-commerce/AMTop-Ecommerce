@@ -29,11 +29,24 @@ h2 {
   transform: scale(1.2); /* Fix: Correct the property name */
 }
 
-.whatAfterNavbar h5 {
+.subSlider img:hover,
+.categoryName:hover {
+  cursor: pointer;
+}
+
+.subSlider img {
+  transition: transform 0.3s ease; /* Fix: Apply transition to the transform property */
+}
+
+.subSlider img:hover {
+  transform: scale(1.2); /* Fix: Correct the property name */
+}
+
+.subSlider h5 {
   transition: color 0.3s ease;
 }
 
-.whatAfterNavbar h5:hover {
+.subSlider h5:hover {
   color: #dc3545;
 }
 

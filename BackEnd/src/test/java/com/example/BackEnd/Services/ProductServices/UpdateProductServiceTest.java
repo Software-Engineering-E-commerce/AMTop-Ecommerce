@@ -64,7 +64,7 @@ class UpdateProductServiceTest {
         when(categoryRepository.findById(any())).thenReturn(Optional.of(category));
         when(productRepository.findById(any())).thenReturn(Optional.of(new Product()));
         when(productRepository.save(any())).thenReturn(new Product());
-        when(imageService.saveImage(any(), any())).thenReturn("/path/to/image");
+        when(imageService.saveImage(any(), any(), eq(false))).thenReturn("/path/to/image");
 
         // Act
         updateProductService.processProduct(productDTO, image);
@@ -73,7 +73,7 @@ class UpdateProductServiceTest {
         verify(productRepository, times(1)).findById(any());
         verify(categoryRepository, times(1)).findById(any());
         verify(productRepository, times(1)).save(any());
-        verify(imageService, times(1)).saveImage(any(), any());
+        verify(imageService, times(1)).saveImage(any(), any(),eq(false));
     }
 
     @Test
@@ -100,7 +100,7 @@ class UpdateProductServiceTest {
         verify(productRepository, times(1)).findById(any());
         verify(categoryRepository, times(1)).findById(any());
         verify(productRepository, times(0)).save(any());
-        verify(imageService, times(0)).saveImage(any(), any());
+        verify(imageService, times(0)).saveImage(any(), any(),eq(false));
     }
 
     @Test
@@ -127,7 +127,7 @@ class UpdateProductServiceTest {
         verify(productRepository, times(1)).findById(any());
         verify(categoryRepository, times(0)).findById(any());
         verify(productRepository, times(0)).save(any());
-        verify(imageService, times(0)).saveImage(any(), any());
+        verify(imageService, times(0)).saveImage(any(), any(),eq(false));
     }
 
     @Test
@@ -151,14 +151,14 @@ class UpdateProductServiceTest {
 
         when(categoryRepository.findById(any())).thenReturn(Optional.of(category));
         when(productRepository.findById(any())).thenReturn(Optional.of(new Product()));
-        when(imageService.saveImage(any(), any())).thenThrow(new IOException());
+        when(imageService.saveImage(any(), any(),eq(false))).thenThrow(new IOException());
 
         // Act, Assert
         assertThrows(IOException.class, () -> updateProductService.processProduct(productDTO, image));
         verify(productRepository, times(1)).findById(any());
         verify(categoryRepository, times(1)).findById(any());
         verify(productRepository, times(0)).save(any());
-        verify(imageService, times(1)).saveImage(any(), any());
+        verify(imageService, times(1)).saveImage(any(), any(),eq(false));
     }
 
     @Test
@@ -182,13 +182,13 @@ class UpdateProductServiceTest {
 
         when(categoryRepository.findById(any())).thenReturn(Optional.of(category));
         when(productRepository.findById(any())).thenReturn(Optional.of(new Product()));
-        when(imageService.saveImage(any(), any())).thenThrow(new IllegalStateException());
+        when(imageService.saveImage(any(), any(),eq(false))).thenThrow(new IllegalStateException());
 
         // Act, Assert
         assertThrows(IllegalStateException.class, () -> updateProductService.processProduct(productDTO, image));
         verify(productRepository, times(1)).findById(any());
         verify(categoryRepository, times(1)).findById(any());
         verify(productRepository, times(0)).save(any());
-        verify(imageService, times(1)).saveImage(any(), any());
+        verify(imageService, times(1)).saveImage(any(), any(),eq(false));
     }
 }

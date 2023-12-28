@@ -41,7 +41,6 @@ interface WishlistElement {
   discountPercentage: number;
 }
 
-
 // The DTO of the cart request needed to send requests to the api and include this object in the body
 interface CartRequest {
   productId: number;
@@ -54,19 +53,19 @@ interface WishlistRequest {
 
 //the OTD for the delete order request
 interface DeleteOrderRequest {
-    orderId: number;
+  orderId: number;
 }
 
 //the OTD for the delete item request
 interface DeleteItemRequest {
-    orderId: number;
-    productId: number;
+  orderId: number;
+  productId: number;
 }
 
 //the OTD for the update order request
 interface UpdateOrderRequest {
-    orderId: number;
-    newStatus: string;
+  orderId: number;
+  newStatus: string;
 }
 
 interface ProductDTO {
@@ -81,13 +80,12 @@ interface ProductDTO {
   category: string;
 }
 
-
-interface CategoryDTO {
-  imageLink:string;
-  categoryName:string;
+interface categoryDTO {
+  name: string;
+  imageUrl: string;
 }
 
-interface HomeProductDTO{
+interface HomeProductDTO {
   id: number;
   productName: string;
   price: number;
@@ -95,8 +93,14 @@ interface HomeProductDTO{
   discountPercentage: number;
   reviews: number[];
   inWishlist: boolean;
-  description:string;
-  productCountAvailable:number;
-  categoryName:string;
-  brand:string;
+  description: string;
+  productCountAvailable: number;
+  categoryName: string;
+  brand: string;
+}
+
+interface HomeProductsDTO {
+  latestProducts: HomeProductDTO[];
+  mostPopularProducts: HomeProductDTO[];
+  mostSoldProducts: HomeProductDTO[];
 }

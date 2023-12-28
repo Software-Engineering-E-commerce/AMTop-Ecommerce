@@ -7,6 +7,8 @@ import "./Home.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowUp,
+  faChevronLeft,
+  faChevronRight,
   faHeadphones,
   faKeyboard,
   faLaptop,
@@ -17,6 +19,8 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import HomeProductListing from "../Components/HomeProductListing";
 import HomeFooter from "../Components/HomeFooter";
+import { Prev } from "react-bootstrap/esm/PageItem";
+import Categories from "./Categories";
 import CategoryCardComponent from "../Components/CategoryCardComponent";
 
 interface Categorie {
@@ -31,6 +35,15 @@ interface HomeInfo {
   categoryList: Categorie[];
 }
 
+// const yourSliderSettings = {
+//   dots: true,
+//   infinite: true,
+//   speed: 500,
+//   slidesToShow: 3, // Adjust the number of slides shown
+//   slidesToScroll: 1,
+//   // ... (other slick settings)
+// };
+
 const Home = () => {
   const location = useLocation();
   var { userToken, from } = location.state || {};
@@ -39,6 +52,8 @@ const Home = () => {
   // TODO send the request to get these products
 
   // The products arrays that will be displayed
+  const [recommendations, setRecommendations] =
+    useState<HomeProductsDTO | null>(null);
   const [latestProducts, setLatestProducts] = useState<HomeProductDTO[]>([]);
   const [mostPopularProducts, setMostPopularProducts] = useState<
     HomeProductDTO[]
@@ -52,7 +67,7 @@ const Home = () => {
 
   const isMounted = useRef<boolean>(true);
 
-  const fetchData = async () => {
+  const getHomeInfo = async () => {
     try {
       const response = await axios.get("http://localhost:9080/Home/startup", {
         headers: {
@@ -60,24 +75,124 @@ const Home = () => {
           "Content-Type": "application/json",
         },
       });
-      console.log("response");
-      console.log(response.data);
-      setHomeInfo(response.data);
+      const tmpResponse: HomeInfo = response.data;
+      return tmpResponse;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const axiosError = error as import("axios").AxiosError;
-        if (axiosError.response) {
-          console.error("Response data:", axiosError.response.data);
-          console.error("Response status:", axiosError.response.status);
-        } else if (axiosError.request) {
-          console.error("No response received:", axiosError.request);
-        } else {
-          console.error("Error:", axiosError.message);
+      return null;
+    }
+  };
+
+  const fetchHomeInfo = async () => {
+    const homeInformation = await getHomeInfo();
+    setHomeInfo(homeInformation);
+    // Load images
+    if (homeInformation?.categoryList != undefined) {
+      const updatedHomeInfo = await Promise.all(
+        homeInformation.categoryList.map(async (cat) => {
+          try {
+            const dynamicImportedImage = await import(
+              `../assets${cat.imageLink}`
+            );
+            return { ...cat, imageLink: dynamicImportedImage.default };
+          } catch (error) {
+            console.error("Error loading image:", error);
+            return cat; // Return original product if image loading fails
+          }
+        })
+      );
+      setHomeInfo((prev) => ({
+        ...prev,
+        categoryList: updatedHomeInfo,
+        firstName: prev?.firstName ?? "",
+        lastName: prev?.lastName ?? "",
+        admin: prev?.admin ?? false,
+      }));
+    }
+  };
+
+  const getRecommendations = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:9080/Home/getHomeRecommendations",
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+            "Content-Type": "application/json",
+          },
         }
-      } else {
-        // Handle non-Axios errors
-        console.error("Non-Axios error:", error);
-      }
+      );
+      const tmpResponse: HomeProductsDTO = response.data;
+      return tmpResponse;
+    } catch (error) {
+      return null;
+    }
+  };
+
+  const fetchRecommendations = async () => {
+    const recommendations = await getRecommendations();
+    if (
+      recommendations?.latestProducts != undefined &&
+      recommendations?.mostPopularProducts != undefined &&
+      recommendations.mostSoldProducts != undefined
+    ) {
+      setLatestProducts(recommendations?.latestProducts);
+      setMostPopularProducts(recommendations?.mostPopularProducts);
+      setMostSoldProducts(recommendations.mostSoldProducts);
+
+      const updatedLatestProducts = await Promise.all(
+        recommendations.latestProducts.map(async (latestProduct) => {
+          try {
+            const dynamicImportedImage = await import(
+              `../assets${latestProduct.imageLink}`
+            );
+            return {
+              ...latestProduct,
+              imageLink: dynamicImportedImage.default,
+            };
+          } catch (error) {
+            console.error("Error loading image:", error);
+            return latestProduct; // Return original product if image loading fails
+          }
+        })
+      );
+
+      const updatedMostPopularProducts = await Promise.all(
+        recommendations.mostPopularProducts.map(async (mostPopularProduct) => {
+          try {
+            const dynamicImportedImage = await import(
+              `../assets${mostPopularProduct.imageLink}`
+            );
+            return {
+              ...mostPopularProduct,
+              imageLink: dynamicImportedImage.default,
+            };
+          } catch (error) {
+            console.error("Error loading image:", error);
+            return mostPopularProduct; // Return original product if image loading fails
+          }
+        })
+      );
+
+      const updatedMostSoldProducts = await Promise.all(
+        recommendations.mostSoldProducts.map(async (mostSoldProduct) => {
+          try {
+            const dynamicImportedImage = await import(
+              `../assets${mostSoldProduct.imageLink}`
+            );
+            return {
+              ...mostSoldProduct,
+              imageLink: dynamicImportedImage.default,
+            };
+          } catch (error) {
+            console.error("Error loading image:", error);
+            return mostSoldProduct; // Return original product if image loading fails
+          }
+        })
+      );
+
+      setLatestProducts(updatedLatestProducts);
+      setMostPopularProducts(updatedMostPopularProducts);
+      setMostSoldProducts(updatedMostSoldProducts);
     }
   };
 
@@ -94,14 +209,8 @@ const Home = () => {
   useEffect(() => {
     // Check if the request has not been made
     if (isMounted.current) {
-      setHomeInfo((prev) => ({
-        ...prev,
-        categoryList: [],
-        firstName: prev?.firstName || "",
-        lastName: prev?.lastName || "",
-        admin: prev?.admin || false,
-      }));
-      fetchData();
+      fetchHomeInfo();
+      fetchRecommendations();
       isMounted.current = false;
     }
 
@@ -116,10 +225,10 @@ const Home = () => {
 
   var SliderSettings = {
     dots: true,
-    infinite: true, // Enable infinite loop
+    infinite: false,
     speed: 500,
     slidesToShow: 4,
-    slidesToScroll: 2,
+    slidesToScroll: 1,
     autoplay: true, // Enable autoplay
     autoplaySpeed: 3000, // Set the autoplay speed in milliseconds
     initialSlide: 0,
@@ -129,7 +238,6 @@ const Home = () => {
         settings: {
           slidesToShow: 3,
           slidesToScroll: 3,
-          infinite: true,
           dots: true,
         },
       },
@@ -173,11 +281,12 @@ const Home = () => {
               </h2>
               <Slider {...SliderSettings}>
                 {homeInfo?.categoryList.map((category, index) => (
-                  <div key={index} className="category-slide">
+                  <div key={category.categoryName} className="category-slide">
                     <CategoryCardComponent
                       categoryName={category.categoryName}
+                      userToken={userToken}
                       imageLink={category.imageLink}
-                      isAdmin={homeInfo.admin}
+                      isAdmin={homeInfo?.admin}
                     />
                   </div>
                 ))}
@@ -287,7 +396,7 @@ const Home = () => {
           <>
             <div className="col-12 homeMostSold" style={{ marginTop: "100px" }}>
               <h2 style={{ marginBottom: "50px", fontWeight: "500" }}>
-                Most Sold Products
+                Best Offers
               </h2>
               <Slider {...SliderSettings}>
                 {mostSoldProducts.map((product, index) => (

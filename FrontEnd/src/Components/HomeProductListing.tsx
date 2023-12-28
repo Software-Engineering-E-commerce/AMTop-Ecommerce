@@ -4,7 +4,7 @@ import StarRating from "./StarRating";
 import "./ProductsList.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCartShopping, faHeart } from "@fortawesome/free-solid-svg-icons";
-import { EditedProduct } from "./EditAddProduct";
+import EditAddProduct, { EditedProduct } from "./EditAddProduct";
 import AddToCart from "./AddToCart";
 import AddToWishlist from "./AddToWishlist";
 
@@ -105,8 +105,23 @@ const HomeProductListing = ({
     product.inWishlist = !product.inWishlist;
   };
 
+  const resetEditButton = () => {
+    setEditProduct(false);
+  }
+
   return (
     <>
+      {editProduct && (
+        <>
+          <EditAddProduct
+            isEdit={true}
+            adminToken={userToken}
+            product={editedProductDTO}
+            resetButton={resetEditButton}
+          />
+        </>
+      )}
+
       <div
         key={product.id}
         className="subSlider"
@@ -124,7 +139,7 @@ const HomeProductListing = ({
               <img
                 src={product.imageLink}
                 alt={product.productName}
-                  style={{ maxHeight: "10rem" }}
+                style={{ maxHeight: "10rem" }}
               />
             )}
           </div>

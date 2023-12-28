@@ -38,7 +38,7 @@ public class UpdateProductService extends AbstractProductService {
             Product product = productOptional.get();
             setProduct(productDTO, product, category.get());
             if (!image.isEmpty()) {
-                String imageLink = imageService.saveImage(image, productDTO.getId());
+                String imageLink = imageService.saveImage(image, productDTO.getId(),false);
                 imageService.deleteImage(product.getImageLink());
                 product.setImageLink(imageLink);
             }

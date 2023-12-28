@@ -17,6 +17,7 @@ import Cart from "./Pages/Cart.tsx";
 import Dashboard from "./Pages/Dashboard.tsx";
 import Catalog from "./Pages/Catalog.tsx";
 import Wishlist from "./Pages/Wishlist.tsx";
+import Categories from "./Pages/Categories.tsx";
 
 
 
@@ -44,6 +45,10 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <LogIn />,
+  },
+  {
+    path: "/categories",
+    element: <Categories />,
   },
   {
     path: "/signup",
