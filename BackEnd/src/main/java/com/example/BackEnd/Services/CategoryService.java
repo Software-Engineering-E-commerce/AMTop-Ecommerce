@@ -52,6 +52,7 @@ public class CategoryService {
      *
      * @param categoryDTO holds the category information collected from view layer(i.e. category name and image link).
      * @param image       the new image for the updated category.
+     * @param originalName to check if the category intended to be edited is present and to be edited with new name/image or both.
      */
     public void editCategory(CategoryDTO categoryDTO, MultipartFile image, String originalName) throws IOException, NoSuchElementException {
 
@@ -120,7 +121,7 @@ public class CategoryService {
         return categoryDTOList;
     }
 
-    private CategoryDTO mapToDTO(Category category) {
+    public CategoryDTO mapToDTO(Category category) {
         return CategoryDTO.builder().name(category.getCategoryName()).imageUrl(category.getImageLink()).build();
     }
 
