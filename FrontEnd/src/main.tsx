@@ -17,8 +17,9 @@ import Cart from "./Pages/Cart.tsx";
 import Dashboard from "./Pages/Dashboard.tsx";
 import Catalog from "./Pages/Catalog.tsx";
 import Wishlist from "./Pages/Wishlist.tsx";
-import CustomerOrders from "./Pages/CustomerOrders.tsx";
+import AdminVerfication from "./Pages/AdminVerfication.tsx";
 
+import CustomerOrders from "./Pages/CustomerOrders.tsx";
 
 
 const router = createBrowserRouter([
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
   {
     path: "/verification",
     element: <Verification />,
+  },
+  {
+    path: "/adminVerfication",
+    element: <AdminVerfication />,
   },
   {
     path: "/cart",
@@ -51,9 +56,8 @@ const router = createBrowserRouter([
     element: <SignUp />,
   },
   {
-
     path: "/home/profile",
-    element: <Profile/>,
+    element: <Profile />,
   },
   {
     path: "/product-details",
@@ -62,13 +66,10 @@ const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: <Dashboard />,
-
   },
   {
-
     path: "/catalog",
     element: <Catalog />,
-
   },
   {
     path: "/customerOrders",
