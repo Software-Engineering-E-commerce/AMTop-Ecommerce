@@ -80,9 +80,9 @@ interface ProductDTO {
   category: string;
 }
 
-interface CategoryDTO {
-  imageLink: string;
-  categoryName: string;
+interface categoryDTO {
+  name: string;
+  imageUrl: string;
 }
 
 interface HomeProductDTO {
@@ -100,7 +100,7 @@ interface HomeProductDTO {
 }
 
 interface HomeProductsDTO {
-  latestProducts: HomeProductDTO;
-  mostPopularProducts: HomeProductDTO;
-  mostSoldProducts: HomeProductDTO;
+  latestProducts: HomeProductDTO[];
+  mostPopularProducts: HomeProductDTO[];
+  mostSoldProducts: HomeProductDTO[];
 }

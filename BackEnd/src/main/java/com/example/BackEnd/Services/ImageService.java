@@ -12,15 +12,15 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class ImageService {
 
-    public String saveImage(MultipartFile image, Long id) throws IOException, IllegalStateException {
+    public String saveImage(MultipartFile image, Object Identifier, boolean isCategory) throws IOException, IllegalStateException {
         if (!Objects.requireNonNull(image.getContentType()).startsWith("image/")) {
             throw new IllegalStateException("File must be an image");
         }
         if (image.isEmpty()) {
             throw new IllegalStateException("Cannot upload empty image");
         }
-        String imageName = id + "-" + image.getOriginalFilename();
-        String imageLink = "/products/" + imageName;
+        String imageName = Identifier + "-" + image.getOriginalFilename();
+        String imageLink = isCategory? ("/categories/" + imageName):("/products/" + imageName);
         try {
             String path = new File("..").getCanonicalPath() + "/FrontEnd/src/assets";
             System.out.println(path);
@@ -30,7 +30,6 @@ public class ImageService {
             throw new IOException("Could not save image: " + imageName);
         }
     }
-
     public void deleteImage(String imageLink) {
         try {
             String path = new File("..").getCanonicalPath() + "/FrontEnd/src/assets";
