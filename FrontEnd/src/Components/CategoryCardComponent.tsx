@@ -40,10 +40,8 @@ const CategoryCardComponent = ({
           />
         </>
       )}
-
-      
-      <div className="subSlider">
-        <div className="subSliderWrap">
+      <div className="subSlider" >
+        <div className="subSliderWrap" style={{minHeight:"300px"}}>
           <div className="categoryImage">
             <img
               style={{ maxHeight: "10rem" }}

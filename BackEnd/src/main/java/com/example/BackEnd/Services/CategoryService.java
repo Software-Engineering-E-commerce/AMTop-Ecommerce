@@ -1,7 +1,6 @@
 package com.example.BackEnd.Services;
 
 import com.example.BackEnd.DTO.CategoryDTO;
-import com.example.BackEnd.Middleware.Permissions;
 import com.example.BackEnd.Model.Category;
 import com.example.BackEnd.Repositories.CategoryRepository;
 import jakarta.transaction.Transactional;
@@ -14,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -55,21 +53,36 @@ public class CategoryService {
      * @param categoryDTO holds the category information collected from view layer(i.e. category name and image link).
      * @param image       the new image for the updated category.
      */
-    public void editCategory(CategoryDTO categoryDTO, MultipartFile image) throws IOException, NoSuchElementException {
+    public void editCategory(CategoryDTO categoryDTO, MultipartFile image, String originalName) throws IOException, NoSuchElementException {
+
         Optional<Category> categoryOptional = categoryRepository.findByCategoryName(categoryDTO.getName());
-        if (categoryOptional.isEmpty()) {
-            throw new NoSuchElementException("Category does not exist");
+        if (categoryOptional.isPresent() && !originalName.equals(categoryDTO.getName())) {
+            throw new NoSuchElementException("There's a category with this name already exists");
         }
         try {
-
-            Category category = categoryOptional.get();
-            category.setCategoryName(categoryDTO.getName());
-            if (!image.isEmpty()) {
+            Optional<Category> editedCategory = categoryRepository.findByCategoryName(originalName);
+            if (!image.isEmpty() && originalName.equals(categoryDTO.getName())) {
                 String imageLink = imageService.saveImage(image, categoryDTO.getName(), true);
-                imageService.deleteImage(category.getImageLink());
-                category.setImageLink(imageLink);
+                imageService.deleteImage(editedCategory.get().getImageLink());
+                editedCategory.get().setImageLink(imageLink);
+            } else if (!image.isEmpty() && !originalName.equals(categoryDTO.getName())){
+                Category newCategory = new Category();
+                newCategory.setCategoryName(categoryDTO.getName());
+                String imageLink = imageService.saveImage(image, categoryDTO.getName(), true);
+                newCategory.setImageLink(imageLink);
+                imageService.deleteImage(editedCategory.get().getImageLink());
+                categoryRepository.delete(editedCategory.get());
+                categoryRepository.save(newCategory);
+            } else if (image.isEmpty() && !originalName.equals(categoryDTO.getName())){
+                Category newCategory = new Category();
+                newCategory.setCategoryName(categoryDTO.getName());
+                String imageLink = editedCategory.get().getImageLink();
+                newCategory.setImageLink(imageLink);
+                categoryRepository.delete(editedCategory.get());
+                categoryRepository.save(newCategory);
+            } else {
+                throw new NoSuchElementException("You've changed nothing !");
             }
-            categoryRepository.save(category);
         } catch (IOException e) {
             throw new IOException(e.getMessage());
         } catch (IllegalStateException e) {

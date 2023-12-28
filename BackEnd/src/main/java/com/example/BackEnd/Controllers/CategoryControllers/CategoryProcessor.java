@@ -44,7 +44,7 @@ public class CategoryProcessor {
         }
     }
 
-    public ResponseEntity<String> editCategory(String jsonString, MultipartFile image, String authorizationHeader){
+    public ResponseEntity<String> editCategory(String jsonString, MultipartFile image, String authorizationHeader, String originalName){
         if (permissions.checkToken(authorizationHeader)) {
             String token = authorizationHeader.substring(7);
             try {
@@ -59,7 +59,7 @@ public class CategoryProcessor {
                 CategoryDTO newCategoryDTO = map.readValue(jsonString, CategoryDTO.class);
 
                 // edit category
-                categoryService.editCategory(newCategoryDTO,image);
+                categoryService.editCategory(newCategoryDTO,image, originalName);
                 return ResponseEntity.status(HttpStatus.OK).body(categoryService.getSuccessMessage(false));
             } catch (Exception e) { // can not edit category
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

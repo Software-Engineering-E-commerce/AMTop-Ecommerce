@@ -2,10 +2,7 @@ import "./App.css";
 import SignUp from "./Pages/SignUp";
 
 function App() {
-
-  return (
-    <SignUp/>
-      );
+  return <SignUp />;
 }
 
 export default App;

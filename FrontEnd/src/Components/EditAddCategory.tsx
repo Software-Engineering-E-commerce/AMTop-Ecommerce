@@ -27,6 +27,7 @@ const EditAddCategory = ({
     categoryName: "",
   });
   const navigate = useNavigate();
+  const [originalName, setOriginalName] = useState("");
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [responseData, setResponseData] = useState("");
@@ -38,6 +39,7 @@ const EditAddCategory = ({
       setFormData({
         categoryName: category.categoryName,
       });
+      setOriginalName(category.categoryName);
     } else {
       // If product prop is not passed, set the initial values to ""
       setFormData({
@@ -104,8 +106,8 @@ const EditAddCategory = ({
     try {
       let url: string = `http://localhost:9080/api/editCategory?categoryDTO=${encodeURIComponent(
         JSON.stringify(tmp)
-      )}`;
-
+      )}&originalName=${originalName}`;
+      
       const formData = new FormData();
       // Remove the line formData.append("image", null);
       if (selectedFile) {
@@ -206,6 +208,7 @@ const EditAddCategory = ({
 
   const resetResponseData = () => {
     setResponseData("");
+    onCancel();
   };
 
   return (

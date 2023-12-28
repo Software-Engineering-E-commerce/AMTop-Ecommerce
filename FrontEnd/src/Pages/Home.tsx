@@ -65,7 +65,7 @@ const Home = () => {
 
   const isMounted = useRef<boolean>(true);
 
-  const fetchData = async () => {
+  const getHomeInfo = async () => {
     try {
       const response = await axios.get("http://localhost:9080/Home/startup", {
         headers: {
@@ -73,24 +73,38 @@ const Home = () => {
           "Content-Type": "application/json",
         },
       });
-      console.log("response");
-      console.log(response.data);
-      setHomeInfo(response.data);
+      const tmpResponse: HomeInfo = response.data;
+      return tmpResponse;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const axiosError = error as import("axios").AxiosError;
-        if (axiosError.response) {
-          console.error("Response data:", axiosError.response.data);
-          console.error("Response status:", axiosError.response.status);
-        } else if (axiosError.request) {
-          console.error("No response received:", axiosError.request);
-        } else {
-          console.error("Error:", axiosError.message);
-        }
-      } else {
-        // Handle non-Axios errors
-        console.error("Non-Axios error:", error);
-      }
+      return null;
+    }
+  };
+
+  const fetchData = async () => {
+    const homeInformation = await getHomeInfo();
+    setHomeInfo(homeInformation);
+    // Load images
+    if (homeInformation?.categoryList != undefined) {
+      const updatedHomeInfo = await Promise.all(
+        homeInformation.categoryList.map(async (cat) => {
+          try {
+            const dynamicImportedImage = await import(
+              `../assets${cat.imageLink}`
+            );
+            return { ...cat, imageLink: dynamicImportedImage.default };
+          } catch (error) {
+            console.error("Error loading image:", error);
+            return cat; // Return original product if image loading fails
+          }
+        })
+      );
+      setHomeInfo((prev) => ({
+        ...prev,
+        categoryList: updatedHomeInfo,
+        firstName: prev?.firstName ?? "",
+        lastName: prev?.lastName ?? "",
+        admin: prev?.admin ?? false,
+      }));
     }
   };
 
@@ -107,15 +121,7 @@ const Home = () => {
   useEffect(() => {
     // Check if the request has not been made
     if (isMounted.current) {
-      // setHomeInfo((prev) => ({
-      //   ...prev,
-      //   categoryList: [],
-      //   firstName: prev?.firstName || "",
-      //   lastName: prev?.lastName || "",
-      //   admin: prev?.admin || false,
-      // }));
       fetchData();
-      console.log(homeInfo?.categoryList);
       isMounted.current = false;
     }
 
@@ -130,10 +136,10 @@ const Home = () => {
 
   var SliderSettings = {
     dots: true,
-    infinite: true, // Enable infinite loop
+    infinite: false,
     speed: 500,
     slidesToShow: 4,
-    slidesToScroll: 2,
+    slidesToScroll: 1,
     autoplay: true, // Enable autoplay
     autoplaySpeed: 3000, // Set the autoplay speed in milliseconds
     initialSlide: 0,
@@ -143,7 +149,6 @@ const Home = () => {
         settings: {
           slidesToShow: 3,
           slidesToScroll: 3,
-          infinite: true,
           dots: true,
         },
       },
@@ -192,7 +197,7 @@ const Home = () => {
                       categoryName={category.categoryName}
                       userToken={userToken}
                       imageLink={category.imageLink}
-                      isAdmin={homeInfo.admin}
+                      isAdmin={homeInfo?.admin}
                     />
                   </div>
                 ))}

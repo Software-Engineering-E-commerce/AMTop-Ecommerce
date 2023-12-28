@@ -22,10 +22,10 @@ const Categories = () => {
 
   var SliderSettings = {
     dots: true,
-    infinite: true, // Enable infinite loop
+    infinite: false, // Enable infinite loop
     speed: 500,
     slidesToShow: 4,
-    slidesToScroll: 2,
+    slidesToScroll: 1,
     autoplay: true, // Enable autoplay
     autoplaySpeed: 3000, // Set the autoplay speed in milliseconds
     initialSlide: 0,
@@ -35,7 +35,6 @@ const Categories = () => {
         settings: {
           slidesToShow: 3,
           slidesToScroll: 3,
-          infinite: true,
           dots: true,
         },
       },
@@ -102,7 +101,7 @@ const Categories = () => {
 
   useEffect(() => {
     if (isMounted.current) {
-      // fetchData();
+      fetchData();
       isMounted.current = false;
     }
   }, []);
