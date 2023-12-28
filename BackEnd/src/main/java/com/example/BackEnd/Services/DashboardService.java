@@ -29,10 +29,23 @@ public class DashboardService {
     public String cancelOrder(Long orderId) {
         Optional<Order> orderToDelete = orderRepository.findById(orderId);
         if (orderToDelete.isPresent()) {
+            List<OrderItem> items = orderToDelete.get().getOrderItems();
+            resetProductCount(items);
             orderRepository.delete(orderToDelete.get());
             return "Order deleted";
         } else return "Order not found, please refresh the page and try again. If the problem persists," +
                 " please contact one of the development team members.";
+    }
+
+    private void resetProductCount(List<OrderItem> items) {
+        for (OrderItem item: items) {
+            Long productId = item.getProduct().getId();
+            Optional<Product> product = productRepository.findProductById(productId);
+            if (product.isPresent()) {
+                product.get().setProductCountAvailable(product.get().getProductCountAvailable() + item.getQuantity());
+                productRepository.save(product.get());
+            }
+        }
     }
 
     @Transactional
@@ -55,6 +68,8 @@ public class DashboardService {
             OrderItemPK itemPK = new OrderItemPK(order.get(), product.get());
             Optional<OrderItem> itemToDelete = orderItemRepository.findById(itemPK);
             if (itemToDelete.isPresent()) {
+                product.get().setProductCountAvailable(product.get().getProductCountAvailable() + itemToDelete.get().getQuantity());
+                productRepository.save(product.get());
                 orderItemRepository.delete(itemToDelete.get());
                 return "Item deleted";
             } else return "Item not found, please refresh the page and try again. If the problem persists," +
