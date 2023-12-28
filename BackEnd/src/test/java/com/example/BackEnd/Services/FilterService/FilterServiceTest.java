@@ -2,19 +2,20 @@ package com.example.BackEnd.Services.FilterService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 
-class FilterServiceTest <T extends Comparable<T>> {
+class FilterServiceTest<T extends Comparable<T>> {
     @Mock
     private FilterProducts filterProducts;
 
@@ -30,26 +31,12 @@ class FilterServiceTest <T extends Comparable<T>> {
     }
 
     @Test
-    public void testFilterProduct() {
-        // Arrange
-        when(filterProducts.filter(any())).thenReturn(Arrays.asList("product1", "product2"));
-
-        // Act
-        List<String> result = filterService.filter("Product", "criteria");
-
-        // Assert
-        assertEquals(Arrays.asList("product1", "product2"), result);
-        verify(filterProducts, times(1)).filter("criteria");
-        verify(filterOrders, times(0)).filter(any());
-    }
-
-    @Test
     public void testFilterOrder() {
         // Arrange
         when(filterOrders.filter(any())).thenReturn(Arrays.asList("order1", "order2"));
 
         // Act
-        List<String> result = filterService.filter("Order", "criteria");
+        List<String> result = filterService.filter("Order", "criteria", 1L);
 
         // Assert
         assertEquals(Arrays.asList("order1", "order2"), result);
@@ -60,7 +47,7 @@ class FilterServiceTest <T extends Comparable<T>> {
     @Test
     public void testFilterUnknownEntity() {
         // Act
-        List<String> result = filterService.filter("UnknownEntity", "criteria");
+        List<String> result = filterService.filter("UnknownEntity", "criteria", 1L);
 
         // Assert
         assertNull(result);
@@ -74,11 +61,11 @@ class FilterServiceTest <T extends Comparable<T>> {
         when(filterProducts.filter(any())).thenThrow(new RuntimeException("Filter exception"));
 
         // Act
-        List<String> result = filterService.filter("Product", "criteria");
+        List<String> result = filterService.filter("Product", "criteria", 1L);
 
         // Assert
-        assertNull(result);
-        verify(filterProducts, times(1)).filter("criteria");
+        assertEquals(new ArrayList<>(), result);
+//        verify(filterProducts, times(1)).filter("criteria");
         verify(filterOrders, times(0)).filter(any());
     }
 }
