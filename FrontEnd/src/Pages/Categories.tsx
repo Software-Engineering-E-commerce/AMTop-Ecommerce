@@ -3,70 +3,22 @@ import { useLocation } from "react-router";
 import Navbar from "../Components/HomeNavbar";
 import Slider from "react-slick";
 import CategoryCardComponent from "../Components/CategoryCardComponent";
+import axios from "axios";
+import EditAddCategory from "../Components/EditAddCategory";
 
-interface CategoryDTO {
-  imageLink: string;
-  categoryName: string;
+interface categoryDTO {
+  name: string;
+  imageUrl: string;
 }
 
 const Categories = () => {
   const location = useLocation();
   var { userToken, isAdmin, firstName, lastName } = location.state || {};
 
-  const [categories, setCategories] = useState<CategoryDTO[]>([]);
+  const [categories, setCategories] = useState<categoryDTO[]>([]);
+  const [addCategory, setAddCategory] = useState(false);
 
   const isMounted = useRef(true);
-
-  console.log(
-    "🚀 ~ file: Categories.tsx:7 ~ Categories ~  userToken, isAdmin, firstName, lastName :",
-    userToken,
-    isAdmin,
-    firstName,
-    lastName
-  );
-
-  let categoris: CategoryDTO[] = [
-    {
-      categoryName: "Iphone",
-      imageLink:
-        "https://m.media-amazon.com/images/W/MEDIAX_792452-T1/images/I/51Pzh68ERNL._AC_AA180_.jpg",
-    },
-    {
-      categoryName: "Iphone 13",
-      imageLink:
-        "https://m.media-amazon.com/images/W/MEDIAX_792452-T1/images/I/81yiZag3xhL._AC_AA180_.jpg",
-    },
-    {
-      categoryName: "Iphone",
-      imageLink:
-        "https://m.media-amazon.com/images/W/MEDIAX_792452-T1/images/I/51Pzh68ERNL._AC_AA180_.jpg",
-    },
-    {
-      categoryName: "Iphone",
-      imageLink:
-        "https://m.media-amazon.com/images/W/MEDIAX_792452-T1/images/I/51Pzh68ERNL._AC_AA180_.jpg",
-    },
-    {
-      categoryName: "Iphone",
-      imageLink:
-        "https://m.media-amazon.com/images/W/MEDIAX_792452-T1/images/I/51Pzh68ERNL._AC_AA180_.jpg",
-    },
-    {
-      categoryName: "Iphone",
-      imageLink:
-        "https://f.nooncdn.com/p/v1657621583/N53329645A_1.jpg?format=avif&width=240",
-    },
-    {
-      categoryName: "Smart watch",
-      imageLink:
-        "https://m.media-amazon.com/images/W/MEDIAX_792452-T1/images/I/71Zmcw24IML._AC_AA180_.jpg",
-    },
-    {
-      categoryName: "iphone",
-      imageLink:
-        "https://m.media-amazon.com/images/W/MEDIAX_792452-T1/images/I/51Pzh68ERNL._AC_AA180_.jpg",
-    },
-  ];
 
   var SliderSettings = {
     dots: true,
@@ -105,12 +57,63 @@ const Categories = () => {
     ],
   };
 
+  const getCategoryDtoList = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:9080/api/categoryDetails/getAllCategories",
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(
+        "🚀 ~ file: Categories.tsx:69 ~ getCategoryDtoList ~ response:",
+        response
+      );
+
+      const categoryDtoList: categoryDTO[] = response.data;
+      return categoryDtoList;
+    } catch (error) {
+      console.log("Error:", error);
+      const categoryDtoList: categoryDTO[] = [];
+      return categoryDtoList;
+    }
+  };
+
+  const fetchData = async () => {
+    const cats = await getCategoryDtoList();
+    setCategories(cats);
+    // Load images
+    const updatedCategories = await Promise.all(
+      cats.map(async (cat) => {
+        try {
+          const dynamicImportedImage = await import(`../assets${cat.imageUrl}`);
+          return { ...cat, imageUrl: dynamicImportedImage.default };
+        } catch (error) {
+          console.error("Error loading image:", error);
+          return cat; // Return original product if image loading fails
+        }
+      })
+    );
+    setCategories(updatedCategories);
+  };
+
   useEffect(() => {
     if (isMounted.current) {
-      setCategories(categoris);
+      // fetchData();
       isMounted.current = false;
     }
   }, []);
+
+  const addNewCategory = () => {
+    setAddCategory(true);
+  };
+
+  const resetAddButton = () => {
+    setAddCategory(false);
+  };
 
   return (
     <>
@@ -121,13 +124,27 @@ const Categories = () => {
         token={userToken}
         isCategories={true}
       />
+
+      {addCategory && (
+        <EditAddCategory
+          resetButton={resetAddButton}
+          adminToken={userToken}
+          isEdit={false}
+        />
+      )}
+
       <div
         className="container categories-page-container"
         style={{ marginTop: "50px" }}
       >
-        {true && (
+        {isAdmin && (
           <>
-            <button type="button" className="btn btn-primary" style={{marginBottom:"20px"}}>
+            <button
+              type="button"
+              className="btn btn-primary"
+              style={{ marginBottom: "20px" }}
+              onClick={addNewCategory}
+            >
               Add Category
             </button>
           </>
@@ -136,9 +153,10 @@ const Categories = () => {
           {categories.map((category, index) => (
             <div key={index} className="category-slide">
               <CategoryCardComponent
-                categoryName={category.categoryName}
-                imageLink={category.imageLink}
-                isAdmin={true}
+                categoryName={category.name}
+                imageLink={category.imageUrl}
+                userToken={userToken}
+                isAdmin={isAdmin}
               />
             </div>
           ))}

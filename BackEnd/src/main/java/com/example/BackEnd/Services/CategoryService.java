@@ -10,8 +10,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,9 +37,9 @@ public class CategoryService {
         }
         try {
             category.setCategoryName(categoryDTO.getName());
-            categoryRepository.save(category);
             String imageLink = imageService.saveImage(image, category.getCategoryName(), true);
             category.setImageLink(imageLink);
+            System.out.println("Image link: " + imageLink);
             categoryRepository.save(category);
         } catch (IOException e) {
             throw new IOException(e.getMessage());
@@ -87,14 +90,25 @@ public class CategoryService {
                 Category category = optionalCategory.get();
 
                 return CategoryDTO.builder()
-                                .name(category.getCategoryName())
-                                .imageUrl(category.getImageLink())
-                                .build();
+                        .name(category.getCategoryName())
+                        .imageUrl(category.getImageLink())
+                        .build();
             }
             return null;
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public List<CategoryDTO> getAllCategories() {
+        List <CategoryDTO> categoryDTOList = new ArrayList<>();
+        List<Category> categoryList = categoryRepository.findAll();
+        for (Category category : categoryList) categoryDTOList.add(mapToDTO(category));
+        return categoryDTOList;
+    }
+
+    private CategoryDTO mapToDTO(Category category) {
+        return CategoryDTO.builder().name(category.getCategoryName()).imageUrl(category.getImageLink()).build();
     }
 
     /**

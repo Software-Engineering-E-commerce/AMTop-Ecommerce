@@ -20,7 +20,7 @@ public class EditCategoryController {
     @PostMapping
     public ResponseEntity<String> editCategory(@RequestParam(value = "categoryDTO") String jsonString,
                                                @RequestParam("image") MultipartFile image,
-                                               @RequestParam(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
+                                               @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
         CategoryProcessor categoryProcessor = new CategoryProcessor(permissions, categoryService);
         return categoryProcessor.editCategory(jsonString, image, authorizationHeader);
     }

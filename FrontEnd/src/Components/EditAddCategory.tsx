@@ -1,6 +1,10 @@
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router";
+import CategoryAlertModal from "./CategoryAlertModal";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 
 export interface EditedCategory {
   categoryName: string;
@@ -75,8 +79,11 @@ const EditAddCategory = ({
       formData.categoryName.length >= 4 &&
       (isEdit || (!isEdit && selectedFile !== null))
     ) {
-        console.log("🚀 ~ file: EditAddCategory.tsx:79 ~ handleFormSubmit ~ formData:", formData)
-        console.log(selectedFile);
+      console.log(
+        "🚀 ~ file: EditAddCategory.tsx:79 ~ handleFormSubmit ~ formData:",
+        formData
+      );
+      console.log(selectedFile);
       // Process the form data
       if (isEdit) {
         handleEditRequest();
@@ -86,19 +93,110 @@ const EditAddCategory = ({
     }
   };
 
-  //   const convertToDto = () => {
-  //     let CategoryDTO: CategoryDTO = {
-  //         categoryName :
-  //     };
-  //     return productDto;
-  //   };
-
   const handleEditRequest = async () => {
-    // TODO
+    console.log("From editing a category");
+
+    let tmp: categoryDTO = {
+      name: formData.categoryName,
+      imageUrl: "Abc",
+    };
+
+    try {
+      let url: string = `http://localhost:9080/api/editCategory?categoryDTO=${encodeURIComponent(
+        JSON.stringify(tmp)
+      )}`;
+
+      const formData = new FormData();
+      // Remove the line formData.append("image", null);
+      if (selectedFile) {
+        formData.append("image", selectedFile);
+      } else {
+        const dummyBlob = new Blob([""], { type: "application/octet-stream" });
+        const dummyFile = new File([dummyBlob], "");
+        formData.append("image", dummyFile);
+      }
+
+      const response = await axios.post(url, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${adminToken}`,
+        },
+      });
+      console.log(response);
+
+      // Here means that the response is Ok and the product is added successfully
+      setResponseData(response.data);
+    } catch (error) {
+      // Handle errors here
+      if (axios.isAxiosError(error)) {
+        // This type assertion tells TypeScript that error is an AxiosError
+        const axiosError = error as import("axios").AxiosError;
+        if (axiosError.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          setResponseData(axiosError.response.data as string);
+        } else if (axiosError.request) {
+          // The request was made but no response was received
+          console.error("No response received:", axiosError.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.error("Error:", axiosError.message);
+        }
+      } else {
+        // Handle non-Axios errors
+        console.error("Non-Axios error:", error);
+      }
+    }
   };
 
   const handleAddRequest = async () => {
-    // TODO
+    console.log("From adding a new category");
+    let tmp: categoryDTO = {
+      name: formData.categoryName,
+      imageUrl: "Abc",
+    };
+
+    try {
+      let url: string = `http://localhost:9080/api/addCategory?categoryDTO=${encodeURIComponent(
+        JSON.stringify(tmp)
+      )}`;
+
+      const formData = new FormData();
+      if (selectedFile) {
+        formData.append("image", selectedFile);
+      }
+
+      const response = await axios.post(url, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${adminToken}`,
+        },
+      });
+      console.log(response);
+
+      // Here means that the response is Ok and the product is added successfully
+      setResponseData(response.data);
+    } catch (error) {
+      // Handle errors here
+      if (axios.isAxiosError(error)) {
+        // This type assertion tells TypeScript that error is an AxiosError
+        const axiosError = error as import("axios").AxiosError;
+        if (axiosError.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          setResponseData(axiosError.response.data as string);
+        } else if (axiosError.request) {
+          // The request was made but no response was received
+          console.error("No response received:", axiosError.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.error("Error:", axiosError.message);
+        }
+      } else {
+        // Handle non-Axios errors
+        console.error("Non-Axios error:", error);
+      }
+    }
   };
 
   const onCancel = () => {
@@ -112,6 +210,48 @@ const EditAddCategory = ({
 
   return (
     <>
+      {responseData !== "" &&
+        (responseData === "Category added successfully" ||
+          responseData === "Category edited successfully") && (
+          <>
+            <CategoryAlertModal
+              onClose={resetResponseData}
+              show={true}
+              body={
+                <>
+                  <h5 style={{ color: "green" }}>
+                    <FontAwesomeIcon
+                      icon={faCircleCheck}
+                      style={{
+                        color: "green",
+                        fontSize: "18px",
+                        marginRight: "10px",
+                      }}
+                    />
+                    {responseData}
+                  </h5>
+                </>
+              }
+            />
+          </>
+        )}
+
+      {responseData !== "" &&
+        responseData !== "Category added successfully" &&
+        responseData !== "Category edited successfully" && (
+          <>
+            <CategoryAlertModal
+              onClose={resetResponseData}
+              show={true}
+              body={
+                <>
+                  <h5 style={{ color: "red" }}>{responseData}</h5>
+                </>
+              }
+            />
+          </>
+        )}
+
       <Modal
         id="exampleModalCenter"
         show={show}
@@ -189,7 +329,7 @@ const EditAddCategory = ({
                 type="file"
                 id="formFile"
                 accept="image/*"
-                style={{fontWeight:"500"}}
+                style={{ fontWeight: "500" }}
                 onChange={handleFileChange}
               />
               {formSubmitted && selectedFile === null && isEdit == false && (

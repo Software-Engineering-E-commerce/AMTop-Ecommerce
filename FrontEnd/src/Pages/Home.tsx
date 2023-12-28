@@ -107,14 +107,15 @@ const Home = () => {
   useEffect(() => {
     // Check if the request has not been made
     if (isMounted.current) {
-      setHomeInfo((prev) => ({
-        ...prev,
-        categoryList: [],
-        firstName: prev?.firstName || "",
-        lastName: prev?.lastName || "",
-        admin: prev?.admin || false,
-      }));
+      // setHomeInfo((prev) => ({
+      //   ...prev,
+      //   categoryList: [],
+      //   firstName: prev?.firstName || "",
+      //   lastName: prev?.lastName || "",
+      //   admin: prev?.admin || false,
+      // }));
       fetchData();
+      console.log(homeInfo?.categoryList);
       isMounted.current = false;
     }
 
@@ -186,9 +187,10 @@ const Home = () => {
               </h2>
               <Slider {...SliderSettings}>
                 {homeInfo?.categoryList.map((category, index) => (
-                  <div key={index} className="category-slide">
+                  <div key={category.categoryName} className="category-slide">
                     <CategoryCardComponent
                       categoryName={category.categoryName}
+                      userToken={userToken}
                       imageLink={category.imageLink}
                       isAdmin={homeInfo.admin}
                     />

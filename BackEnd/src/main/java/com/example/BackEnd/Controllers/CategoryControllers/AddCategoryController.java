@@ -21,7 +21,9 @@ public class AddCategoryController {
     @PostMapping
     public ResponseEntity<String> addCategory(@RequestParam(value = "categoryDTO") String jsonString,
                                               @RequestParam("image") MultipartFile image,
-                                              @RequestParam(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
+                                              @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
+
+        System.out.println("In add new category");
         CategoryProcessor categoryProcessor = new CategoryProcessor(permissions, categoryService);
         return categoryProcessor.addCategory(jsonString, image, authorizationHeader);
     }
