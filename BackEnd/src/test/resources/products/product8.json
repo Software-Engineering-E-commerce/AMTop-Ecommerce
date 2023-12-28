@@ -1,0 +1,16 @@
+{
+  "id": 8,
+  "productName": "Product8",
+  "price": 800,
+  "postedDate": "2023-12-25T15:30:45.123456",
+  "description": "Description8",
+  "productCountAvailable": 90,
+  "productSoldCount": 80,
+  "brand": "Brand6",
+  "imageLink": "ImageLink8",
+  "discountPercentage": 10.0,
+  "category": {
+    "categoryName": "Category8",
+    "imageLink": "ImageLink8"
+  }
+}

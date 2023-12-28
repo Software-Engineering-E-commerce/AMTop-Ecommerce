@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+
 @Repository
 @RequiredArgsConstructor
 public class FilterProducts<T extends Comparable<T>> implements IFilter {
