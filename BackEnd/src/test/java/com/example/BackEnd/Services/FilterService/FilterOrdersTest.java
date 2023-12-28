@@ -134,6 +134,7 @@ class FilterOrdersTest {
         filterOrderDto.setId(0L);
         filterOrderDto.setFromPrice(0);
         filterOrderDto.setToPrice(1000000000);
+        filterOrderDto.setStatus("");
         List<Order> orders = filterOrders.filter(filterOrderDto);
         assertEquals(1, orders.size());
         assertEquals(customer1.getId(), orders.get(0).getId());
@@ -148,6 +149,7 @@ class FilterOrdersTest {
         filterOrderDto.setId(order2.getId());
         filterOrderDto.setFromPrice(0);
         filterOrderDto.setToPrice(1000000000);
+        filterOrderDto.setStatus("");
         List<Order> orders = filterOrders.filter(filterOrderDto);
         assertEquals(1, orders.size());
         assertEquals(order2.getId(), orders.get(0).getId());
@@ -162,6 +164,7 @@ class FilterOrdersTest {
         filterOrderDto.setId(order2.getId());
         filterOrderDto.setFromPrice(0);
         filterOrderDto.setToPrice(1000000000);
+        filterOrderDto.setStatus("");
         List<Order> orders = filterOrders.filter(filterOrderDto);
         assertEquals(1, orders.size());
         assertEquals(order2.getId(), orders.get(0).getId());
@@ -177,6 +180,7 @@ class FilterOrdersTest {
         filterOrderDto.setId(0L);
         filterOrderDto.setFromPrice(100);
         filterOrderDto.setToPrice(210);
+        filterOrderDto.setStatus("");
         List<Order> orders = filterOrders.filter(filterOrderDto);
         assertEquals(3, orders.size());
         assertEquals(order1.getId(), orders.get(0).getId());

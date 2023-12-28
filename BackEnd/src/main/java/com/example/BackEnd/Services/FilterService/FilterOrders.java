@@ -63,7 +63,7 @@ public class FilterOrders<T extends Comparable<T>> implements IFilter {
             FilterOrderDto filterOrderDto,
             List<Predicate> predicates
     ) {
-        if (filterOrderDto.getStatus() != null) {
+        if (!filterOrderDto.getStatus().isEmpty()) {
             predicates.add(criteriaBuilder
                     .equal(root.get("status"), filterOrderDto.getStatus()));
         }
