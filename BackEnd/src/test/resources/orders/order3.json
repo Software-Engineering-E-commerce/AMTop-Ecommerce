@@ -1,0 +1,8 @@
+{
+  "startDate": "2022-09-27T15:30:45.123456",
+  "deliveryDate": "2022-10-25T15:30:45.123456",
+  "address": "address3",
+  "totalAmount": 2,
+  "totalCost": 80.0,
+  "status": "Delivered"
+}
