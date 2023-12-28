@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import "./HomeFooter.css"; // Import your CSS file
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -9,12 +9,44 @@ import {
   faTwitter,
 } from "@fortawesome/free-brands-svg-icons";
 import { faEnvelope, faPhoneVolume } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
 
-const HomeFooter: React.FC = () => {
+interface HomeFooterProps {
+  token: string;
+}
+const HomeFooter = ({ token }: HomeFooterProps) => {
+  const [Categories, setCategories] = useState<categoryDTO[]>([]);
+  const isMounted = useRef(true);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:9080/api/categoryDetails/getAllCategories",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setCategories(response.data);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
+
+  // useEffect runs on component mount
+  useEffect(() => {
+    if (isMounted.current) {
+      fetchCategories();
+      isMounted.current = false;
+    }
+  }, []);
+
   return (
-    <footer className="footer homeFooter" style={{marginTop:"45px"}}>
+    <footer className="footer homeFooter" style={{ marginTop: "45px" }}>
       <div className="container-fluid">
-        <div className="row" style={{padding:"40px 20px"}}>
+        <div className="row" style={{ padding: "40px 20px" }}>
           <div className="footer-col">
             <h4>Contact Us</h4>
             <ul>
@@ -51,18 +83,13 @@ const HomeFooter: React.FC = () => {
           <div className="footer-col">
             <h4>online shop</h4>
             <ul>
-              <li>
-                <a href="#">smart watches</a>
-              </li>
-              <li>
-                <a href="#">headphones</a>
-              </li>
-              <li>
-                <a href="#">aeropods</a>
-              </li>
-              <li>
-                <a href="#">laptops</a>
-              </li>
+              {Categories.map((category, index) => (
+                <>
+                  <li>
+                    <a href="#">{category.name}</a>
+                  </li>
+                </>
+              ))}
             </ul>
           </div>
           <div className="footer-col">
@@ -83,8 +110,11 @@ const HomeFooter: React.FC = () => {
             </div>
           </div>
         </div>
-        <div className="footerBottom"><p>Copyright &copy;2023, Designed by the <span>AMTOP team</span></p></div>
-
+        <div className="footerBottom">
+          <p>
+            Copyright &copy;2023, Designed by the <span>AMTOP team</span>
+          </p>
+        </div>
       </div>
     </footer>
   );

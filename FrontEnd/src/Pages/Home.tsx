@@ -420,7 +420,7 @@ const Home = () => {
           </button>
         )}
       </div>
-      <HomeFooter />
+      <HomeFooter token={userToken}/>
     </div>
   );
 };

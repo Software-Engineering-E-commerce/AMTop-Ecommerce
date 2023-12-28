@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button, Form, Modal, Dropdown } from "react-bootstrap";
 import "./EditAddProduct.css";
 import axios from "axios";
@@ -48,6 +48,33 @@ const EditAddProduct = ({
   const [responseData, setResponseData] = useState("");
   const [show, setShow] = useState<boolean>(true);
   const [closeClicked, setCloseClicked] = useState(false);
+  const [Categories, setCategories] = useState<categoryDTO[]>([]);
+  const isMounted = useRef(true);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:9080/api/categoryDetails/getAllCategories",
+        {
+          headers: {
+            Authorization: `Bearer ${adminToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setCategories(response.data);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
+
+  // useEffect runs on component mount
+  useEffect(() => {
+    if (isMounted.current) {
+      fetchCategories();
+      isMounted.current = false;
+    }
+  }, []);
 
   useEffect(() => {
     if (product) {
@@ -72,7 +99,7 @@ const EditAddProduct = ({
         countAvailable: "0",
         brand: "",
         discountPercentage: "0.00",
-        category: "Laptops",
+        category: ""
       });
     }
   }, [product]);
@@ -276,16 +303,8 @@ const EditAddProduct = ({
     console.log("In reset response data ");
     setResponseData("");
     resetButton();
-
-    navigate("/catalog", {
-      state: {
-        userToken: adminToken,
-        isAdmin: true,
-        firstName: "AMTOP",
-        lastName: "E-Commerce",
-      },
-    });
   };
+
   const resetShow = () => {
     setShow(false);
     resetButton();
@@ -488,21 +507,13 @@ const EditAddProduct = ({
                   {formData.category}
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
-                  <Dropdown.Item
-                    onClick={() => handleCategorySelect("Laptops")}
-                  >
-                    Laptops
-                  </Dropdown.Item>
-                  <Dropdown.Item
-                    onClick={() => handleCategorySelect("Mobile phones")}
-                  >
-                    Mobile phones
-                  </Dropdown.Item>
-                  <Dropdown.Item
-                    onClick={() => handleCategorySelect("Smart Watches")}
-                  >
-                    Smart Watches
-                  </Dropdown.Item>
+                  {Categories.map((category, index) => (
+                    <Dropdown.Item
+                      onClick={() => handleCategorySelect(category.name)}
+                    >
+                      {category.name}
+                    </Dropdown.Item>
+                  ))}
                 </Dropdown.Menu>
               </Dropdown>
             </div>
