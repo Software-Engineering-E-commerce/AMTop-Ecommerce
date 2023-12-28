@@ -1,0 +1,8 @@
+{
+  "startDate": "2023-12-25T15:30:45.123456",
+  "deliveryDate": "2024-01-01T15:30:45.123456",
+  "address": "address4",
+  "totalAmount": 1,
+  "totalCost": 140.0,
+  "status": "SHIPPED"
+}
