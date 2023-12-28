@@ -8,7 +8,6 @@ import com.example.BackEnd.Repositories.OrderRepository;
 import com.example.BackEnd.Repositories.ProductRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,8 +29,7 @@ class FilterOrdersTest {
     Category category1, category2, category3;
     Product product1, product2, product3, product4;
     Customer customer1, customer2, customer3, customer4;
-    @Autowired
-    private EntityManager entityManager;
+
     @Autowired
     private OrderRepository orderRepository;
     @Autowired
