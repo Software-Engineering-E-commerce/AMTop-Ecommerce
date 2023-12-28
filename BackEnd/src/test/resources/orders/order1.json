@@ -1,0 +1,8 @@
+{
+  "startDate": "2023-11-14T15:30:45.123456",
+  "deliveryDate": "2023-11-30T15:30:45.123456",
+  "address": "address1",
+  "totalAmount": 3,
+  "totalCost": 150.0,
+  "status": "PENDING"
+}
