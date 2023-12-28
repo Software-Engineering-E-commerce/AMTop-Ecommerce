@@ -86,7 +86,7 @@ public class AddCategoryServiceTest {
 
         MultipartFile image = mock(MultipartFile.class);
 
-        when(categoryRepository.save(any())).thenReturn(new Category());
+        lenient().when(categoryRepository.save(any())).thenReturn(new Category());
         when(imageService.saveImage(any(), any(), eq(true))).thenThrow(new IOException());
 
         // Act, Assert
@@ -105,7 +105,7 @@ public class AddCategoryServiceTest {
 
         MultipartFile image = mock(MultipartFile.class);
 
-        when(categoryRepository.save(any())).thenReturn(new Category());
+        lenient().when(categoryRepository.save(any())).thenReturn(new Category());
         when(imageService.saveImage(any(), any(), eq(true))).thenThrow(new IllegalStateException());
 
         // Act, Assert
