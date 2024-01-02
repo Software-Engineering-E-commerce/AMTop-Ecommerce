@@ -87,7 +87,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product, token }) => {
               src={imageSrc}
               alt={product.name}
               className="img-fluid rounded"
-              style={{ width: "80%", height: "auto" }}
+              style={{ width: "50%", height: "auto" }}
             />
           )}
 

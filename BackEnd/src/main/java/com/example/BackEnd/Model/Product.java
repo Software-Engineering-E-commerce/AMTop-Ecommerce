@@ -14,7 +14,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product {
+public class Product implements Comparable<Product> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -38,10 +38,14 @@ public class Product {
     private float discountPercentage;
     @ManyToOne
     @JoinColumn(name = "category_name", nullable = false)
-    //json ignore
     private Category category;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
-    private List<Review> reviews = new ArrayList<>();
+    private List<Review> reviews = new ArrayList<>(); // sort?????
+
+    @Override
+    public int compareTo(Product o) {
+        return this.getId().compareTo(o.getId());
+    }
 }

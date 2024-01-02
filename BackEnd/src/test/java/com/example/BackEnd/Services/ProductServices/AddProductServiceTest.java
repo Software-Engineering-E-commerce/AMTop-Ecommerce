@@ -62,7 +62,7 @@ class AddProductServiceTest {
 
         when(categoryRepository.findById(any())).thenReturn(Optional.of(category));
         when(productRepository.save(any())).thenReturn(new Product());
-        when(imageService.saveImage(any(), any())).thenReturn("/path/to/image");
+        when(imageService.saveImage(any(), any(),eq(false))).thenReturn("/path/to/image");
 
         // Act
         addProductService.processProduct(productDTO, image);
@@ -70,7 +70,7 @@ class AddProductServiceTest {
         // Assert
         verify(categoryRepository, times(1)).findById(any());
         verify(productRepository, times(2)).save(any()); // called twice: once before saving the image link and once after
-        verify(imageService, times(1)).saveImage(any(), any());
+        verify(imageService, times(1)).saveImage(any(), any(),eq(false));
     }
 
     @Test
@@ -95,7 +95,7 @@ class AddProductServiceTest {
         assertThrows(NoSuchElementException.class, () -> addProductService.processProduct(productDTO, image));
         verify(categoryRepository, times(1)).findById(any());
         verify(productRepository, times(0)).save(any());
-        verify(imageService, times(0)).saveImage(any(), any());
+        verify(imageService, times(0)).saveImage(any(), any(),eq(false));
     }
 
     @Test
@@ -119,13 +119,13 @@ class AddProductServiceTest {
 
         when(categoryRepository.findById(any())).thenReturn(Optional.of(category));
         when(productRepository.save(any())).thenReturn(new Product());
-        when(imageService.saveImage(any(), any())).thenThrow(new IOException());
+        when(imageService.saveImage(any(), any(),eq(false))).thenThrow(new IOException());
 
         // Act, Assert
         assertThrows(IOException.class, () -> addProductService.processProduct(productDTO, image));
         verify(categoryRepository, times(1)).findById(any());
         verify(productRepository, times(1)).save(any());
-        verify(imageService, times(1)).saveImage(any(), any());
+        verify(imageService, times(1)).saveImage(any(), any(),eq(false));
     }
 
     @Test
@@ -149,12 +149,12 @@ class AddProductServiceTest {
 
         when(categoryRepository.findById(any())).thenReturn(Optional.of(category));
         when(productRepository.save(any())).thenReturn(new Product());
-        when(imageService.saveImage(any(), any())).thenThrow(new IllegalStateException());
+        when(imageService.saveImage(any(), any(),eq(false))).thenThrow(new IllegalStateException());
 
         // Act, Assert
         assertThrows(IllegalStateException.class, () -> addProductService.processProduct(productDTO, image));
         verify(categoryRepository, times(1)).findById(any());
         verify(productRepository, times(1)).save(any());
-        verify(imageService, times(1)).saveImage(any(), any());
+        verify(imageService, times(1)).saveImage(any(), any(),eq(false));
     }
 }

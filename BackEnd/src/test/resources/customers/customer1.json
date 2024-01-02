@@ -1,0 +1,9 @@
+{
+  "id": 1,
+  "email": "emai1@gmail.com",
+  "firstName": "first_name1",
+  "lastName": "last_name1",
+  "isGmail": false,
+  "isVerified": true,
+  "password": "password1"
+}

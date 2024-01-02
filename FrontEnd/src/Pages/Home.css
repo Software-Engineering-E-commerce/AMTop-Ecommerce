@@ -1,0 +1,184 @@
+/* Start Variables */
+:root {
+  --main-color: #19c8fa;
+  --transparent-color: rgb(15 116 143 / 70%);
+  --section-padding: 100px;
+}
+/* End Variables */
+
+.whatAfterNavbar {
+  /* position: relative; */
+  margin-top: 170px;
+}
+
+h2 {
+  color: #333333;
+  font-weight: 500;
+}
+
+.homeCategories img:hover,
+.categoryName:hover {
+  cursor: pointer;
+}
+
+.whatAfterNavbar img {
+  transition: transform 0.3s ease; /* Fix: Apply transition to the transform property */
+}
+
+.whatAfterNavbar img:hover {
+  transform: scale(1.2); /* Fix: Correct the property name */
+}
+
+.subSlider img:hover,
+.categoryName:hover {
+  cursor: pointer;
+}
+
+.subSlider img {
+  transition: transform 0.3s ease; /* Fix: Apply transition to the transform property */
+}
+
+.subSlider img:hover {
+  transform: scale(1.2); /* Fix: Correct the property name */
+}
+
+.subSlider h5 {
+  transition: color 0.3s ease;
+}
+
+.subSlider h5:hover {
+  color: #dc3545;
+}
+
+.slick-prev {
+  left: 10px;
+}
+
+.slick-next {
+  right: 10px;
+}
+
+.scroll-to-top-btn {
+  position: sticky;
+  right: -50px;
+  padding: 8px 12px;
+  color: #fff;
+  background-color: orange;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 1.5em;
+  bottom: 40px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.subSliderWrap {
+  /* border: 1px solid #ddd; */
+  /* border-radius: 8px; */
+  /* background-color: white; */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding-bottom: 1px;
+  text-align: center;
+  position: relative;
+  padding: 30px;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  border-radius: 7px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.homeLatestProducts img {
+  transition: transform 0.3s ease; /* Fix: Apply transition to the transform property */
+}
+
+.homeLatestProducts img:hover {
+  transform: scale(1.2); /* Fix: Correct the property name */
+}
+
+.subSlider {
+  padding: 0 10px;
+  width: 100%;
+  display: inline-block;
+  margin-top: 10px;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.05);
+}
+
+.scroll-to-top-btn:hover {
+  background-color: rgb(22, 16, 4);
+}
+
+/* Start Design */
+.design {
+  padding-top: var(--section-padding);
+  padding-bottom: var(--section-padding);
+  height: 600px;
+  position: relative;
+  background-image: url("../assets/design-features.jpg");
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  margin-top: 100px;
+}
+.design::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(0 0 0 / 60%);
+}
+.design ul {
+  list-style-type: none;
+}
+.design .image,
+.design .text {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+}
+
+.design .text{
+  margin-left: 50px;
+}
+.design .image {
+  text-align: center;
+}
+@media (max-width: 1000px) {
+  .design .image {
+    display: none;
+  }
+}
+.design .image img {
+  position: relative;
+  bottom: -150px;
+}
+.design .text {
+  color: white;
+  padding: 50px;
+  background-color: var(--transparent-color);
+}
+.design .text h2 {
+  font-weight: normal;
+  text-transform: uppercase;
+  margin-bottom: 40px;
+}
+.design .text ul li {
+  padding: 15px 0;
+  font-size: 1.25em;
+}
+/* .design .text ul li::before {
+  font-family: "Font Awesome 5 Free";
+  content: "\f108";
+  font-weight: 900;
+  margin-right: 20px;
+  position: relative;
+  top: 1px;
+} */
+/* End Design */

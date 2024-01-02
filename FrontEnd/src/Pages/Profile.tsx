@@ -145,7 +145,7 @@ const Profile = () => {
                 setFirstNameNavS(data.firstName);
                 setLastNameNavS(data.lastName);
                 setPhoneNumber(data.phoneNumber);
-                setIsCustomer(data.customer);
+                setIsCustomer(data.isCustomer);
                 setAddresses(data.addresses || []);
                 setActiveAddresses(data.addresses ? data.addresses.map(() => true) : []);
               } else {

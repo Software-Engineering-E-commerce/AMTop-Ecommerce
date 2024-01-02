@@ -1,0 +1,16 @@
+{
+    "id": 12,
+    "productName": "Product12",
+    "price": 500,
+    "postedDate": "2023-12-25T15:30:45.123456",
+    "description": "Description12",
+    "productCountAvailable": 20,
+    "productSoldCount": 80,
+    "brand": "dell",
+    "imageLink": "ImageLink12",
+    "discountPercentage": 20.0,
+    "category": {
+      "categoryName": "Category8",
+      "imageLink": "ImageLink8"
+    }
+  }

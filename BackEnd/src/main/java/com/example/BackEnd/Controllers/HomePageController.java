@@ -37,6 +37,18 @@ public class HomePageController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         }
+    }
 
+    // Getting the home recommendation products DTO to view it in the Home page
+    @GetMapping("/getHomeRecommendations")
+    public ResponseEntity<HomeProductsDTO> getHomeRecommendations (
+            @RequestHeader("Authorization") String authorizationHeader){
+        try {
+            String token = extractToken(authorizationHeader);
+            HomeProductsDTO  homeProductsDTO =  homeService.getHomeRecommendations(token);
+            return ResponseEntity.status(HttpStatus.OK).body(homeProductsDTO);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
     }
 }
