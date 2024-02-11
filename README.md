@@ -15,7 +15,7 @@ Welcome to AMTop-Ecommerce, a cutting-edge E-commerce web app designed to revolu
 
 AMTop-Ecommerce is a comprehensive E-commerce platform built using Spring Boot, Java, SQL, React, and TypeScript. It offers two distinct views for vendors and customers, each packed with features to enhance usability and efficiency.
 ---
-###Key Highlights:
+### Key Highlights:
 
 - Dual View Support: Seamlessly navigate between Vendor and Customer views, each tailored to optimize user experience.
 - Agile Methodologies: We embraced Agile methodologies, utilizing Jira to manage three sprints alongside a meticulous design phase.
