@@ -1,7 +1,7 @@
 ## AMTop-Ecommerce
 
 Welcome to AMTop-Ecommerce, a cutting-edge E-commerce web app designed to revolutionize online shopping experiences for both vendors and customers.
-
+---
 ### Table of Contents
 
 - [Introduction](#introduction)
@@ -10,19 +10,19 @@ Welcome to AMTop-Ecommerce, a cutting-edge E-commerce web app designed to revolu
 - [Getting Started](#getting-started)
 - [Built With](#built-with)
 - [Video Link](#video-link)
-
+---
 ### Introduction
 
 AMTop-Ecommerce is a comprehensive E-commerce platform built using Spring Boot, Java, SQL, React, and TypeScript. It offers two distinct views for vendors and customers, each packed with features to enhance usability and efficiency.
-
-Key Highlights:
+---
+###Key Highlights:
 
 - Dual View Support: Seamlessly navigate between Vendor and Customer views, each tailored to optimize user experience.
 - Agile Methodologies: We embraced Agile methodologies, utilizing Jira to manage three sprints alongside a meticulous design phase.
 - Robust Testing: With a commitment to quality, we implemented unit tests using JUnit, achieving an impressive 78.5% code coverage.
 - Comprehensive Design Activities: Our process encompassed ER diagrams, class diagrams, and detailed requirements documentation.
 - Efficient Time Management: We provided accurate time estimates for tasks and meticulously logged progress using Jira.
-
+---
 ### Features
 
 ### Main System Features:
@@ -53,7 +53,7 @@ Key Highlights:
 - Order History: Vendors can access order history to review past sales and transactions.
 
 And much more!
-
+---
 ### Getting Started
 
 To run AMTop-Ecommerce on your local machine, follow these steps:
@@ -67,8 +67,7 @@ To run AMTop-Ecommerce on your local machine, follow these steps:
 /BackEnd/" directory.
 6. Start the frontend server: Navigate to the `frontend` directory and run `npm run dev`
 7. Access the application in your browser at `http://localhost:3000`
-
-
+---
 ### Built With
 
 - Spring Boot
@@ -76,7 +75,7 @@ To run AMTop-Ecommerce on your local machine, follow these steps:
 - SQL
 - React
 - TypeScript
-
-### Video
+---
+### Video Link
 
 https://drive.google.com/file/d/14RQTeRMq_MmxQyV1Tj_lC0A-O73ntin8/view?usp=drive_link
