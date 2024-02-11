@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useLocation } from "react-router";
+import { useLocation } from "react-router-dom";
 import Navbar from "../Components/HomeNavbar";
 import Slider from "react-slick";
 import CategoryCardComponent from "../Components/CategoryCardComponent";
