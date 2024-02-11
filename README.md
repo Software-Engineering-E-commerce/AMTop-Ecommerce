@@ -58,7 +58,7 @@ And much more!
 
 To run AMTop-Ecommerce on your local machine, follow these steps:
 
-1. Clone the repository: `git clone [https://github.com/your-username/AMTop-Ecommerce.git](https://github.com/Software-Engineering-E-commerce/AMTop-Ecommerce.git)`
+1. Clone the repository: `git clone https://github.com/Software-Engineering-E-commerce/AMTop-Ecommerce.git`
 3. Install dependencies:
    - Frontend (React): Navigate to the `frontend` directory and run `npm install`
 4. Set up the database:
