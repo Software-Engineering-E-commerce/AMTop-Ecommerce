@@ -40,15 +40,19 @@ const CustomerOrders = () => {
           token = {userToken}
       />
       <OrdersList 
-        getOrders = {getOrders}
-        deleteOrder = {async () => "Not Required"}
-        deleteOrderItem= {async () => "Not Required"}
-        updateOrderStatus = {async () => "Not Required"}
-        isAdmin = {isAdmin}
-        firstName = {firstName}
-        lastName = {lastName}
-        userToken = {userToken}
-      />
+        getOrders={getOrders}
+        deleteOrder={async () => "Not Required"}
+        deleteOrderItem={async () => "Not Required"}
+        updateOrderStatus={async () => "Not Required"}
+        isAdmin={isAdmin}
+        firstName={firstName}
+        lastName={lastName}
+        userToken={userToken} getSortedOrders={function (sortBy: any, sortOrder: any): Promise<Order[]> {
+          throw new Error("Function not implemented.");
+        } } getFilteredOrders={function (filter: FilterOrderDto): Promise<Order[]> {
+          throw new Error("Function not implemented.");
+        } }      
+        />
     </div>
   );
 };
