@@ -23,7 +23,7 @@ AMTop-Ecommerce is a comprehensive E-commerce platform built using Spring Boot, 
 * [Mohamed Hassan](https://github.com/Mohamed-Eltobgy)
 * [Mohamed Raffek](https://github.com/mohamedraffeek)
 * [Mahmoud Attia](https://github.com/mahmoudattia12)
-* [Mahmoud Ghlab](https://github.com/Mahmoudjobdis)
+* [Mahmoud Ghlab](https://github.com/Mahmoudghlab25)
 ---
 ### Key Highlights:
 
