@@ -22,6 +22,7 @@ import HomeFooter from "../Components/HomeFooter";
 import { Prev } from "react-bootstrap/esm/PageItem";
 import Categories from "./Categories";
 import CategoryCardComponent from "../Components/CategoryCardComponent";
+import mobileImg from "../assets/mobile.png";
 
 interface Categorie {
   categoryName: string;
@@ -325,7 +326,7 @@ const Home = () => {
       <div className="design">
         <div className="image">
           <img
-            src="src\assets\mobile.png"
+            src={mobileImg}
             alt="Mobile"
             style={{ width: "30rem" }}
           />

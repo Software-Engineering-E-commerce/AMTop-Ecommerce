@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import OurLogo from "../assets/OurLogo.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUser,
@@ -260,8 +261,8 @@ const Navbar: React.FC<NavbarProps> = ({
             <h5 style={{ color: "#fff" }} className="brand-name">
               <img
                 id="amTopIcon"
-                src="src\assets\OurLogo.png"
-                alt="productImage"
+                src={OurLogo}
+                alt="AMTOP logo"
                 onClick={toHomePage}
               />
             </h5>
