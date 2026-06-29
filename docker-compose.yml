@@ -1,0 +1,49 @@
+version: '3.9'
+services:
+  db: # this is the service name, you can use it as a hostname in other services
+    image: mysql:8.0
+    ports:
+      - "3307:3306"
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-amtopdb}
+      MYSQL_USER: ${MYSQL_USER:-amtop}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-amtop_pass}
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./BackEnd
+    
+    # depends_on is used to specify that the backend service depends on the db service. The condition: service_healthy option ensures that the backend service will only start after the db service is healthy (we already got a healthcheck for the db) and ready to accept connections. This is important because the backend service needs to connect to the database during its startup process.
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${MYSQL_DATABASE:-amtopdb}
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER:-amtop}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:-amtop_pass}
+      JWT_SECRET: ${JWT_SECRET:-change_me}
+      SERVER_PORT: 9080
+    ports:
+      - "9080:9080"
+    restart: on-failure
+
+  frontend:
+    build:
+      context: ./FrontEnd
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+    restart: unless-stopped
+
+volumes:
+  db_data:
