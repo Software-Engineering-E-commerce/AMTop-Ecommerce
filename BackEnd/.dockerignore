@@ -1,0 +1,7 @@
+target/
+.m2/
+**/node_modules
+*.log
+*.tmp
+Dockerfile
+.git
